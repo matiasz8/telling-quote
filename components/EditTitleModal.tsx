@@ -1,0 +1,77 @@
+"use client";
+
+import { useState, useEffect } from "react";
+
+interface EditTitleModalProps {
+  isOpen: boolean;
+  currentTitle: string;
+  onClose: () => void;
+  onSave: (newTitle: string) => void;
+}
+
+export default function EditTitleModal({
+  isOpen,
+  currentTitle,
+  onClose,
+  onSave,
+}: EditTitleModalProps) {
+  const [title, setTitle] = useState(currentTitle);
+
+  useEffect(() => {
+    if (isOpen) {
+      setTitle(currentTitle);
+    }
+  }, [isOpen, currentTitle]);
+
+  if (!isOpen) return null;
+
+  const handleSave = () => {
+    if (!title.trim()) return;
+    onSave(title.trim());
+    onClose();
+  };
+
+  const handleCancel = () => {
+    setTitle(currentTitle);
+    onClose();
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+      handleSave();
+    } else if (e.key === "Escape") {
+      handleCancel();
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="bg-white rounded-lg p-6 w-full max-w-md">
+        <h2 className="text-xl font-semibold mb-4 text-gray-600">Edit Title</h2>
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          onKeyDown={handleKeyDown}
+          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4 placeholder:text-gray-400 text-gray-700"
+          placeholder="Enter title"
+          autoFocus
+        />
+        <div className="flex gap-4">
+          <button
+            onClick={handleSave}
+            className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            Save
+          </button>
+          <button
+            onClick={handleCancel}
+            className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
