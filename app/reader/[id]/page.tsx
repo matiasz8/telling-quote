@@ -10,6 +10,7 @@ import { processContent } from '@/utils/textProcessor';
 import confetti from 'canvas-confetti';
 import { theme } from '@/config/theme';
 import { getFontFamilyClass, getFontSizeClasses, getThemeClasses } from '@/utils/styleHelpers';
+import CodeBlock from '@/components/CodeBlock';
 
 // Helper function to get inline code classes based on theme
 function getInlineCodeClasses(isDark: boolean): string {
@@ -261,8 +262,14 @@ export default function ReaderPage() {
             )}
           </div>
           
-          {/* Content area - bullets or regular text */}
-          {currentSentence.isBulletPoint ? (
+          {/* Content area - code blocks, bullets or regular text */}
+          {currentSentence.isCodeBlock ? (
+            <CodeBlock 
+              code={currentSentence.sentence} 
+              language={currentSentence.codeLanguage || 'text'} 
+              isDark={isDark} 
+            />
+          ) : currentSentence.isBulletPoint ? (
             <div className={`my-12 ${themeClasses.text} min-h-[200px] flex flex-col justify-center max-w-2xl mx-auto`}>
               {/* Parent bullet if this is a sub-bullet */}
               {(currentSentence.indentLevel ?? 0) > 0 && currentSentence.parentBullet && (

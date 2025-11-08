@@ -11,6 +11,8 @@ export interface ProcessedText {
   parentBullet?: string; // El bullet padre si es un sub-bullet
   parentIsNumbered?: boolean; // Si el padre es una lista numerada
   parentNumberIndex?: number; // El índice numérico del padre si es una lista numerada
+  isCodeBlock?: boolean; // Marca si es un bloque de código
+  codeLanguage?: string; // Lenguaje del código (bash, javascript, etc.)
 }
 
 interface Section {
@@ -122,9 +124,44 @@ export function processContent(title: string, content: string): ProcessedText[] 
     let parentIsNumbered = false; // Indica si el padre es una lista numerada
     let parentNumberIndex = 0; // Índice del número del padre
     let lastIndentLevel = 0; // Trackea el último nivel de indentación procesado
+    let insideCodeBlock = false; // Indica si estamos dentro de un bloque de código
+    let codeBlockLines: string[] = []; // Acumula las líneas del bloque de código
+    let codeLanguage = ''; // Lenguaje del bloque de código
 
     for (const line of sectionLines) {
       const trimmedLine = line.trim();
+      
+      // Detectar bloques de código (```)
+      if (trimmedLine.startsWith('```')) {
+        if (!insideCodeBlock) {
+          // Inicio de bloque de código
+          insideCodeBlock = true;
+          codeLanguage = trimmedLine.substring(3).trim() || 'text';
+          codeBlockLines = [];
+        } else {
+          // Fin de bloque de código
+          insideCodeBlock = false;
+          if (codeBlockLines.length > 0) {
+            processedText.push({
+              id: globalIndex++,
+              title: title,
+              subtitle: section.subtitle,
+              sentence: codeBlockLines.join('\n'),
+              isCodeBlock: true,
+              codeLanguage: codeLanguage,
+            });
+          }
+          codeBlockLines = [];
+          codeLanguage = '';
+        }
+        continue;
+      }
+      
+      // Si estamos dentro de un bloque de código, acumular líneas
+      if (insideCodeBlock) {
+        codeBlockLines.push(line);
+        continue;
+      }
       
       // Detectar nivel de indentación (contar espacios/tabs al inicio)
       const indentMatch = line.match(/^(\s*)/);
