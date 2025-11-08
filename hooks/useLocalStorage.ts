@@ -28,6 +28,10 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T 
       // Save to local storage
       if (typeof window !== 'undefined') {
         window.localStorage.setItem(key, JSON.stringify(valueToStore));
+        // Dispatch custom event to sync across components in same page
+        window.dispatchEvent(new CustomEvent('local-storage-change', { 
+          detail: { key, value: valueToStore } 
+        }));
       }
     } catch (error) {
       // A more advanced implementation would handle the error case
@@ -35,7 +39,7 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T 
     }
   };
 
-  // Sync with localStorage changes from other tabs/windows
+  // Sync with localStorage changes from other tabs/windows and same page
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -49,8 +53,20 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T 
       }
     };
 
+    const handleCustomStorageChange = (e: Event) => {
+      const customEvent = e as CustomEvent<{ key: string; value: T }>;
+      if (customEvent.detail.key === key) {
+        setStoredValue(customEvent.detail.value);
+      }
+    };
+
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    window.addEventListener('local-storage-change', handleCustomStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('local-storage-change', handleCustomStorageChange);
+    };
   }, [key]);
 
   return [storedValue, setValue];
