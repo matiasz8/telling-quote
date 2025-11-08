@@ -8,11 +8,19 @@ import { useSettings } from '@/hooks/useSettings';
 import { Reading } from '@/types';
 import { processContent } from '@/utils/textProcessor';
 import confetti from 'canvas-confetti';
-import { theme, getInlineCodeClasses } from '@/config/theme';
+import { theme } from '@/config/theme';
 import { getFontFamilyClass, getFontSizeClasses, getThemeClasses } from '@/utils/styleHelpers';
 
+// Helper function to get inline code classes based on theme
+function getInlineCodeClasses(isDark: boolean): string {
+  if (isDark) {
+    return 'inline-block px-2 py-0.5 mx-1 bg-gray-800 text-green-400 rounded font-mono text-sm';
+  }
+  return 'inline-block px-2 py-0.5 mx-1 bg-orange-100 text-orange-800 rounded font-mono text-sm';
+}
+
 // Helper function to format inline code (e.g., `awslocal s3 ls`)
-function formatInlineCode(text: string) {
+function formatInlineCode(text: string, isDark: boolean) {
   // Detecta patrones de backticks: `código`
   const parts = text.split(/(`[^`]+`)/g);
   
@@ -23,7 +31,7 @@ function formatInlineCode(text: string) {
       return (
         <span 
           key={idx} 
-          className={getInlineCodeClasses()}
+          className={getInlineCodeClasses(isDark)}
         >
           {code}
         </span>
@@ -47,6 +55,7 @@ export default function ReaderPage() {
   const fontFamilyClass = getFontFamilyClass(settings.fontFamily);
   const fontSizeClasses = getFontSizeClasses(settings.fontSize);
   const themeClasses = getThemeClasses(settings.theme);
+  const isDark = settings.theme === 'dark';
 
   const reading = useMemo(() => {
     if (!id) return undefined;
@@ -243,11 +252,11 @@ export default function ReaderPage() {
         <div className="max-w-4xl mx-auto">
           <div className="mb-8 text-center">
             <h2 className={`${fontSizeClasses.title} font-semibold ${themeClasses.text} mb-2`}>
-              {formatInlineCode(currentSentence.title)}
+              {formatInlineCode(currentSentence.title, isDark)}
             </h2>
             {currentSentence.subtitle && !currentSentence.isSubtitleIntro && (
               <h3 className={`${fontSizeClasses.subtitle} font-medium ${themeClasses.textSecondary}`}>
-                {formatInlineCode(currentSentence.subtitle)}
+                {formatInlineCode(currentSentence.subtitle, isDark)}
               </h3>
             )}
           </div>
@@ -262,7 +271,7 @@ export default function ReaderPage() {
                     <span className="mr-3 mt-1 shrink-0">
                       {currentSentence.parentIsNumbered ? `${currentSentence.parentNumberIndex ?? 1}.` : '•'}
                     </span>
-                    <span>{formatInlineCode(currentSentence.parentBullet)}</span>
+                    <span>{formatInlineCode(currentSentence.parentBullet, isDark)}</span>
                   </div>
                 </div>
               )}
@@ -279,7 +288,7 @@ export default function ReaderPage() {
                             ? `${idx + 1}.` 
                             : '•'}
                       </span>
-                      <span>{formatInlineCode(bullet)}</span>
+                      <span>{formatInlineCode(bullet, isDark)}</span>
                     </li>
                   ))}
                 </ul>
@@ -298,7 +307,7 @@ export default function ReaderPage() {
                         ? `${(currentSentence.bulletHistory?.length || 0) + 1}.` 
                         : '•'}
                   </span>
-                  <span>{formatInlineCode(currentSentence.sentence)}</span>
+                  <span>{formatInlineCode(currentSentence.sentence, isDark)}</span>
                 </li>
               </ul>
             </div>
@@ -308,7 +317,7 @@ export default function ReaderPage() {
                 ? `${fontSizeClasses.subtitle} ${theme.subtitleIntro.weight} ${theme.subtitleIntro.style}` 
                 : fontSizeClasses.text
             }`}>
-              {formatInlineCode(currentSentence.sentence)}
+              {formatInlineCode(currentSentence.sentence, isDark)}
             </p>
           )}
 
