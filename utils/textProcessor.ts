@@ -9,6 +9,8 @@ export interface ProcessedText {
   isNumberedList?: boolean; // Marca si es una lista numerada
   indentLevel?: number; // Nivel de indentación (0 = raíz, 1 = sub-bullet, etc.)
   parentBullet?: string; // El bullet padre si es un sub-bullet
+  parentIsNumbered?: boolean; // Si el padre es una lista numerada
+  parentNumberIndex?: number; // El índice numérico del padre si es una lista numerada
 }
 
 interface Section {
@@ -37,6 +39,10 @@ export function processContent(title: string, content: string): ProcessedText[] 
     // Check if line is a markdown heading (##, ###, etc.)
     const headingMatch = trimmedLine.match(/^(#{1,6})\s+(.+)$/);
 
+    // Check if line is a numbered or bulleted list (to exclude from heading detection)
+    const isNumberedList = /^\d+\.\s+/.test(trimmedLine);
+    const isBulletList = /^[-*+]\s+/.test(trimmedLine);
+
     // Heuristic: heading-like line (no markdown) - short, surrounded by blank lines, no terminal punctuation
     const prevIsBlank = i === 0 || lines[i - 1].trim().length === 0;
     const nextIsBlank = i === lines.length - 1 || lines[i + 1].trim().length === 0;
@@ -50,6 +56,8 @@ export function processContent(title: string, content: string): ProcessedText[] 
     const endsWithQuestionOrExclaim = /[?¿!¡]$/.test(trimmedLine);
     const looksLikeHeading =
       !headingMatch &&
+      !isNumberedList &&
+      !isBulletList &&
       prevIsBlank &&
       nextIsBlank &&
       isReasonableLength &&
@@ -109,8 +117,11 @@ export function processContent(title: string, content: string): ProcessedText[] 
 
     const sectionLines = section.content.split('\n');
     let currentParagraph: string[] = [];
-    let bulletHistory: string[] = []; // Acumula los bullets de la lista actual
+    const bulletHistoryByLevel: Record<number, string[]> = {}; // Historial separado por nivel
     let lastParentBullet: string | null = null; // Guarda el último bullet de nivel 0
+    let parentIsNumbered = false; // Indica si el padre es una lista numerada
+    let parentNumberIndex = 0; // Índice del número del padre
+    let lastIndentLevel = 0; // Trackea el último nivel de indentación procesado
 
     for (const line of sectionLines) {
       const trimmedLine = line.trim();
@@ -156,8 +167,16 @@ export function processContent(title: string, content: string): ProcessedText[] 
           }
           currentParagraph = [];
         }
-        // Reset bullet history when we encounter an empty line
-        bulletHistory = [];
+        // Solo reset si la línea NO tiene espacios de indentación (realmente vacía)
+        // Si tiene espacios, puede ser parte de una lista indentada
+        if (line.trim().length === 0 && line.length === 0) {
+          // Limpiar todos los historiales cuando hay línea completamente vacía
+          Object.keys(bulletHistoryByLevel).forEach(level => {
+            delete bulletHistoryByLevel[parseInt(level)];
+          });
+          parentIsNumbered = false; // Reset al terminar una lista
+          parentNumberIndex = 0; // Reset índice
+        }
         continue; // Skip this line
       }
 
@@ -202,8 +221,7 @@ export function processContent(title: string, content: string): ProcessedText[] 
             }
             currentParagraph = [];
           }
-          // Reset bullet history when starting a new bullet list
-          bulletHistory = [];
+          // NO resetear parentIsNumbered ni parentNumberIndex aquí - solo cuando termina la lista completa
         }
         
         // Process bullet point or numbered item and add to history
@@ -216,26 +234,54 @@ export function processContent(title: string, content: string): ProcessedText[] 
           .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
         
         if (bulletText.length > 0) {
+          // Inicializar historial del nivel si no existe
+          if (!bulletHistoryByLevel[indentLevel]) {
+            bulletHistoryByLevel[indentLevel] = [];
+          }
+          
+          // Si cambia el nivel de indentación, limpiar niveles superiores
+          if (indentLevel !== lastIndentLevel) {
+            // Limpiar historiales de niveles mayores que el actual
+            Object.keys(bulletHistoryByLevel).forEach(level => {
+              if (parseInt(level) > indentLevel) {
+                delete bulletHistoryByLevel[parseInt(level)];
+              }
+            });
+            lastIndentLevel = indentLevel;
+          }
+          
           // Guardar el bullet padre si es de nivel 0
           if (indentLevel === 0) {
             lastParentBullet = bulletText;
+            parentIsNumbered = !!numberedMatch; // Rastrear si el padre es numerado
+            // Extraer el índice numérico si es numerado
+            if (numberedMatch) {
+              const numberMatch = trimmedLine.match(/^(\d+)\./);
+              parentNumberIndex = numberMatch ? parseInt(numberMatch[1], 10) : 0;
+            } else {
+              parentNumberIndex = 0; // Reset si no es numerado
+            }
           }
           
-          // Add current bullet to history
-          bulletHistory.push(bulletText);
+          // Add current bullet to history of this level
+          bulletHistoryByLevel[indentLevel].push(bulletText);
           
           // Create a slide with all bullets accumulated so far
-          processedText.push({
+          const slide = {
             id: globalIndex++,
             title: title,
             subtitle: section.subtitle,
             sentence: bulletText, // El bullet actual
             isBulletPoint: true,
             isNumberedList: !!numberedMatch, // Marca si es lista numerada
-            bulletHistory: [...bulletHistory.slice(0, -1)], // Todos los bullets anteriores
+            bulletHistory: [...(bulletHistoryByLevel[indentLevel] || []).slice(0, -1)], // Todos los bullets anteriores del mismo nivel
             indentLevel: indentLevel,
             parentBullet: indentLevel > 0 && lastParentBullet ? lastParentBullet : undefined,
-          });
+            parentIsNumbered: indentLevel > 0 && lastParentBullet ? parentIsNumbered : undefined, // Si tiene padre, usar su tipo
+            parentNumberIndex: indentLevel > 0 && lastParentBullet && parentIsNumbered ? parentNumberIndex : undefined,
+          };
+          
+          processedText.push(slide);
         }
       } else if (colonBulletMatch) {
         // Treat label: description as a bullet item
@@ -271,13 +317,20 @@ export function processContent(title: string, content: string): ProcessedText[] 
             }
           }
           currentParagraph = [];
-          // Reset bullet history when starting a new bullet list
-          bulletHistory = [];
+          // Reset bullet history when starting a new bullet list (colon style is always level 0)
+          if (bulletHistoryByLevel[0]) {
+            bulletHistoryByLevel[0] = [];
+          }
         }
 
         if (bulletText.length > 0) {
+          // Inicializar historial del nivel 0 si no existe
+          if (!bulletHistoryByLevel[0]) {
+            bulletHistoryByLevel[0] = [];
+          }
+          
           // Add current bullet to history
-          bulletHistory.push(bulletText);
+          bulletHistoryByLevel[0].push(bulletText);
           
           // Create a slide with all bullets accumulated so far
           processedText.push({
@@ -286,14 +339,17 @@ export function processContent(title: string, content: string): ProcessedText[] 
             subtitle: section.subtitle,
             sentence: bulletText, // El bullet actual
             isBulletPoint: true,
-            bulletHistory: [...bulletHistory.slice(0, -1)], // Todos los bullets anteriores
+            bulletHistory: [...(bulletHistoryByLevel[0] || []).slice(0, -1)], // Todos los bullets anteriores
           });
         }
       } else if (trimmedLine.length > 0) {
         // Regular paragraph line
         // Reset bullet history when we encounter regular text
-        if (bulletHistory.length > 0) {
-          bulletHistory = [];
+        const hasAnyBullets = Object.keys(bulletHistoryByLevel).length > 0;
+        if (hasAnyBullets) {
+          Object.keys(bulletHistoryByLevel).forEach(level => {
+            delete bulletHistoryByLevel[parseInt(level)];
+          });
         }
         currentParagraph.push(trimmedLine);
       } else {

@@ -7,6 +7,29 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { Reading } from '@/types';
 import { processContent } from '@/utils/textProcessor';
 import confetti from 'canvas-confetti';
+import { theme, getInlineCodeClasses } from '@/config/theme';
+
+// Helper function to format inline code (e.g., `awslocal s3 ls`)
+function formatInlineCode(text: string) {
+  // Detecta patrones de backticks: `código`
+  const parts = text.split(/(`[^`]+`)/g);
+  
+  return parts.map((part, idx) => {
+    // Si la parte está entre backticks, formatearla como código
+    if (part.startsWith('`') && part.endsWith('`')) {
+      const code = part.slice(1, -1); // Remover los backticks
+      return (
+        <span 
+          key={idx} 
+          className={getInlineCodeClasses()}
+        >
+          {code}
+        </span>
+      );
+    }
+    return part;
+  });
+}
 
 export default function ReaderPage() {
   const params = useParams();
@@ -199,9 +222,9 @@ export default function ReaderPage() {
               {safeIndex + 1} / {processedText.length}
             </span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+          <div className={`w-full ${theme.progressBar.background} rounded-full h-2 overflow-hidden`}>
             <div
-              className="bg-linear-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
+              className={`${theme.progressBar.fill} h-2 rounded-full transition-all duration-300 ease-out`}
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -213,11 +236,11 @@ export default function ReaderPage() {
         <div className="max-w-4xl mx-auto">
           <div className="mb-8 text-center">
             <h2 className="text-xl font-semibold text-gray-900 mb-2">
-              {currentSentence.title}
+              {formatInlineCode(currentSentence.title)}
             </h2>
             {currentSentence.subtitle && !currentSentence.isSubtitleIntro && (
               <h3 className="text-lg font-medium text-gray-700">
-                {currentSentence.subtitle}
+                {formatInlineCode(currentSentence.subtitle)}
               </h3>
             )}
           </div>
@@ -228,9 +251,11 @@ export default function ReaderPage() {
               {/* Parent bullet if this is a sub-bullet */}
               {(currentSentence.indentLevel ?? 0) > 0 && currentSentence.parentBullet && (
                 <div className="mb-6 pb-4 border-b border-gray-200">
-                  <div className="flex items-start text-gray-500 text-xl italic">
-                    <span className="mr-3 mt-1 shrink-0">•</span>
-                    <span>{currentSentence.parentBullet}</span>
+                  <div className={`flex items-start ${theme.bullets.parent.text} ${theme.bullets.parent.size} ${theme.bullets.parent.weight}`}>
+                    <span className="mr-3 mt-1 shrink-0">
+                      {currentSentence.parentIsNumbered ? `${currentSentence.parentNumberIndex ?? 1}.` : '•'}
+                    </span>
+                    <span>{formatInlineCode(currentSentence.parentBullet)}</span>
                   </div>
                 </div>
               )}
@@ -239,34 +264,44 @@ export default function ReaderPage() {
               {currentSentence.bulletHistory && currentSentence.bulletHistory.length > 0 && (
                 <ul className="space-y-3 mb-4">
                   {currentSentence.bulletHistory.map((bullet, idx) => (
-                    <li key={idx} className="flex items-start text-gray-400 text-2xl">
+                    <li key={idx} className={`flex items-start ${theme.bullets.history.text} ${theme.bullets.history.size}`}>
                       <span className={`mr-3 mt-1 shrink-0 ${(currentSentence.indentLevel ?? 0) > 0 ? 'ml-8' : ''}`}>
-                        {currentSentence.isNumberedList ? `${idx + 1}.` : ((currentSentence.indentLevel ?? 0) > 0 ? '◦' : '•')}
+                        {(currentSentence.indentLevel ?? 0) > 0
+                          ? '◦'
+                          : currentSentence.isNumberedList 
+                            ? `${idx + 1}.` 
+                            : '•'}
                       </span>
-                      <span>{bullet}</span>
+                      <span>{formatInlineCode(bullet)}</span>
                     </li>
                   ))}
                 </ul>
               )}
               {/* Current bullet (highlighted) */}
               <ul className="space-y-3">
-                <li className="flex items-start text-gray-900 text-3xl font-semibold">
+                <li className={`flex items-start ${
+                  (currentSentence.indentLevel ?? 0) === 0 
+                    ? `${theme.bullets.level0.text} ${theme.bullets.level0.size} ${theme.bullets.level0.weight}` 
+                    : `${theme.bullets.level1.text} ${theme.bullets.level1.size} ${theme.bullets.level1.weight}`
+                }`}>
                   <span className={`mr-3 mt-1 shrink-0 ${(currentSentence.indentLevel ?? 0) > 0 ? 'ml-8' : ''}`}>
-                    {currentSentence.isNumberedList 
-                      ? `${(currentSentence.bulletHistory?.length || 0) + 1}.` 
-                      : ((currentSentence.indentLevel ?? 0) > 0 ? '◦' : '•')}
+                    {(currentSentence.indentLevel ?? 0) > 0
+                      ? '◦'
+                      : currentSentence.isNumberedList 
+                        ? `${(currentSentence.bulletHistory?.length || 0) + 1}.` 
+                        : '•'}
                   </span>
-                  <span>{currentSentence.sentence}</span>
+                  <span>{formatInlineCode(currentSentence.sentence)}</span>
                 </li>
               </ul>
             </div>
           ) : (
             <p className={`font-serif my-12 text-gray-900 leading-relaxed text-center min-h-[200px] flex items-center justify-center ${
               currentSentence.isSubtitleIntro 
-                ? 'text-5xl font-bold italic' 
-                : 'text-4xl'
+                ? `${theme.subtitleIntro.size} ${theme.subtitleIntro.weight} ${theme.subtitleIntro.style}` 
+                : theme.regularText.size
             }`}>
-              {currentSentence.sentence}
+              {formatInlineCode(currentSentence.sentence)}
             </p>
           )}
 

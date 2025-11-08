@@ -23,7 +23,7 @@ export default function ReadingCard({ reading, onEdit, onDelete }: ReadingCardPr
   };
 
   return (
-    <div className="min-w-[200px] max-w-[300px] bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow border border-gray-200 relative group">
+    <div className="w-full bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow border border-gray-200 relative group">
       <Link href={`/reader/${reading.id}`} className="block">
         <h3 className="text-lg font-semibold text-gray-900 line-clamp-2 pr-8">{reading.title}</h3>
       </Link>
