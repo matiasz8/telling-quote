@@ -32,11 +32,25 @@ export function processContent(title: string, content: string): ProcessedText[] 
   const sections: Section[] = [];
   let currentSubtitle: string | null = null;
   let currentContent: string[] = [];
+  let insideCodeBlock = false; // Track if we're inside a code block
 
   // Process lines to identify sections with subtitles
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     const trimmedLine = line.trim();
+
+    // Detectar bloques de código (```) y alternar el estado
+    if (trimmedLine.startsWith('```')) {
+      insideCodeBlock = !insideCodeBlock;
+      currentContent.push(line);
+      continue;
+    }
+
+    // Si estamos dentro de un bloque de código, no procesar como heading
+    if (insideCodeBlock) {
+      currentContent.push(line);
+      continue;
+    }
 
     // Check if line is a markdown heading (##, ###, etc.)
     const headingMatch = trimmedLine.match(/^(#{1,6})\s+(.+)$/);
