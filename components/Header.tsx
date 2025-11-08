@@ -7,15 +7,16 @@ import { useSettings } from '@/hooks/useSettings';
 export default function Header() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { settings, setSettings } = useSettings();
+  const isDark = settings.theme === 'dark';
 
   return (
     <>
-      <header className="w-full border-b border-gray-200 bg-white">
+      <header className={`w-full border-b ${isDark ? 'border-purple-900 bg-linear-to-r from-purple-900 to-black' : 'border-gray-200 bg-white'}`}>
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">tellingQuote</h1>
+          <h1 className={`text-2xl font-bold ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>tellingQuote</h1>
           <button
             onClick={() => setIsSettingsOpen(true)}
-            className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+            className={`p-2 ${isDark ? 'text-gray-300 hover:text-gray-100 hover:bg-purple-800' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'} rounded-lg transition-colors`}
             title="Configuración"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
