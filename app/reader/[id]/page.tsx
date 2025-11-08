@@ -4,10 +4,12 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { useSettings } from '@/hooks/useSettings';
 import { Reading } from '@/types';
 import { processContent } from '@/utils/textProcessor';
 import confetti from 'canvas-confetti';
 import { theme, getInlineCodeClasses } from '@/config/theme';
+import { getFontFamilyClass, getFontSizeClasses, getThemeClasses } from '@/utils/styleHelpers';
 
 // Helper function to format inline code (e.g., `awslocal s3 ls`)
 function formatInlineCode(text: string) {
@@ -35,11 +37,16 @@ export default function ReaderPage() {
   const params = useParams();
   const id = typeof params.id === 'string' ? params.id : Array.isArray(params.id) ? params.id[0] : '';
   const [readings] = useLocalStorage<Reading[]>('readings', []);
+  const { settings } = useSettings();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [lastReadingId, setLastReadingId] = useState(id);
   const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pageRef = useRef<HTMLDivElement | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const fontFamilyClass = getFontFamilyClass(settings.fontFamily);
+  const fontSizeClasses = getFontSizeClasses(settings.fontSize);
+  const themeClasses = getThemeClasses(settings.theme);
 
   const reading = useMemo(() => {
     if (!id) return undefined;
@@ -192,9 +199,9 @@ export default function ReaderPage() {
 
   if (processedText.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className={`min-h-screen ${themeClasses.bg} flex items-center justify-center`}>
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">No content to display</h1>
+          <h1 className={`text-2xl font-bold ${themeClasses.text} mb-4`}>No content to display</h1>
           <Link href="/" className="text-blue-500 hover:text-blue-600">
             Back to Dashboard
           </Link>
@@ -210,15 +217,15 @@ export default function ReaderPage() {
   const isFinished = safeIndex === processedText.length - 1;
 
   return (
-    <div ref={pageRef} className="min-h-screen bg-gray-50">
+    <div ref={pageRef} className={`min-h-screen ${themeClasses.bg} ${fontFamilyClass}`}>
       {/* Progress Bar */}
-      <div className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm">
+      <div className={`sticky top-0 z-10 ${themeClasses.cardBg} border-b ${themeClasses.border} shadow-sm`}>
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between mb-2">
             <Link href="/" className="text-sm text-blue-500 hover:text-blue-600">
               ← Back to Dashboard
             </Link>
-            <span className="text-sm text-gray-600">
+            <span className={`text-sm ${themeClasses.textSecondary}`}>
               {safeIndex + 1} / {processedText.length}
             </span>
           </div>
@@ -235,11 +242,11 @@ export default function ReaderPage() {
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8 text-center">
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+            <h2 className={`${fontSizeClasses.title} font-semibold ${themeClasses.text} mb-2`}>
               {formatInlineCode(currentSentence.title)}
             </h2>
             {currentSentence.subtitle && !currentSentence.isSubtitleIntro && (
-              <h3 className="text-lg font-medium text-gray-700">
+              <h3 className={`${fontSizeClasses.subtitle} font-medium ${themeClasses.textSecondary}`}>
                 {formatInlineCode(currentSentence.subtitle)}
               </h3>
             )}
@@ -247,11 +254,11 @@ export default function ReaderPage() {
           
           {/* Content area - bullets or regular text */}
           {currentSentence.isBulletPoint ? (
-            <div className="my-12 text-gray-900 min-h-[200px] flex flex-col justify-center max-w-2xl mx-auto">
+            <div className={`my-12 ${themeClasses.text} min-h-[200px] flex flex-col justify-center max-w-2xl mx-auto`}>
               {/* Parent bullet if this is a sub-bullet */}
               {(currentSentence.indentLevel ?? 0) > 0 && currentSentence.parentBullet && (
-                <div className="mb-6 pb-4 border-b border-gray-200">
-                  <div className={`flex items-start ${theme.bullets.parent.text} ${theme.bullets.parent.size} ${theme.bullets.parent.weight}`}>
+                <div className={`mb-6 pb-4 border-b ${themeClasses.border}`}>
+                  <div className={`flex items-start ${theme.bullets.parent.text} ${fontSizeClasses.bullet} ${theme.bullets.parent.weight}`}>
                     <span className="mr-3 mt-1 shrink-0">
                       {currentSentence.parentIsNumbered ? `${currentSentence.parentNumberIndex ?? 1}.` : '•'}
                     </span>
@@ -264,7 +271,7 @@ export default function ReaderPage() {
               {currentSentence.bulletHistory && currentSentence.bulletHistory.length > 0 && (
                 <ul className="space-y-3 mb-4">
                   {currentSentence.bulletHistory.map((bullet, idx) => (
-                    <li key={idx} className={`flex items-start ${theme.bullets.history.text} ${theme.bullets.history.size}`}>
+                    <li key={idx} className={`flex items-start ${theme.bullets.history.text} ${fontSizeClasses.bullet}`}>
                       <span className={`mr-3 mt-1 shrink-0 ${(currentSentence.indentLevel ?? 0) > 0 ? 'ml-8' : ''}`}>
                         {(currentSentence.indentLevel ?? 0) > 0
                           ? '◦'
@@ -281,8 +288,8 @@ export default function ReaderPage() {
               <ul className="space-y-3">
                 <li className={`flex items-start ${
                   (currentSentence.indentLevel ?? 0) === 0 
-                    ? `${theme.bullets.level0.text} ${theme.bullets.level0.size} ${theme.bullets.level0.weight}` 
-                    : `${theme.bullets.level1.text} ${theme.bullets.level1.size} ${theme.bullets.level1.weight}`
+                    ? `${theme.bullets.level0.text} ${fontSizeClasses.bullet} ${theme.bullets.level0.weight}` 
+                    : `${theme.bullets.level1.text} ${fontSizeClasses.bullet} ${theme.bullets.level1.weight}`
                 }`}>
                   <span className={`mr-3 mt-1 shrink-0 ${(currentSentence.indentLevel ?? 0) > 0 ? 'ml-8' : ''}`}>
                     {(currentSentence.indentLevel ?? 0) > 0
@@ -296,10 +303,10 @@ export default function ReaderPage() {
               </ul>
             </div>
           ) : (
-            <p className={`font-serif my-12 text-gray-900 leading-relaxed text-center min-h-[200px] flex items-center justify-center ${
+            <p className={`my-12 ${themeClasses.text} leading-relaxed text-center min-h-[200px] flex items-center justify-center ${
               currentSentence.isSubtitleIntro 
-                ? `${theme.subtitleIntro.size} ${theme.subtitleIntro.weight} ${theme.subtitleIntro.style}` 
-                : theme.regularText.size
+                ? `${fontSizeClasses.subtitle} ${theme.subtitleIntro.weight} ${theme.subtitleIntro.style}` 
+                : fontSizeClasses.text
             }`}>
               {formatInlineCode(currentSentence.sentence)}
             </p>
