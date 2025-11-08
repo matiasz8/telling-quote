@@ -23,39 +23,36 @@ export function formatMarkdown(content: string): string {
       insideList = true;
     }
     
-    // Si encontramos una línea vacía
+    // Si encontramos una línea vacía (o solo con espacios)
     if (trimmed.length === 0) {
       // Si ya tuvimos una línea vacía, skip esta
       if (previousLineWasEmpty) {
         continue;
       }
       
-      // Si estamos dentro de una lista, skip las líneas vacías
+      // Si estamos dentro de una lista, skip TODAS las líneas vacías
       if (insideList) {
-        // Pero permitir una línea vacía si el siguiente item es de nivel 0 (termina la lista)
-        const nextLine = lines[i + 1];
-        if (nextLine) {
-          const nextTrimmed = nextLine.trim();
-          const nextIsTopLevelItem = /^[-*+]\s/.test(nextTrimmed) || /^\d+\.\s/.test(nextTrimmed);
-          
-          if (!nextIsTopLevelItem) {
-            // Skip línea vacía dentro de lista
-            continue;
-          } else {
-            // Termina la lista, permitir línea vacía
-            insideList = false;
-          }
-        }
+        continue;
       }
       
       previousLineWasEmpty = true;
-      formatted.push(line);
+      formatted.push(''); // Agregar línea vacía limpia (sin espacios)
     } else {
+      // Línea con contenido
       previousLineWasEmpty = false;
       formatted.push(line);
       
-      // Si no es un item de lista y no está vacío, ya no estamos en lista
-      if (!isListItem && trimmed.length > 0 && !isIndentedBullet) {
+      // Si no es un item de lista, terminamos la lista
+      if (!isListItem && !isIndentedBullet) {
+        // Si la siguiente línea es un item de lista de nivel 0, agregar línea vacía
+        const nextLine = lines[i + 1];
+        if (nextLine && insideList) {
+          const nextTrimmed = nextLine.trim();
+          const nextIsTopLevel = /^[-*+]\s/.test(nextTrimmed) || /^\d+\.\s/.test(nextTrimmed);
+          if (nextIsTopLevel) {
+            formatted.push('');
+          }
+        }
         insideList = false;
       }
     }
