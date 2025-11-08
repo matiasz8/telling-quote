@@ -258,7 +258,7 @@ export default function ReaderPage() {
               {/* Parent bullet if this is a sub-bullet */}
               {(currentSentence.indentLevel ?? 0) > 0 && currentSentence.parentBullet && (
                 <div className={`mb-6 pb-4 border-b ${themeClasses.border}`}>
-                  <div className={`flex items-start ${theme.bullets.parent.text} ${fontSizeClasses.bullet} ${theme.bullets.parent.weight}`}>
+                  <div className={`flex items-start ${themeClasses.textSecondary} ${fontSizeClasses.bullet} ${theme.bullets.parent.weight}`}>
                     <span className="mr-3 mt-1 shrink-0">
                       {currentSentence.parentIsNumbered ? `${currentSentence.parentNumberIndex ?? 1}.` : '•'}
                     </span>
@@ -271,7 +271,7 @@ export default function ReaderPage() {
               {currentSentence.bulletHistory && currentSentence.bulletHistory.length > 0 && (
                 <ul className="space-y-3 mb-4">
                   {currentSentence.bulletHistory.map((bullet, idx) => (
-                    <li key={idx} className={`flex items-start ${theme.bullets.history.text} ${fontSizeClasses.bullet}`}>
+                    <li key={idx} className={`flex items-start ${themeClasses.textSecondary} ${fontSizeClasses.bullet}`}>
                       <span className={`mr-3 mt-1 shrink-0 ${(currentSentence.indentLevel ?? 0) > 0 ? 'ml-8' : ''}`}>
                         {(currentSentence.indentLevel ?? 0) > 0
                           ? '◦'
@@ -288,8 +288,8 @@ export default function ReaderPage() {
               <ul className="space-y-3">
                 <li className={`flex items-start ${
                   (currentSentence.indentLevel ?? 0) === 0 
-                    ? `${theme.bullets.level0.text} ${fontSizeClasses.bullet} ${theme.bullets.level0.weight}` 
-                    : `${theme.bullets.level1.text} ${fontSizeClasses.bullet} ${theme.bullets.level1.weight}`
+                    ? `${themeClasses.textSecondary} ${fontSizeClasses.bullet} ${theme.bullets.level0.weight}` 
+                    : `${themeClasses.text} ${fontSizeClasses.bullet} ${theme.bullets.level1.weight}`
                 }`}>
                   <span className={`mr-3 mt-1 shrink-0 ${(currentSentence.indentLevel ?? 0) > 0 ? 'ml-8' : ''}`}>
                     {(currentSentence.indentLevel ?? 0) > 0

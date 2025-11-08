@@ -7,7 +7,9 @@ import EditTitleModal from '@/components/EditTitleModal';
 import ConfirmDeleteModal from '@/components/ConfirmDeleteModal';
 import ReadingCard from '@/components/ReadingCard';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { useSettings } from '@/hooks/useSettings';
 import { Reading } from '@/types';
+import { getThemeClasses } from '@/utils/styleHelpers';
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,6 +18,8 @@ export default function Home() {
   const [editingReading, setEditingReading] = useState<Reading | null>(null);
   const [deletingReading, setDeletingReading] = useState<Reading | null>(null);
   const [readings, setReadings] = useLocalStorage<Reading[]>('readings', []);
+  const { settings } = useSettings();
+  const themeClasses = getThemeClasses(settings.theme);
 
   const handleSave = (reading: Reading) => {
     setReadings((prev) => [...prev, reading]);
@@ -48,7 +52,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className={`min-h-screen ${themeClasses.bg}`}>
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="flex justify-center mb-8">
@@ -67,6 +71,7 @@ export default function Home() {
                 reading={reading}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
+                isDark={settings.theme === 'dark'}
               />
             ))}
           </div>
