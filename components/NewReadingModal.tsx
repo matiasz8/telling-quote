@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Reading } from "@/types";
+import { formatMarkdown } from "@/utils/markdownFormatter";
 
 interface NewReadingModalProps {
   isOpen: boolean;
@@ -39,12 +40,13 @@ export default function NewReadingModal({
       .replace(/\[([^\]]+)\]\([^\)]+\)/g, "$1")
       .trim();
 
-    const content = text.trim();
+    // Formatear el contenido para eliminar líneas vacías innecesarias
+    const formattedContent = formatMarkdown(text.trim());
 
     const newReading: Reading = {
       id: crypto.randomUUID(),
       title: derivedTitle || "Untitled",
-      content: content,
+      content: formattedContent,
     };
 
     onSave(newReading);
