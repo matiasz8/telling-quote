@@ -9,7 +9,6 @@ import ReadingCard from '@/components/ReadingCard';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useSettings } from '@/hooks/useSettings';
 import { Reading } from '@/types';
-import { getThemeClasses } from '@/utils/styleHelpers';
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -19,7 +18,6 @@ export default function Home() {
   const [deletingReading, setDeletingReading] = useState<Reading | null>(null);
   const [readings, setReadings] = useLocalStorage<Reading[]>('readings', []);
   const { settings } = useSettings();
-  const themeClasses = getThemeClasses(settings.theme);
 
   const handleSave = (reading: Reading) => {
     setReadings((prev) => [...prev, reading]);
@@ -54,7 +52,7 @@ export default function Home() {
   const isDark = settings.theme === 'dark';
 
   return (
-    <div className={`min-h-screen ${isDark ? 'bg-linear-to-br from-purple-900 via-gray-900 to-black' : themeClasses.bg}`}>
+    <div className={`min-h-screen ${isDark ? 'bg-linear-to-br from-purple-900 via-gray-900 to-black' : 'bg-linear-to-br from-amber-50 via-orange-50 to-yellow-50'}`}>
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="flex justify-center mb-8">
