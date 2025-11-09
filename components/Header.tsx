@@ -11,7 +11,7 @@ export default function Header() {
 
   return (
     <>
-      <header className={`w-full border-b ${isDark ? 'border-purple-900 bg-linear-to-r from-purple-900 to-black' : 'border-orange-200 bg-linear-to-r from-amber-100 to-orange-100'}`}>
+      <header className={`w-full border-b ${isDark ? 'border-purple-900 bg-linear-to-r from-purple-900 to-black' : 'border-lime-200 bg-linear-to-r from-yellow-100 to-lime-100'}`}>
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className={`text-2xl font-bold ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>tellingQuote</h1>
           <div className="flex items-center gap-3">

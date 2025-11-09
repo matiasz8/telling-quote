@@ -334,14 +334,18 @@ export interface Settings {
 ### Theme System
 
 **Light Theme**:
-- Background: Amber → Orange → Yellow gradient
+- Background: Yellow → Lime → Emerald gradient
 - Text: Gray-900
 - Cards: White with light borders
+- Header: Yellow-100 → Lime-100 gradient
 
 **Dark Theme**:
 - Background: Purple → Gray → Black gradient
 - Text: Gray-100
 - Cards: Gray-800 with dark borders
+- Header: Purple-900 → Black gradient
+
+**Color Philosophy**: The light theme uses yellow-green tones (complementary to purple) creating a vibrant, energetic feel that contrasts beautifully with the dark theme's deep purples.
 
 ### Responsive Design
 
