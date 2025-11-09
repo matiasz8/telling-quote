@@ -13,6 +13,8 @@ export interface ProcessedText {
   parentNumberIndex?: number; // El índice numérico del padre si es una lista numerada
   isCodeBlock?: boolean; // Marca si es un bloque de código
   codeLanguage?: string; // Lenguaje del código (bash, javascript, etc.)
+  isBlockquote?: boolean; // Marca si es una cita/blockquote
+  isHorizontalRule?: boolean; // Marca si es un separador horizontal
 }
 
 interface Section {
@@ -181,8 +183,104 @@ export function processContent(title: string, content: string): ProcessedText[] 
       const indentMatch = line.match(/^(\s*)/);
       const indentLevel = indentMatch ? Math.floor(indentMatch[1].length / 2) : 0; // Cada 2 espacios = 1 nivel
 
-      // Skip empty lines and horizontal rules (---, ****, ___, etc.)
-      if (trimmedLine.length === 0 || /^[-*_]{3,}$/.test(trimmedLine)) {
+      // Detectar separadores horizontales (---, ***, ___)
+      if (/^[-*_]{3,}$/.test(trimmedLine)) {
+        // Procesar párrafo acumulado antes del separador
+        if (currentParagraph.length > 0) {
+          const paragraphText = currentParagraph.join(' ').trim();
+          if (paragraphText.length > 0) {
+            const cleanText = paragraphText
+              .replace(/\*\*/g, '')
+              .replace(/\*/g, '')
+              .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
+            
+            const sentences = cleanText.match(/[^.!?]+[.!?]/g) || [];
+            if (sentences.length > 0) {
+              for (const sentence of sentences) {
+                const trimmedSentence = sentence.trim();
+                if (trimmedSentence.length > 0) {
+                  processedText.push({
+                    id: globalIndex++,
+                    title: title,
+                    subtitle: section.subtitle,
+                    sentence: trimmedSentence,
+                  });
+                }
+              }
+            } else if (cleanText.length > 0) {
+              processedText.push({
+                id: globalIndex++,
+                title: title,
+                subtitle: section.subtitle,
+                sentence: cleanText,
+              });
+            }
+          }
+          currentParagraph = [];
+        }
+        
+        // Agregar el separador horizontal
+        processedText.push({
+          id: globalIndex++,
+          title: title,
+          subtitle: section.subtitle,
+          sentence: '---',
+          isHorizontalRule: true,
+        });
+        continue;
+      }
+
+      // Detectar blockquotes (líneas que empiezan con >)
+      const blockquoteMatch = trimmedLine.match(/^>\s*(.+)$/);
+      if (blockquoteMatch) {
+        // Procesar párrafo acumulado antes del blockquote
+        if (currentParagraph.length > 0) {
+          const paragraphText = currentParagraph.join(' ').trim();
+          if (paragraphText.length > 0) {
+            const cleanText = paragraphText
+              .replace(/\*\*/g, '')
+              .replace(/\*/g, '')
+              .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
+            
+            const sentences = cleanText.match(/[^.!?]+[.!?]/g) || [];
+            if (sentences.length > 0) {
+              for (const sentence of sentences) {
+                const trimmedSentence = sentence.trim();
+                if (trimmedSentence.length > 0) {
+                  processedText.push({
+                    id: globalIndex++,
+                    title: title,
+                    subtitle: section.subtitle,
+                    sentence: trimmedSentence,
+                  });
+                }
+              }
+            } else if (cleanText.length > 0) {
+              processedText.push({
+                id: globalIndex++,
+                title: title,
+                subtitle: section.subtitle,
+                sentence: cleanText,
+              });
+            }
+          }
+          currentParagraph = [];
+        }
+        
+        // Agregar el blockquote
+        const quoteText = blockquoteMatch[1];
+        processedText.push({
+          id: globalIndex++,
+          title: title,
+          subtitle: section.subtitle,
+          sentence: quoteText,
+          isBlockquote: true,
+        });
+        continue;
+      }
+
+      // Skip empty lines
+      if (trimmedLine.length === 0) {
         // Process accumulated paragraph if there's content
         if (currentParagraph.length > 0) {
           const paragraphText = currentParagraph.join(' ').trim();

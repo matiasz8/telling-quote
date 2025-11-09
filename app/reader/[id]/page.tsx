@@ -20,25 +20,157 @@ function getInlineCodeClasses(isDark: boolean): string {
   return 'inline-block px-2 py-0.5 mx-1 bg-orange-100 text-orange-800 rounded font-mono text-sm';
 }
 
-// Helper function to format inline code (e.g., `awslocal s3 ls`)
-function formatInlineCode(text: string, isDark: boolean) {
-  // Detecta patrones de backticks: `código`
-  const parts = text.split(/(`[^`]+`)/g);
+// Helper function to format text with all inline markdown styles
+function formatText(text: string, isDark: boolean): React.ReactNode {
+  // Process text in order of precedence to avoid conflicts
+  type TextPart = { type: string; content: string; url?: string };
+  let parts: TextPart[] = [{ type: 'text', content: text }];
   
-  return parts.map((part, idx) => {
-    // Si la parte está entre backticks, formatearla como código
-    if (part.startsWith('`') && part.endsWith('`')) {
-      const code = part.slice(1, -1); // Remover los backticks
-      return (
-        <span 
-          key={idx} 
-          className={getInlineCodeClasses(isDark)}
-        >
-          {code}
-        </span>
-      );
+  // 1. Process inline code first (highest priority, to protect it from other formatting)
+  parts = parts.flatMap(part => {
+    if (part.type !== 'text') return [part];
+    const segments: TextPart[] = [];
+    const codeRegex = /(`[^`]+`)/g;
+    let lastIndex = 0;
+    let match;
+    
+    while ((match = codeRegex.exec(part.content)) !== null) {
+      if (match.index > lastIndex) {
+        segments.push({ type: 'text', content: part.content.slice(lastIndex, match.index) });
+      }
+      segments.push({ type: 'code', content: match[1].slice(1, -1) });
+      lastIndex = match.index + match[0].length;
     }
-    return part;
+    
+    if (lastIndex < part.content.length) {
+      segments.push({ type: 'text', content: part.content.slice(lastIndex) });
+    }
+    
+    return segments.length > 0 ? segments : [part];
+  });
+  
+  // 2. Process bold (**text**)
+  parts = parts.flatMap(part => {
+    if (part.type !== 'text') return [part];
+    const segments: TextPart[] = [];
+    const boldRegex = /(\*\*[^*]+\*\*)/g;
+    let lastIndex = 0;
+    let match;
+    
+    while ((match = boldRegex.exec(part.content)) !== null) {
+      if (match.index > lastIndex) {
+        segments.push({ type: 'text', content: part.content.slice(lastIndex, match.index) });
+      }
+      segments.push({ type: 'bold', content: match[1].slice(2, -2) });
+      lastIndex = match.index + match[0].length;
+    }
+    
+    if (lastIndex < part.content.length) {
+      segments.push({ type: 'text', content: part.content.slice(lastIndex) });
+    }
+    
+    return segments.length > 0 ? segments : [part];
+  });
+  
+  // 3. Process strikethrough (~~text~~)
+  parts = parts.flatMap(part => {
+    if (part.type !== 'text') return [part];
+    const segments: TextPart[] = [];
+    const strikeRegex = /(~~[^~]+~~)/g;
+    let lastIndex = 0;
+    let match;
+    
+    while ((match = strikeRegex.exec(part.content)) !== null) {
+      if (match.index > lastIndex) {
+        segments.push({ type: 'text', content: part.content.slice(lastIndex, match.index) });
+      }
+      segments.push({ type: 'strike', content: match[1].slice(2, -2) });
+      lastIndex = match.index + match[0].length;
+    }
+    
+    if (lastIndex < part.content.length) {
+      segments.push({ type: 'text', content: part.content.slice(lastIndex) });
+    }
+    
+    return segments.length > 0 ? segments : [part];
+  });
+  
+  // 4. Process italic (*text* or _text_)
+  parts = parts.flatMap(part => {
+    if (part.type !== 'text') return [part];
+    const segments: TextPart[] = [];
+    const italicRegex = /(\*[^*]+\*|_[^_]+_)/g;
+    let lastIndex = 0;
+    let match;
+    
+    while ((match = italicRegex.exec(part.content)) !== null) {
+      if (match.index > lastIndex) {
+        segments.push({ type: 'text', content: part.content.slice(lastIndex, match.index) });
+      }
+      segments.push({ type: 'italic', content: match[1].slice(1, -1) });
+      lastIndex = match.index + match[0].length;
+    }
+    
+    if (lastIndex < part.content.length) {
+      segments.push({ type: 'text', content: part.content.slice(lastIndex) });
+    }
+    
+    return segments.length > 0 ? segments : [part];
+  });
+  
+  // 5. Process links [text](url)
+  parts = parts.flatMap(part => {
+    if (part.type !== 'text') return [part];
+    const segments: TextPart[] = [];
+    const linkRegex = /(\[([^\]]+)\]\(([^)]+)\))/g;
+    let lastIndex = 0;
+    let match;
+    
+    while ((match = linkRegex.exec(part.content)) !== null) {
+      if (match.index > lastIndex) {
+        segments.push({ type: 'text', content: part.content.slice(lastIndex, match.index) });
+      }
+      segments.push({ type: 'link', content: match[2], url: match[3] });
+      lastIndex = match.index + match[0].length;
+    }
+    
+    if (lastIndex < part.content.length) {
+      segments.push({ type: 'text', content: part.content.slice(lastIndex) });
+    }
+    
+    return segments.length > 0 ? segments : [part];
+  });
+  
+  // Render the parts
+  return parts.map((part, idx) => {
+    switch (part.type) {
+      case 'code':
+        return (
+          <span key={idx} className={getInlineCodeClasses(isDark)}>
+            {part.content}
+          </span>
+        );
+      case 'bold':
+        return <strong key={idx} className="font-bold">{part.content}</strong>;
+      case 'italic':
+        return <em key={idx} className="italic">{part.content}</em>;
+      case 'strike':
+        return <del key={idx} className="line-through opacity-70">{part.content}</del>;
+      case 'link':
+        return (
+          <a
+            key={idx}
+            href={part.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`underline ${isDark ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'}`}
+          >
+            {part.content}
+          </a>
+        );
+      default:
+        return <span key={idx}>{part.content}</span>;
+    }
   });
 }
 
@@ -297,22 +429,38 @@ export default function ReaderPage() {
         <div className="max-w-4xl mx-auto">
           <div className="mb-8 text-center">
             <h2 className={`${fontSizeClasses.title} font-semibold ${themeClasses.text} mb-2`}>
-              {formatInlineCode(currentSentence.title, isDark)}
+              {formatText(currentSentence.title, isDark)}
             </h2>
             {currentSentence.subtitle && !currentSentence.isSubtitleIntro && (
               <h3 className={`${fontSizeClasses.subtitle} font-medium ${themeClasses.textSecondary}`}>
-                {formatInlineCode(currentSentence.subtitle, isDark)}
+                {formatText(currentSentence.subtitle, isDark)}
               </h3>
             )}
           </div>
           
-          {/* Content area - code blocks, bullets or regular text */}
+          {/* Content area - code blocks, bullets, blockquotes, separators or regular text */}
           {currentSentence.isCodeBlock ? (
             <CodeBlock 
               code={currentSentence.sentence} 
               language={currentSentence.codeLanguage || 'text'} 
               isDark={isDark} 
             />
+          ) : currentSentence.isBlockquote ? (
+            <blockquote className={`my-12 px-6 py-4 border-l-4 ${
+              isDark 
+                ? 'border-purple-500 bg-purple-900/20' 
+                : 'border-emerald-500 bg-emerald-50'
+            } rounded-r-lg`}>
+              <p className={`${themeClasses.text} ${fontSizeClasses.text} italic leading-relaxed`}>
+                {formatText(currentSentence.sentence, isDark)}
+              </p>
+            </blockquote>
+          ) : currentSentence.isHorizontalRule ? (
+            <div className="my-12 flex items-center justify-center">
+              <hr className={`w-full max-w-md border-t-2 ${
+                isDark ? 'border-gray-700' : 'border-gray-300'
+              }`} />
+            </div>
           ) : currentSentence.isBulletPoint ? (
             <div className={`my-12 ${themeClasses.text} min-h-[200px] flex flex-col justify-center max-w-2xl mx-auto`}>
               {/* Parent bullet if this is a sub-bullet */}
@@ -322,7 +470,7 @@ export default function ReaderPage() {
                     <span className="mr-3 mt-1 shrink-0">
                       {currentSentence.parentIsNumbered ? `${currentSentence.parentNumberIndex ?? 1}.` : '•'}
                     </span>
-                    <span>{formatInlineCode(currentSentence.parentBullet, isDark)}</span>
+                    <span>{formatText(currentSentence.parentBullet, isDark)}</span>
                   </div>
                 </div>
               )}
@@ -339,7 +487,7 @@ export default function ReaderPage() {
                             ? `${idx + 1}.` 
                             : '•'}
                       </span>
-                      <span>{formatInlineCode(bullet, isDark)}</span>
+                      <span>{formatText(bullet, isDark)}</span>
                     </li>
                   ))}
                 </ul>
@@ -358,7 +506,7 @@ export default function ReaderPage() {
                         ? `${(currentSentence.bulletHistory?.length || 0) + 1}.` 
                         : '•'}
                   </span>
-                  <span>{formatInlineCode(currentSentence.sentence, isDark)}</span>
+                  <span>{formatText(currentSentence.sentence, isDark)}</span>
                 </li>
               </ul>
             </div>
@@ -368,7 +516,7 @@ export default function ReaderPage() {
                 ? `${fontSizeClasses.subtitle} ${theme.subtitleIntro.weight} ${theme.subtitleIntro.style}` 
                 : fontSizeClasses.text
             }`}>
-              {formatInlineCode(currentSentence.sentence, isDark)}
+              {formatText(currentSentence.sentence, isDark)}
             </p>
           )}
 

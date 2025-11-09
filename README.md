@@ -121,9 +121,14 @@ telling-quote/
 
 ## 📝 Supported Markdown Format
 
-- **Titles**: `## Subtitle` divides content into sections
+- **Headings**: `## Subtitle` divides content into sections
+- **Bold**: `**text**` for strong emphasis
+- **Italic**: `*text*` or `_text_` for subtle emphasis
+- **Strikethrough**: `~~text~~` for deleted or obsolete text
 - **Bulleted lists**: `- Item` or `* Item`
 - **Numbered lists**: `1. Item` with parent context
+- **Blockquotes**: `> quote` for highlighting important citations
+- **Horizontal rules**: `---` or `***` for section separators
 - **Inline code**: `` `code` ``
 - **Code blocks**: 
   ````markdown
@@ -131,8 +136,7 @@ telling-quote/
   console.log('Hello');
   ```
   ````
-- **Bold**: `**text**`
-- **Links**: `[text](url)`
+- **Links**: `[text](url)` with hover effect
 
 ## 🤝 Contributions
 
