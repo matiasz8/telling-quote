@@ -55,12 +55,15 @@ The easiest way to deploy this Next.js application is using [Vercel](https://ver
 1. Push your repository to GitHub
 2. Import the project in [Vercel](https://vercel.com/new)
 3. Vercel will automatically detect Next.js and configure the build
+4. Your app will be deployed with full SSR support
 
-### GitHub Pages
+**Note**: The `next.config.ts` is already configured for Vercel deployment by default.
 
-To deploy on GitHub Pages with static export:
+### GitHub Pages (Alternative)
 
-1. Update `next.config.ts` to enable static export:
+To deploy on GitHub Pages with static export, you need to modify the configuration:
+
+1. Uncomment the export settings in `next.config.ts`:
 
 ```typescript
 const nextConfig = {
@@ -72,48 +75,13 @@ const nextConfig = {
 };
 ```
 
-2. Add a script in `package.json`:
+2. The GitHub Actions workflow in `.github/workflows/deploy.yml` is already configured
 
-```json
-"scripts": {
-  "export": "next build"
-}
-```
+3. In GitHub, go to Settings → Pages → Source and select "GitHub Actions"
 
-3. Create `.github/workflows/deploy.yml`:
+4. Push to main branch and the deployment will run automatically
 
-```yaml
-name: Deploy to GitHub Pages
-
-on:
-  push:
-    branches: [ main ]
-
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-          
-      - name: Install dependencies
-        run: npm ci
-        
-      - name: Build
-        run: npm run build
-        
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./out
-```
-
-4. In GitHub, go to Settings → Pages → Source and select the `gh-pages` branch
+**Note**: With static export, all data is stored in browser localStorage only. For Vercel deployment, you can keep the dynamic routing without modifications.
 
 ## 🛠️ Technologies
 
