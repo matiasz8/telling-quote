@@ -31,7 +31,7 @@ export default function ReadingCard({ reading, onEdit, onDelete, isDark = false 
       <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
         <button
           onClick={handleEditClick}
-          className="p-1.5 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          className="p-1.5 bg-linear-to-r from-emerald-500 to-teal-500 text-white rounded hover:from-emerald-600 hover:to-teal-600 transition-all duration-200 shadow-sm"
           title="Edit title"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -40,7 +40,7 @@ export default function ReadingCard({ reading, onEdit, onDelete, isDark = false 
         </button>
         <button
           onClick={handleDeleteClick}
-          className="p-1.5 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+          className="p-1.5 bg-linear-to-r from-red-500 to-rose-500 text-white rounded hover:from-red-600 hover:to-rose-600 transition-all duration-200 shadow-sm"
           title="Delete reading"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

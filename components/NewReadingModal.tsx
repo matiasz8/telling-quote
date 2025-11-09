@@ -96,13 +96,13 @@ export default function NewReadingModal({
         <div className="flex gap-4 mt-4">
           <button
             onClick={handleSave}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+            className="px-6 py-2.5 bg-linear-to-r from-purple-600 to-violet-600 text-white rounded-lg hover:from-purple-700 hover:to-violet-700 transition-all duration-200 font-medium shadow-md hover:shadow-lg transform hover:scale-105"
           >
             Save Reading
           </button>
           <button
             onClick={handleCancel}
-            className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+            className="px-6 py-2.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all duration-200 font-medium"
           >
             Cancel
           </button>

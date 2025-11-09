@@ -70,12 +70,14 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
               <button
                 key={option.value}
                 onClick={() => handleFontFamilyChange(option.value)}
-                className={`p-3 border-2 rounded-lg transition-all ${option.className} ${
+                className={`p-3 border-2 rounded-lg transition-all duration-200 ${option.className} ${
                   settings.fontFamily === option.value
-                    ? 'border-blue-500 bg-blue-50 text-gray-900'
+                    ? isDark
+                      ? 'border-purple-500 bg-purple-900/30 shadow-md'
+                      : 'border-emerald-500 bg-emerald-50 shadow-md'
                     : isDark
                     ? 'border-gray-600 hover:border-gray-500 bg-gray-700'
-                    : 'border-gray-200 hover:border-gray-300'
+                    : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                 }`}
               >
                 {option.label}
@@ -94,12 +96,14 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
               <button
                 key={option.value}
                 onClick={() => handleFontSizeChange(option.value)}
-                className={`p-3 border-2 rounded-lg transition-all ${
+                className={`p-3 border-2 rounded-lg transition-all duration-200 ${
                   settings.fontSize === option.value
-                    ? 'border-blue-500 bg-blue-50 text-gray-900'
+                    ? isDark
+                      ? 'border-purple-500 bg-purple-900/30 shadow-md'
+                      : 'border-emerald-500 bg-emerald-50 shadow-md'
                     : isDark
                     ? 'border-gray-600 hover:border-gray-500 bg-gray-700'
-                    : 'border-gray-200 hover:border-gray-300'
+                    : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                 }`}
               >
                 {option.label}
@@ -118,12 +122,14 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
               <button
                 key={option.value}
                 onClick={() => handleThemeChange(option.value)}
-                className={`p-3 border-2 rounded-lg transition-all ${
+                className={`p-3 border-2 rounded-lg transition-all duration-200 ${
                   settings.theme === option.value
-                    ? 'border-blue-500 bg-blue-50 text-gray-900'
+                    ? isDark
+                      ? 'border-purple-500 bg-purple-900/30 shadow-md'
+                      : 'border-emerald-500 bg-emerald-50 shadow-md'
                     : isDark
                     ? 'border-gray-600 hover:border-gray-500 bg-gray-700'
-                    : 'border-gray-200 hover:border-gray-300'
+                    : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                 }`}
               >
                 {option.label}
@@ -135,7 +141,11 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
         <div className="flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+            className={`px-6 py-2.5 rounded-lg transition-all duration-200 font-medium shadow-md hover:shadow-lg ${
+              isDark
+                ? 'bg-linear-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white'
+                : 'bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white'
+            }`}
           >
             Close
           </button>
