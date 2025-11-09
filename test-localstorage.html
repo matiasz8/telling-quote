@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head><title>Test localStorage</title></head>
+<body>
+<script>
+const settings = localStorage.getItem('settings');
+console.log('Raw settings:', settings);
+console.log('Parsed:', JSON.parse(settings));
+</script>
+<div id="result"></div>
+<script>
+document.getElementById('result').textContent = settings;
+</script>
+</body>
+</html>

@@ -52,7 +52,7 @@ export default function Home() {
   const isDark = settings.theme === 'dark';
 
   return (
-    <div className={`min-h-screen ${isDark ? 'bg-linear-to-br from-purple-900 via-gray-900 to-black' : 'bg-linear-to-br from-amber-50 via-orange-50 to-yellow-50'}`}>
+    <div suppressHydrationWarning className={`min-h-screen ${isDark ? 'bg-linear-to-br from-purple-900 via-gray-900 to-black' : 'bg-linear-to-br from-amber-50 via-orange-50 to-yellow-50'}`}>
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="flex justify-center mb-8">
