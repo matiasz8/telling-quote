@@ -114,11 +114,11 @@ Los separadores horizontales ayudan a dividir secciones temáticas:
 
 Puedes incluir imágenes usando la sintaxis markdown estándar:
 
-![Logo de tellingQuote](https://via.placeholder.com/600x400/4F46E5/FFFFFF?text=tellingQuote)
+![Logo de tellingQuote](https://picsum.photos/600/400)
 
 Las imágenes se muestran centradas y con el tamaño optimizado para la lectura.
 
-![Diagrama de flujo](https://via.placeholder.com/800x300/10B981/FFFFFF?text=Diagrama+de+Flujo)
+![Diagrama de flujo](https://picsum.photos/600/400)
 
 ### Texto Destacado
 

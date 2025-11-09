@@ -20,6 +20,63 @@ export interface ProcessedText {
   imageAlt?: string; // Texto alternativo de la imagen
 }
 
+/**
+ * Helper para extraer oraciones de un párrafo preservando el markdown inline
+ * Limpia el markdown solo para detectar oraciones, pero retorna el texto original
+ */
+function extractSentencesWithMarkdown(paragraphText: string): string[] {
+  // Limpiar solo para detectar oraciones
+  const cleanForDetection = paragraphText
+    .replace(/\*\*/g, '')  // Remove bold
+    .replace(/\*/g, '')    // Remove italic
+    .replace(/~~/g, '')    // Remove strikethrough
+    .replace(/==/g, '')    // Remove highlighting
+    .replace(/`/g, '')     // Remove code markers
+    .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1'); // Remove link syntax, keep text
+  
+  // Detectar oraciones en el texto limpio
+  const sentenceMatches = cleanForDetection.match(/[^.!?]+[.!?]/g);
+  if (!sentenceMatches || sentenceMatches.length === 0) {
+    // No hay oraciones detectadas, retornar el párrafo completo
+    return [paragraphText.trim()];
+  }
+  
+  // Mapear cada oración detectada de vuelta al texto original con markdown
+  const sentences: string[] = [];
+  let currentPos = 0;
+  
+  for (const cleanSentence of sentenceMatches) {
+    const cleanTrimmed = cleanSentence.trim();
+    if (cleanTrimmed.length === 0) continue;
+    
+    // Buscar esta oración en el texto original
+    // Usamos una búsqueda aproximada buscando la primera palabra
+    const words = cleanTrimmed.split(/\s+/);
+    const firstWord = words[0];
+    
+    // Buscar desde la posición actual
+    const searchText = paragraphText.slice(currentPos);
+    const firstWordRegex = new RegExp(firstWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+    const match = searchText.match(firstWordRegex);
+    
+    if (match && match.index !== undefined) {
+      const startPos = currentPos + match.index;
+      // Buscar el final de la oración (., !, ?)
+      const endMatch = paragraphText.slice(startPos).match(/[.!?]/);
+      if (endMatch && endMatch.index !== undefined) {
+        const endPos = startPos + endMatch.index + 1;
+        const originalSentence = paragraphText.slice(startPos, endPos).trim();
+        sentences.push(originalSentence);
+        currentPos = endPos;
+      }
+    }
+  }
+  
+  // Si no pudimos mapear, retornar el párrafo completo
+  return sentences.length > 0 ? sentences : [paragraphText.trim()];
+}
+
+
 interface Section {
   subtitle: string | null;
   content: string;
@@ -192,31 +249,16 @@ export function processContent(title: string, content: string): ProcessedText[] 
         if (currentParagraph.length > 0) {
           const paragraphText = currentParagraph.join(' ').trim();
           if (paragraphText.length > 0) {
-            const cleanText = paragraphText
-              .replace(/\*\*/g, '')
-              .replace(/\*/g, '')
-              .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
-            
-            const sentences = cleanText.match(/[^.!?]+[.!?]/g) || [];
-            if (sentences.length > 0) {
-              for (const sentence of sentences) {
-                const trimmedSentence = sentence.trim();
-                if (trimmedSentence.length > 0) {
-                  processedText.push({
-                    id: globalIndex++,
-                    title: title,
-                    subtitle: section.subtitle,
-                    sentence: trimmedSentence,
-                  });
-                }
+            const sentences = extractSentencesWithMarkdown(paragraphText);
+            for (const sentence of sentences) {
+              if (sentence.length > 0) {
+                processedText.push({
+                  id: globalIndex++,
+                  title: title,
+                  subtitle: section.subtitle,
+                  sentence: sentence,
+                });
               }
-            } else if (cleanText.length > 0) {
-              processedText.push({
-                id: globalIndex++,
-                title: title,
-                subtitle: section.subtitle,
-                sentence: cleanText,
-              });
             }
           }
           currentParagraph = [];
@@ -233,31 +275,16 @@ export function processContent(title: string, content: string): ProcessedText[] 
         if (currentParagraph.length > 0) {
           const paragraphText = currentParagraph.join(' ').trim();
           if (paragraphText.length > 0) {
-            const cleanText = paragraphText
-              .replace(/\*\*/g, '')
-              .replace(/\*/g, '')
-              .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
-            
-            const sentences = cleanText.match(/[^.!?]+[.!?]/g) || [];
-            if (sentences.length > 0) {
-              for (const sentence of sentences) {
-                const trimmedSentence = sentence.trim();
-                if (trimmedSentence.length > 0) {
-                  processedText.push({
-                    id: globalIndex++,
-                    title: title,
-                    subtitle: section.subtitle,
-                    sentence: trimmedSentence,
-                  });
-                }
+            const sentences = extractSentencesWithMarkdown(paragraphText);
+            for (const sentence of sentences) {
+              if (sentence.length > 0) {
+                processedText.push({
+                  id: globalIndex++,
+                  title: title,
+                  subtitle: section.subtitle,
+                  sentence: sentence,
+                });
               }
-            } else if (cleanText.length > 0) {
-              processedText.push({
-                id: globalIndex++,
-                title: title,
-                subtitle: section.subtitle,
-                sentence: cleanText,
-              });
             }
           }
           currentParagraph = [];
@@ -284,31 +311,16 @@ export function processContent(title: string, content: string): ProcessedText[] 
         if (currentParagraph.length > 0) {
           const paragraphText = currentParagraph.join(' ').trim();
           if (paragraphText.length > 0) {
-            const cleanText = paragraphText
-              .replace(/\*\*/g, '')
-              .replace(/\*/g, '')
-              .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
-            
-            const sentences = cleanText.match(/[^.!?]+[.!?]/g) || [];
-            if (sentences.length > 0) {
-              for (const sentence of sentences) {
-                const trimmedSentence = sentence.trim();
-                if (trimmedSentence.length > 0) {
-                  processedText.push({
-                    id: globalIndex++,
-                    title: title,
-                    subtitle: section.subtitle,
-                    sentence: trimmedSentence,
-                  });
-                }
+            const sentences = extractSentencesWithMarkdown(paragraphText);
+            for (const sentence of sentences) {
+              if (sentence.length > 0) {
+                processedText.push({
+                  id: globalIndex++,
+                  title: title,
+                  subtitle: section.subtitle,
+                  sentence: sentence,
+                });
               }
-            } else if (cleanText.length > 0) {
-              processedText.push({
-                id: globalIndex++,
-                title: title,
-                subtitle: section.subtitle,
-                sentence: cleanText,
-              });
             }
           }
           currentParagraph = [];
@@ -387,33 +399,16 @@ export function processContent(title: string, content: string): ProcessedText[] 
         if (currentParagraph.length > 0) {
           const paragraphText = currentParagraph.join(' ').trim();
           if (paragraphText.length > 0) {
-            // Remove markdown formatting
-            const cleanText = paragraphText
-              .replace(/\*\*/g, '')
-              .replace(/\*/g, '')
-              .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
-            
-            // Split into sentences
-            const sentences = cleanText.match(/[^.!?]+[.!?]/g) || [];
-            if (sentences.length > 0) {
-              for (const sentence of sentences) {
-                const trimmedSentence = sentence.trim();
-                if (trimmedSentence.length > 0) {
-                  processedText.push({
-                    id: globalIndex++,
-                    title: title,
-                    subtitle: section.subtitle,
-                    sentence: trimmedSentence,
-                  });
-                }
+            const sentences = extractSentencesWithMarkdown(paragraphText);
+            for (const sentence of sentences) {
+              if (sentence.length > 0) {
+                processedText.push({
+                  id: globalIndex++,
+                  title: title,
+                  subtitle: section.subtitle,
+                  sentence: sentence,
+                });
               }
-            } else if (cleanText.length > 0) {
-              processedText.push({
-                id: globalIndex++,
-                title: title,
-                subtitle: section.subtitle,
-                sentence: cleanText,
-              });
             }
             currentParagraph = [];
           }
@@ -422,12 +417,8 @@ export function processContent(title: string, content: string): ProcessedText[] 
         
         // Process bullet point or numbered item and add to history
         const match = bulletMatch || numberedMatch;
-        let bulletText = match![1].trim();
-        // Remove markdown formatting
-        bulletText = bulletText
-          .replace(/\*\*/g, '')
-          .replace(/\*/g, '')
-          .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
+        const bulletText = match![1].trim();
+        // Keep markdown formatting in bulletText (don't clean it)
         
         if (bulletText.length > 0) {
           // Inicializar historial del nivel si no existe
@@ -481,35 +472,23 @@ export function processContent(title: string, content: string): ProcessedText[] 
         }
       } else if (colonBulletMatch) {
         // Treat label: description as a bullet item
-        const bulletText = `${colonBulletMatch[1].trim()}: ${colonBulletMatch[2].trim()}`
-          .replace(/\*\*/g, '')
-          .replace(/\*/g, '')
-          .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
+        const bulletText = `${colonBulletMatch[1].trim()}: ${colonBulletMatch[2].trim()}`;
+        // Keep markdown formatting
 
         // Flush paragraph before adding bullet
         if (currentParagraph.length > 0) {
           const paragraphText = currentParagraph.join(' ').trim();
           if (paragraphText.length > 0) {
-            const sentences = paragraphText.match(/[^.!?]+[.!?]/g) || [];
-            if (sentences.length > 0) {
-              for (const sentence of sentences) {
-                const trimmedSentence = sentence.trim();
-                if (trimmedSentence.length > 0) {
-                  processedText.push({
-                    id: globalIndex++,
-                    title: title,
-                    subtitle: section.subtitle,
-                    sentence: trimmedSentence,
-                  });
-                }
+            const sentences = extractSentencesWithMarkdown(paragraphText);
+            for (const sentence of sentences) {
+              if (sentence.length > 0) {
+                processedText.push({
+                  id: globalIndex++,
+                  title: title,
+                  subtitle: section.subtitle,
+                  sentence: sentence,
+                });
               }
-            } else {
-              processedText.push({
-                id: globalIndex++,
-                title: title,
-                subtitle: section.subtitle,
-                sentence: paragraphText,
-              });
             }
           }
           currentParagraph = [];
@@ -553,33 +532,16 @@ export function processContent(title: string, content: string): ProcessedText[] 
         if (currentParagraph.length > 0) {
           const paragraphText = currentParagraph.join(' ').trim();
           if (paragraphText.length > 0) {
-            // Remove markdown formatting
-            const cleanText = paragraphText
-              .replace(/\*\*/g, '')
-              .replace(/\*/g, '')
-              .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
-            
-            // Split into sentences
-            const sentences = cleanText.match(/[^.!?]+[.!?]/g) || [];
-            if (sentences.length > 0) {
-              for (const sentence of sentences) {
-                const trimmedSentence = sentence.trim();
-                if (trimmedSentence.length > 0) {
-                  processedText.push({
-                    id: globalIndex++,
-                    title: title,
-                    subtitle: section.subtitle,
-                    sentence: trimmedSentence,
-                  });
-                }
+            const sentences = extractSentencesWithMarkdown(paragraphText);
+            for (const sentence of sentences) {
+              if (sentence.length > 0) {
+                processedText.push({
+                  id: globalIndex++,
+                  title: title,
+                  subtitle: section.subtitle,
+                  sentence: sentence,
+                });
               }
-            } else if (cleanText.length > 0) {
-              processedText.push({
-                id: globalIndex++,
-                title: title,
-                subtitle: section.subtitle,
-                sentence: cleanText,
-              });
             }
           }
           currentParagraph = [];
@@ -591,33 +553,16 @@ export function processContent(title: string, content: string): ProcessedText[] 
     if (currentParagraph.length > 0) {
       const paragraphText = currentParagraph.join(' ').trim();
       if (paragraphText.length > 0) {
-        // Remove markdown formatting
-        const cleanText = paragraphText
-          .replace(/\*\*/g, '')
-          .replace(/\*/g, '')
-          .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
-        
-        // Split into sentences
-        const sentences = cleanText.match(/[^.!?]+[.!?]/g) || [];
-        if (sentences.length > 0) {
-          for (const sentence of sentences) {
-            const trimmedSentence = sentence.trim();
-            if (trimmedSentence.length > 0) {
-              processedText.push({
-                id: globalIndex++,
-                title: title,
-                subtitle: section.subtitle,
-                sentence: trimmedSentence,
-              });
-            }
+        const sentences = extractSentencesWithMarkdown(paragraphText);
+        for (const sentence of sentences) {
+          if (sentence.length > 0) {
+            processedText.push({
+              id: globalIndex++,
+              title: title,
+              subtitle: section.subtitle,
+              sentence: sentence,
+            });
           }
-        } else if (cleanText.length > 0) {
-          processedText.push({
-            id: globalIndex++,
-            title: title,
-            subtitle: section.subtitle,
-            sentence: cleanText,
-          });
         }
       }
     }
