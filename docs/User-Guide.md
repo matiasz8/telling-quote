@@ -11,9 +11,10 @@ Navigate to the dashboard where you'll see a "New Reading" button.
 ### Step 2: Create a New Reading
 
 1. Click the **"New Reading"** button
-2. Enter a title for your reading
-3. Paste or type your markdown content
-4. Click **"Save Reading"**
+2. The title input will be automatically focused for quick typing
+3. Enter a title for your reading
+4. Paste or type your markdown content
+5. Click **"Save Reading"**
 
 ### Step 3: Navigate Your Reading
 
@@ -22,6 +23,87 @@ Navigate to the dashboard where you'll see a "New Reading" button.
 - Click the **navigation buttons** at the bottom for precise control
 
 ## Markdown Format Guide
+
+### Basic Text Formatting (Phase 1)
+
+**Bold**: `**text**` → **text**
+*Italic*: `*text*` or `_text_` → *text*
+~~Strikethrough~~: `~~text~~` → ~~text~~
+Inline code: `` `code` `` → `code`
+
+**Blockquotes**:
+```markdown
+> This is a quote
+> — Author
+```
+
+### Rich Media (Phase 2)
+
+**Images**:
+```markdown
+![Alt text](https://example.com/image.jpg)
+```
+Images are displayed centered and optimized for readability.
+
+**Text Highlighting**:
+```markdown
+==highlighted text==
+```
+Creates theme-aware background highlighting.
+
+### Structured Content (Phase 3)
+
+**Tables**:
+```markdown
+| Header 1 | Header 2 | Header 3 |
+|----------|----------|----------|
+| Cell 1   | Cell 2   | Cell 3   |
+| Cell 4   | Cell 5   | Cell 6   |
+```
+Features:
+- Gradient headers (theme-aware)
+- Hover effects on rows
+- Supports inline markdown in cells
+- Responsive design
+
+**Task Lists**:
+```markdown
+- [ ] Pending task
+- [x] Completed task
+```
+Features:
+- Custom checkboxes with SVG icons
+- Theme-aware colors (purple/lime)
+- Line-through for completed tasks
+
+### Academic Content (Phase 4)
+
+**Footnotes**:
+```markdown
+This text has a reference[^1].
+
+[^1]: This is the footnote text.
+```
+Features:
+- Superscript references
+- Styled footnote boxes
+- Named footnotes support (e.g., `[^name]`)
+
+**Math Equations**:
+
+Inline math: `$E = mc^2$`
+Block math:
+```markdown
+$$
+\int_{a}^{b} f(x)dx = F(b) - F(a)
+$$
+```
+Features:
+- Professional KaTeX rendering
+- Full LaTeX notation support
+- Matrices, integrals, summations
+- Greek letters and symbols
+- Theme-aware backgrounds
 
 ### Titles and Sections
 
@@ -131,6 +213,16 @@ All settings are automatically saved in your browser.
 - **Progress Indicator**: Visual progress bar
 
 ## Managing Readings
+
+### Reading Completion Tracking
+
+tellingQuote automatically tracks which readings you've completed:
+
+- **Completion Indicator**: A small colored dot appears on completed reading cards
+  - 🟢 **Green dot** in light theme
+  - 🟣 **Purple dot** in dark theme
+- **Automatic Marking**: Readings are marked complete when you reach the final slide
+- **Persistent**: Completion status is saved in your browser
 
 ### Editing a Title
 

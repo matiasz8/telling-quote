@@ -146,6 +146,61 @@ telling-quote/
 - **Images**: `![alt text](image-url)` - displayed centered with optimized size
 - **Highlighting**: `==highlighted text==` - theme-aware background color for emphasis
 
+### Structured Content (Phase 3)
+
+- **Tables**: Organize data with modern, styled tables
+
+  ```markdown
+  | Header 1 | Header 2 |
+  |----------|----------|
+  | Cell 1   | Cell 2   |
+  ```
+
+  - Gradient headers (theme-aware: purple in dark mode, yellow-lime in light)
+  - Hover effects on rows
+  - Support for inline markdown in cells (bold, italic, code, etc.)
+  - Responsive with horizontal scroll on mobile
+
+- **Task Lists**: Interactive checkboxes for todos and progress tracking
+
+  ```markdown
+  - [ ] Pending task
+  - [x] Completed task
+  ```
+
+  - Custom SVG checkmarks
+  - Theme-aware colors (purple in dark mode, lime in light)
+  - Line-through styling for completed tasks
+  - Support for inline markdown in task text
+
+### Academic Content (Phase 4)
+
+- **Footnotes**: Add references and citations with footnote notation
+
+  ```markdown
+  Text with reference[^1]
+  
+  [^1]: Footnote definition text
+  ```
+
+  - Superscript references with theme-aware colors
+  - Footnote definitions displayed in styled boxes
+  - Support for named footnotes (e.g., `[^name]`)
+  - Multiple footnotes per slide
+
+- **Math Equations**: Professional mathematical typography powered by KaTeX
+
+  - **Inline math**: `$E = mc^2$` - renders inline with text
+  - **Block math**: `$$\int_{a}^{b} f(x)dx$$` - displays centered equations
+  - Support for:
+    - Greek letters and symbols
+    - Fractions and superscripts/subscripts
+    - Integrals, summations, products
+    - Matrices and cases
+    - All standard LaTeX math notation
+  - Theme-aware rendering (dark/light backgrounds)
+  - Error-tolerant (won't break on invalid syntax)
+
 **Note**: Horizontal rules (`---`, `***`) are recognized but omitted in slide view as they serve as visual separators in source markdown.
 
 ## 🤝 Contributions

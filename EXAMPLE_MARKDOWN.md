@@ -146,6 +146,104 @@ También puedes combinar: **negrita con ==destacado==** o *cursiva con ==highlig
 
 ---
 
+## 📊 Tablas
+
+Las tablas te permiten organizar información en filas y columnas con un diseño profesional y moderno.
+
+### Tabla Simple
+
+| Lenguaje | Popularidad | Tipo |
+|----------|-------------|------|
+| JavaScript | ⭐⭐⭐⭐⭐ | Multiparadigma |
+| Python | ⭐⭐⭐⭐⭐ | Interpretado |
+| TypeScript | ⭐⭐⭐⭐ | Tipado estático |
+| Rust | ⭐⭐⭐ | Sistemas |
+
+### Tabla con Formato
+
+| Feature | Descripción | Estado |
+|---------|-------------|--------|
+| **Markdown** | Soporte completo | ==Activo== |
+| *Tablas* | Diseño moderno | ✅ Listo |
+| `Code` | Resaltado de código | 🚀 Mejorado |
+
+---
+
+## ✅ Listas de Tareas
+
+Crea listas de tareas con checkboxes personalizados y animados.
+
+### Tareas Completadas
+
+- [x] Implementar soporte de markdown
+- [x] Agregar temas claro y oscuro
+- [x] Crear sistema de navegación
+
+### Tareas Pendientes
+
+- [ ] Añadir soporte para footnotes
+- [ ] Implementar ecuaciones matemáticas
+- [ ] Mejorar rendimiento de carga
+
+### Lista Mixta
+
+- [x] Diseñar interfaz de usuario
+- [x] Implementar lógica de negocio
+- [ ] Escribir tests unitarios
+- [ ] Documentar API
+
+---
+
+## 📚 Footnotes y Referencias
+
+Las footnotes te permiten agregar notas al pie y referencias académicas.
+
+### Ejemplo Básico
+
+Este texto tiene una referencia[^1] que aparece al final.
+
+También puedes tener múltiples referencias[^2] en el mismo párrafo.
+
+[^1]: Esta es la primera nota al pie con información adicional.
+[^2]: Segunda nota que explica un concepto importante.
+
+### Ejemplo Académico
+
+La teoría de la relatividad[^einstein] revolucionó la física moderna.
+
+Los principios de la computación cuántica[^quantum] permiten nuevos paradigmas.
+
+[^einstein]: Einstein, A. (1905). "Zur Elektrodynamik bewegter Körper". Annalen der Physik.
+[^quantum]: Nielsen, M. & Chuang, I. (2010). Quantum Computation and Quantum Information.
+
+---
+
+## 🧮 Ecuaciones Matemáticas
+
+Renderiza ecuaciones matemáticas profesionales con KaTeX.
+
+### Matemática Inline
+
+La fórmula de Euler es $e^{i\pi} + 1 = 0$, una de las más bellas en matemáticas.
+
+El teorema de Pitágoras: $a^2 + b^2 = c^2$.
+
+### Ecuaciones en Bloque
+
+$$E = mc^2$$
+
+$$\int_{a}^{b} f(x)dx = F(b) - F(a)$$
+
+$$\sum_{i=1}^{n} i = \frac{n(n+1)}{2}$$
+
+### Matrices y Sistemas
+
+$$\begin{bmatrix} a & b \\ c & d \end{bmatrix}$$
+
+$$f(x) = \begin{cases} x^2 & \text{if } x \geq 0 \\ -x & \text{if } x < 0 \end{cases}$$
+
+---
+
 > ¡Ahora puedes crear contenido rico y visualmente atractivo en tellingQuote!
 
 **Tip**: Combina estos formatos para crear presentaciones profesionales y educativas.

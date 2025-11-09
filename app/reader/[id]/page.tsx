@@ -12,6 +12,8 @@ import { STORAGE_KEYS, NAVIGATION_KEYS, TOUCH_SWIPE_THRESHOLD } from '@/lib/cons
 import confetti from 'canvas-confetti';
 import { theme } from '@/config/theme';
 import CodeBlock from '@/components/CodeBlock';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
 
 // Helper function to get inline code classes based on theme
 function getInlineCodeClasses(isDark: boolean): string {
@@ -50,7 +52,53 @@ function formatText(text: string, isDark: boolean): React.ReactNode {
     return segments.length > 0 ? segments : [part];
   });
   
-  // 2. Process highlighting (==text==)
+  // 2. Process inline math ($...$) - high priority to protect from other formatting
+  parts = parts.flatMap(part => {
+    if (part.type !== 'text') return [part];
+    const segments: TextPart[] = [];
+    const mathRegex = /(\$[^$]+\$)/g;
+    let lastIndex = 0;
+    let match;
+    
+    while ((match = mathRegex.exec(part.content)) !== null) {
+      if (match.index > lastIndex) {
+        segments.push({ type: 'text', content: part.content.slice(lastIndex, match.index) });
+      }
+      segments.push({ type: 'math', content: match[1].slice(1, -1) });
+      lastIndex = match.index + match[0].length;
+    }
+    
+    if (lastIndex < part.content.length) {
+      segments.push({ type: 'text', content: part.content.slice(lastIndex) });
+    }
+    
+    return segments.length > 0 ? segments : [part];
+  });
+  
+  // 3. Process footnote references ([^1])
+  parts = parts.flatMap(part => {
+    if (part.type !== 'text') return [part];
+    const segments: TextPart[] = [];
+    const footnoteRegex = /(\[\^[^\]]+\])/g;
+    let lastIndex = 0;
+    let match;
+    
+    while ((match = footnoteRegex.exec(part.content)) !== null) {
+      if (match.index > lastIndex) {
+        segments.push({ type: 'text', content: part.content.slice(lastIndex, match.index) });
+      }
+      segments.push({ type: 'footnote', content: match[1].slice(2, -1) });
+      lastIndex = match.index + match[0].length;
+    }
+    
+    if (lastIndex < part.content.length) {
+      segments.push({ type: 'text', content: part.content.slice(lastIndex) });
+    }
+    
+    return segments.length > 0 ? segments : [part];
+  });
+  
+  // 4. Process highlighting (==text==)
   parts = parts.flatMap(part => {
     if (part.type !== 'text') return [part];
     const segments: TextPart[] = [];
@@ -73,7 +121,7 @@ function formatText(text: string, isDark: boolean): React.ReactNode {
     return segments.length > 0 ? segments : [part];
   });
   
-  // 3. Process bold (**text**)
+  // 5. Process bold (**text**)
   parts = parts.flatMap(part => {
     if (part.type !== 'text') return [part];
     const segments: TextPart[] = [];
@@ -96,7 +144,7 @@ function formatText(text: string, isDark: boolean): React.ReactNode {
     return segments.length > 0 ? segments : [part];
   });
   
-  // 4. Process strikethrough (~~text~~)
+  // 6. Process strikethrough (~~text~~)
   parts = parts.flatMap(part => {
     if (part.type !== 'text') return [part];
     const segments: TextPart[] = [];
@@ -119,7 +167,7 @@ function formatText(text: string, isDark: boolean): React.ReactNode {
     return segments.length > 0 ? segments : [part];
   });
   
-  // 4. Process italic (*text* or _text_)
+  // 7. Process italic (*text* or _text_)
   parts = parts.flatMap(part => {
     if (part.type !== 'text') return [part];
     const segments: TextPart[] = [];
@@ -176,6 +224,29 @@ function formatText(text: string, isDark: boolean): React.ReactNode {
                 {part.content}
               </span>
             );
+          case 'math':
+            return (
+              <span 
+                key={idx} 
+                className="inline-block px-2 mx-1"
+                dangerouslySetInnerHTML={{ 
+                  __html: katex.renderToString(part.content, {
+                    displayMode: false,
+                    throwOnError: false,
+                  })
+                }}
+              />
+            );
+          case 'footnote':
+            return (
+              <sup key={idx}>
+                <span className={`px-1 text-sm font-bold ${
+                  isDark ? 'text-purple-400' : 'text-yellow-600'
+                }`}>
+                  [{part.content}]
+                </span>
+              </sup>
+            );
           case 'highlight':
             return (
               <mark key={idx} className={`px-1 rounded ${
@@ -216,6 +287,7 @@ export default function ReaderPage() {
   const params = useParams();
   const id = typeof params.id === 'string' ? params.id : Array.isArray(params.id) ? params.id[0] : '';
   const [readings] = useLocalStorage<Reading[]>(STORAGE_KEYS.READINGS, []);
+  const [completedReadings, setCompletedReadings] = useLocalStorage<string[]>('completedReadings', []);
   const { settings } = useSettings();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [lastReadingId, setLastReadingId] = useState(id);
@@ -345,6 +417,11 @@ export default function ReaderPage() {
   }, []);
 
   const handleFinishReading = useCallback(() => {
+    // Mark reading as completed
+    if (id && !completedReadings.includes(id)) {
+      setCompletedReadings([...completedReadings, id]);
+    }
+    
     // Trigger confetti effect
     const duration = 2000;
     const animationEnd = Date.now() + duration;
@@ -375,7 +452,7 @@ export default function ReaderPage() {
         origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
       });
     }, 250);
-  }, []);
+  }, [id, completedReadings, setCompletedReadings]);
 
   // Scroll navigation
   useEffect(() => {
@@ -512,6 +589,91 @@ export default function ReaderPage() {
                 {formatText(currentSentence.sentence, isDark)}
               </p>
             </blockquote>
+          ) : currentSentence.isTable ? (
+            <div className="my-12 overflow-x-auto">
+              <table className={`min-w-full ${isDark ? 'bg-gray-800' : 'bg-white'} shadow-lg rounded-lg overflow-hidden`}>
+                <thead className={isDark ? 'bg-purple-900/50' : 'bg-linear-to-r from-yellow-400 to-lime-400'}>
+                  <tr>
+                    {currentSentence.tableHeaders?.map((header, idx) => (
+                      <th key={idx} className={`px-6 py-4 text-left ${fontSizeClasses.subtitle} font-semibold ${
+                        isDark ? 'text-purple-200' : 'text-gray-800'
+                      }`}>
+                        {formatText(header, isDark)}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentSentence.tableRows?.map((row, rowIdx) => (
+                    <tr key={rowIdx} className={`border-t ${
+                      isDark 
+                        ? 'border-gray-700 hover:bg-gray-700/50' 
+                        : 'border-gray-200 hover:bg-gray-50'
+                    } transition-colors`}>
+                      {row.map((cell, cellIdx) => (
+                        <td key={cellIdx} className={`px-6 py-4 ${themeClasses.text} ${fontSizeClasses.text}`}>
+                          {formatText(cell, isDark)}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : currentSentence.isCheckbox ? (
+            <div className={`my-12 flex items-center justify-center ${themeClasses.text} ${fontSizeClasses.text}`}>
+              <div className="flex items-start gap-4 max-w-2xl w-full">
+                <div className={`mt-1 shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center transition-all ${
+                  currentSentence.isChecked
+                    ? isDark 
+                      ? 'bg-purple-500 border-purple-500' 
+                      : 'bg-lime-500 border-lime-500'
+                    : isDark
+                      ? 'border-gray-600 bg-gray-800'
+                      : 'border-gray-400 bg-white'
+                }`}>
+                  {currentSentence.isChecked && (
+                    <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                </div>
+                <span className={currentSentence.isChecked ? 'line-through opacity-60' : ''}>
+                  {formatText(currentSentence.sentence, isDark)}
+                </span>
+              </div>
+            </div>
+          ) : currentSentence.isFootnoteDef ? (
+            <div className={`my-12 ${themeClasses.text} ${fontSizeClasses.text} max-w-2xl mx-auto`}>
+              <div className={`px-6 py-4 rounded-lg border-l-4 ${
+                isDark 
+                  ? 'bg-gray-800/50 border-purple-500' 
+                  : 'bg-yellow-50 border-yellow-400'
+              }`}>
+                <div className="flex items-start gap-2">
+                  <span className={`text-sm font-bold ${isDark ? 'text-purple-400' : 'text-yellow-600'}`}>
+                    [{currentSentence.footnoteId}]
+                  </span>
+                  <span className="flex-1">
+                    {formatText(currentSentence.footnoteText || '', isDark)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ) : currentSentence.isMathBlock ? (
+            <div className={`my-12 flex items-center justify-center ${themeClasses.text}`}>
+              <div 
+                className={`px-8 py-6 rounded-lg ${
+                  isDark ? 'bg-gray-800/50' : 'bg-white shadow-md'
+                }`}
+                dangerouslySetInnerHTML={{ 
+                  __html: katex.renderToString(currentSentence.mathContent || '', {
+                    displayMode: true,
+                    throwOnError: false,
+                  })
+                }}
+              />
+            </div>
           ) : currentSentence.isBulletPoint ? (
             <div className={`my-12 ${themeClasses.text} min-h-[200px] flex flex-col justify-center max-w-2xl mx-auto`}>
               {/* Parent bullet if this is a sub-bullet */}

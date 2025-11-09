@@ -18,7 +18,20 @@ export interface ProcessedText {
   isImage?: boolean; // Marca si es una imagen
   imageUrl?: string; // URL de la imagen
   imageAlt?: string; // Texto alternativo de la imagen
+  isTable?: boolean; // Marca si es una tabla
+  tableHeaders?: string[]; // Encabezados de la tabla
+  tableRows?: string[][]; // Filas de datos de la tabla
+  isCheckbox?: boolean; // Marca si es un checkbox de tarea
+  isChecked?: boolean; // Si el checkbox está marcado
+  isFootnoteRef?: boolean; // Marca si es una referencia a footnote [^1]
+  footnoteId?: string; // ID del footnote
+  isFootnoteDef?: boolean; // Marca si es la definición de un footnote [^1]: text
+  footnoteText?: string; // Texto del footnote
+  isMathInline?: boolean; // Marca si es matemática inline $...$
+  isMathBlock?: boolean; // Marca si es bloque matemático $$...$$
+  mathContent?: string; // Contenido de la ecuación matemática
 }
+
 
 /**
  * Helper para extraer oraciones de un párrafo preservando el markdown inline
@@ -198,6 +211,8 @@ export function processContent(title: string, content: string): ProcessedText[] 
     let insideCodeBlock = false; // Indica si estamos dentro de un bloque de código
     let codeBlockLines: string[] = []; // Acumula las líneas del bloque de código
     let codeLanguage = ''; // Lenguaje del bloque de código
+    let insideTable = false; // Indica si estamos procesando una tabla
+    let tableLines: string[] = []; // Acumula las líneas de la tabla
 
     for (const line of sectionLines) {
       const trimmedLine = line.trim();
@@ -261,6 +276,52 @@ export function processContent(title: string, content: string): ProcessedText[] 
         
         // Simplemente omitir el separador, no crear un slide para él
         continue;
+      }
+
+      // Detectar tablas (líneas que empiezan con |)
+      const tableRowMatch = trimmedLine.match(/^\|(.+)\|$/);
+      if (tableRowMatch) {
+        // Acumular líneas de tabla
+        if (!insideTable) {
+          // Primera línea de la tabla (headers)
+          insideTable = true;
+          tableLines = [trimmedLine];
+        } else {
+          tableLines.push(trimmedLine);
+        }
+        continue;
+      } else if (insideTable) {
+        // Fin de la tabla - procesarla
+        if (tableLines.length >= 2) {
+          // Parsear headers (primera línea)
+          const headers = tableLines[0]
+            .split('|')
+            .slice(1, -1) // Remover primero y último vacío
+            .map((h: string) => h.trim());
+          
+          // Parsear rows (saltar la línea de separadores |---|---|)
+          const rows: string[][] = [];
+          for (let i = 2; i < tableLines.length; i++) {
+            const cells = tableLines[i]
+              .split('|')
+              .slice(1, -1)
+              .map((c: string) => c.trim());
+            rows.push(cells);
+          }
+          
+          processedText.push({
+            id: globalIndex++,
+            title: title,
+            subtitle: section.subtitle,
+            sentence: `Table: ${headers.join(', ')}`,
+            isTable: true,
+            tableHeaders: headers,
+            tableRows: rows,
+          });
+        }
+        insideTable = false;
+        tableLines = [];
+        // No hacer continue, procesar esta línea normalmente
       }
 
       // Detectar imágenes en formato markdown ![alt](url)
@@ -386,8 +447,117 @@ export function processContent(title: string, content: string): ProcessedText[] 
       // Check if line is a bullet point or numbered list
       const bulletMatch = trimmedLine.match(/^[-*+]\s+(.+)$/);
       const numberedMatch = bulletMatch ? null : trimmedLine.match(/^\d+\.\s+(.+)$/);
+      // Check for task list items (checkboxes)
+      const checkboxMatch = trimmedLine.match(/^[-*+]\s+\[([ xX])\]\s+(.+)$/);
       // Heuristic bullet: "Label: description" style
-      const colonBulletMatch = bulletMatch || numberedMatch ? null : trimmedLine.match(/^(?=.{3,120}$)([A-ZÁÉÍÓÚÜÑ¿¡][^:]{1,80}):\s+(.+)$/);
+      const colonBulletMatch = bulletMatch || numberedMatch || checkboxMatch ? null : trimmedLine.match(/^(?=.{3,120}$)([A-ZÁÉÍÓÚÜÑ¿¡][^:]{1,80}):\s+(.+)$/);
+
+      // Handle checkboxes separately
+      if (checkboxMatch) {
+        // Process accumulated paragraph first
+        if (currentParagraph.length > 0) {
+          const paragraphText = currentParagraph.join(' ').trim();
+          if (paragraphText.length > 0) {
+            const sentences = extractSentencesWithMarkdown(paragraphText);
+            for (const sentence of sentences) {
+              if (sentence.length > 0) {
+                processedText.push({
+                  id: globalIndex++,
+                  title: title,
+                  subtitle: section.subtitle,
+                  sentence: sentence,
+                });
+              }
+            }
+            currentParagraph = [];
+          }
+        }
+        
+        const isChecked = checkboxMatch[1].toLowerCase() === 'x';
+        const taskText = checkboxMatch[2].trim();
+        
+        processedText.push({
+          id: globalIndex++,
+          title: title,
+          subtitle: section.subtitle,
+          sentence: taskText,
+          isCheckbox: true,
+          isChecked: isChecked,
+        });
+        continue;
+      }
+
+      // Check for footnote definition: [^1]: text
+      const footnoteDefMatch = trimmedLine.match(/^\[\^([^\]]+)\]:\s+(.+)$/);
+      if (footnoteDefMatch) {
+        // Process accumulated paragraph first
+        if (currentParagraph.length > 0) {
+          const paragraphText = currentParagraph.join(' ').trim();
+          if (paragraphText.length > 0) {
+            const sentences = extractSentencesWithMarkdown(paragraphText);
+            for (const sentence of sentences) {
+              if (sentence.length > 0) {
+                processedText.push({
+                  id: globalIndex++,
+                  title: title,
+                  subtitle: section.subtitle,
+                  sentence: sentence,
+                });
+              }
+            }
+            currentParagraph = [];
+          }
+        }
+        
+        const footnoteId = footnoteDefMatch[1].trim();
+        const footnoteText = footnoteDefMatch[2].trim();
+        
+        processedText.push({
+          id: globalIndex++,
+          title: title,
+          subtitle: section.subtitle,
+          sentence: footnoteText,
+          isFootnoteDef: true,
+          footnoteId: footnoteId,
+          footnoteText: footnoteText,
+        });
+        continue;
+      }
+
+      // Check for block math: $$...$$
+      const blockMathMatch = trimmedLine.match(/^\$\$(.+)\$\$$/);
+      if (blockMathMatch) {
+        // Process accumulated paragraph first
+        if (currentParagraph.length > 0) {
+          const paragraphText = currentParagraph.join(' ').trim();
+          if (paragraphText.length > 0) {
+            const sentences = extractSentencesWithMarkdown(paragraphText);
+            for (const sentence of sentences) {
+              if (sentence.length > 0) {
+                processedText.push({
+                  id: globalIndex++,
+                  title: title,
+                  subtitle: section.subtitle,
+                  sentence: sentence,
+                });
+              }
+            }
+            currentParagraph = [];
+          }
+        }
+        
+        const mathContent = blockMathMatch[1].trim();
+        
+        processedText.push({
+          id: globalIndex++,
+          title: title,
+          subtitle: section.subtitle,
+          sentence: mathContent,
+          isMathBlock: true,
+          mathContent: mathContent,
+        });
+        continue;
+      }
 
       if (bulletMatch || numberedMatch) {
         // Process accumulated paragraph first

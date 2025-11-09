@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Reading } from "@/types";
 import { formatMarkdown } from "@/lib/utils";
 
@@ -18,6 +18,17 @@ export default function NewReadingModal({
   const [text, setText] = useState("");
   const [titleInput, setTitleInput] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const titleInputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-focus title input when modal opens
+  useEffect(() => {
+    if (isOpen && titleInputRef.current) {
+      // Small delay to ensure modal is fully rendered
+      setTimeout(() => {
+        titleInputRef.current?.focus();
+      }, 100);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -79,6 +90,7 @@ export default function NewReadingModal({
           New Reading
         </h2>
         <input
+          ref={titleInputRef}
           type="text"
           value={titleInput}
           onChange={(e) => {

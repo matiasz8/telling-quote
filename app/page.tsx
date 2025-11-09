@@ -18,6 +18,7 @@ export default function Home() {
   const [editingReading, setEditingReading] = useState<Reading | null>(null);
   const [deletingReading, setDeletingReading] = useState<Reading | null>(null);
   const [readings, setReadings] = useLocalStorage<Reading[]>(STORAGE_KEYS.READINGS, []);
+  const [completedReadings] = useLocalStorage<string[]>('completedReadings', []);
   const { settings } = useSettings();
 
   const handleSave = (reading: Reading) => {
@@ -92,6 +93,7 @@ export default function Home() {
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 isDark={settings.theme === 'dark'}
+                isCompleted={completedReadings.includes(reading.id)}
               />
             ))}
           </div>
