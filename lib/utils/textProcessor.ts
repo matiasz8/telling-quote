@@ -22,58 +22,24 @@ export interface ProcessedText {
 
 /**
  * Helper para extraer oraciones de un párrafo preservando el markdown inline
- * Limpia el markdown solo para detectar oraciones, pero retorna el texto original
+ * Divide el texto original por puntuación, preservando todo el markdown
  */
 function extractSentencesWithMarkdown(paragraphText: string): string[] {
-  // Limpiar solo para detectar oraciones
-  const cleanForDetection = paragraphText
-    .replace(/\*\*/g, '')  // Remove bold
-    .replace(/\*/g, '')    // Remove italic
-    .replace(/~~/g, '')    // Remove strikethrough
-    .replace(/==/g, '')    // Remove highlighting
-    .replace(/`/g, '')     // Remove code markers
-    .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1'); // Remove link syntax, keep text
+  // Dividir directamente el texto original por oraciones
+  // Buscar patrones de final de oración: . ! ? seguidos de espacio o final de texto
+  const sentenceRegex = /[^.!?]+[.!?]+/g;
+  const sentences = paragraphText.match(sentenceRegex);
   
-  // Detectar oraciones en el texto limpio
-  const sentenceMatches = cleanForDetection.match(/[^.!?]+[.!?]/g);
-  if (!sentenceMatches || sentenceMatches.length === 0) {
-    // No hay oraciones detectadas, retornar el párrafo completo
-    return [paragraphText.trim()];
+  if (sentences && sentences.length > 0) {
+    // Filtrar y limpiar cada oración
+    return sentences
+      .map(s => s.trim())
+      .filter(s => s.length > 0);
   }
   
-  // Mapear cada oración detectada de vuelta al texto original con markdown
-  const sentences: string[] = [];
-  let currentPos = 0;
-  
-  for (const cleanSentence of sentenceMatches) {
-    const cleanTrimmed = cleanSentence.trim();
-    if (cleanTrimmed.length === 0) continue;
-    
-    // Buscar esta oración en el texto original
-    // Usamos una búsqueda aproximada buscando la primera palabra
-    const words = cleanTrimmed.split(/\s+/);
-    const firstWord = words[0];
-    
-    // Buscar desde la posición actual
-    const searchText = paragraphText.slice(currentPos);
-    const firstWordRegex = new RegExp(firstWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
-    const match = searchText.match(firstWordRegex);
-    
-    if (match && match.index !== undefined) {
-      const startPos = currentPos + match.index;
-      // Buscar el final de la oración (., !, ?)
-      const endMatch = paragraphText.slice(startPos).match(/[.!?]/);
-      if (endMatch && endMatch.index !== undefined) {
-        const endPos = startPos + endMatch.index + 1;
-        const originalSentence = paragraphText.slice(startPos, endPos).trim();
-        sentences.push(originalSentence);
-        currentPos = endPos;
-      }
-    }
-  }
-  
-  // Si no pudimos mapear, retornar el párrafo completo
-  return sentences.length > 0 ? sentences : [paragraphText.trim()];
+  // Si no se detectaron oraciones con puntuación, retornar el párrafo completo
+  // (puede ser una oración sin punto final)
+  return paragraphText.trim().length > 0 ? [paragraphText.trim()] : [];
 }
 
 
