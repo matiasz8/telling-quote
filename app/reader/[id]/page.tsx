@@ -187,11 +187,11 @@ function formatText(text: string, isDark: boolean): React.ReactNode {
               </mark>
             );
           case 'bold':
-            return <strong key={idx}>{part.content}</strong>;
+            return <strong key={idx} className="px-1">{part.content}</strong>;
           case 'italic':
-            return <em key={idx}>{part.content}</em>;
+            return <em key={idx} className="px-1">{part.content}</em>;
           case 'strike':
-            return <del key={idx} className="line-through opacity-70">{part.content}</del>;
+            return <del key={idx} className="line-through opacity-70 px-1">{part.content}</del>;
           case 'link':
             return (
               <a
@@ -199,7 +199,7 @@ function formatText(text: string, isDark: boolean): React.ReactNode {
                 href={part.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`underline ${isDark ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'}`}
+                className={`underline px-1 ${isDark ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'}`}
               >
                 {part.content}
               </a>
