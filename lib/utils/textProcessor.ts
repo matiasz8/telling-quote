@@ -22,24 +22,53 @@ export interface ProcessedText {
 
 /**
  * Helper para extraer oraciones de un párrafo preservando el markdown inline
- * Divide el texto original por puntuación, preservando todo el markdown
+ * Divide el texto original por puntuación, preservando todo el markdown y URLs
  */
 function extractSentencesWithMarkdown(paragraphText: string): string[] {
-  // Dividir directamente el texto original por oraciones
-  // Buscar patrones de final de oración: . ! ? seguidos de espacio o final de texto
+  // Proteger URLs y enlaces markdown temporalmente
+  const urlPlaceholders: string[] = [];
+  let textWithPlaceholders = paragraphText;
+  
+  // Reemplazar enlaces markdown [texto](url) con placeholders
+  textWithPlaceholders = textWithPlaceholders.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match) => {
+    const placeholder = `__LINK_${urlPlaceholders.length}__`;
+    urlPlaceholders.push(match);
+    return placeholder;
+  });
+  
+  // Reemplazar URLs sueltas con placeholders (http://, https://, www.)
+  textWithPlaceholders = textWithPlaceholders.replace(/(https?:\/\/[^\s]+|www\.[^\s]+)/g, (match) => {
+    const placeholder = `__URL_${urlPlaceholders.length}__`;
+    urlPlaceholders.push(match);
+    return placeholder;
+  });
+  
+  // Ahora dividir por oraciones en el texto con placeholders
   const sentenceRegex = /[^.!?]+[.!?]+/g;
-  const sentences = paragraphText.match(sentenceRegex);
+  const sentences = textWithPlaceholders.match(sentenceRegex);
   
   if (sentences && sentences.length > 0) {
-    // Filtrar y limpiar cada oración
+    // Restaurar URLs y enlaces en cada oración
     return sentences
-      .map(s => s.trim())
+      .map(s => {
+        let restored = s.trim();
+        urlPlaceholders.forEach((original, index) => {
+          restored = restored.replace(`__LINK_${index}__`, original);
+          restored = restored.replace(`__URL_${index}__`, original);
+        });
+        return restored;
+      })
       .filter(s => s.length > 0);
   }
   
-  // Si no se detectaron oraciones con puntuación, retornar el párrafo completo
-  // (puede ser una oración sin punto final)
-  return paragraphText.trim().length > 0 ? [paragraphText.trim()] : [];
+  // Si no se detectaron oraciones, restaurar y retornar el párrafo completo
+  let restored = textWithPlaceholders.trim();
+  urlPlaceholders.forEach((original, index) => {
+    restored = restored.replace(`__LINK_${index}__`, original);
+    restored = restored.replace(`__URL_${index}__`, original);
+  });
+  
+  return restored.length > 0 ? [restored] : [];
 }
 
 
