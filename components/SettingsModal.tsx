@@ -17,15 +17,15 @@ const fontFamilyOptions: { value: FontFamily; label: string; className: string }
 ];
 
 const fontSizeOptions: { value: FontSize; label: string }[] = [
-  { value: 'small', label: 'Pequeño' },
-  { value: 'medium', label: 'Mediano' },
-  { value: 'large', label: 'Grande' },
-  { value: 'xlarge', label: 'Extra Grande' },
+  { value: 'small', label: 'Small' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'large', label: 'Large' },
+  { value: 'xlarge', label: 'Extra Large' },
 ];
 
 const themeOptions: { value: Theme; label: string }[] = [
-  { value: 'light', label: 'Claro' },
-  { value: 'dark', label: 'Oscuro' },
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
 ];
 
 export default function SettingsModal({ isOpen, onClose, settings, onSave }: SettingsModalProps) {
@@ -49,7 +49,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className={`${isDark ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-900'} rounded-lg shadow-xl max-w-md w-full p-6`}>
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">Configuración</h2>
+          <h2 className="text-2xl font-bold">Settings</h2>
           <button
             onClick={onClose}
             className={`${isDark ? 'text-gray-400 hover:text-gray-200' : 'text-gray-400 hover:text-gray-600'} transition-colors`}
@@ -63,7 +63,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
         {/* Font Family */}
         <div className="mb-6">
           <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-3`}>
-            Tipo de Letra
+            Font Family
           </label>
           <div className="grid grid-cols-2 gap-2">
             {fontFamilyOptions.map((option) => (
@@ -87,7 +87,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
         {/* Font Size */}
         <div className="mb-6">
           <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-3`}>
-            Tamaño de Letra
+            Font Size
           </label>
           <div className="grid grid-cols-2 gap-2">
             {fontSizeOptions.map((option) => (
@@ -111,7 +111,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
         {/* Theme */}
         <div className="mb-6">
           <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-3`}>
-            Tema
+            Theme
           </label>
           <div className="grid grid-cols-2 gap-2">
             {themeOptions.map((option) => (
@@ -137,7 +137,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
             onClick={onClose}
             className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
           >
-            Cerrar
+            Close
           </button>
         </div>
       </div>

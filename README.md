@@ -1,81 +1,87 @@
 # Telling Quote
 
-Una aplicación interactiva de lectura que convierte contenido markdown en presentaciones tipo slides, permitiéndote leer y estudiar de forma organizada y visualmente atractiva.
+An interactive reading application that converts markdown content into slide-style presentations, allowing you to read and study in an organized and visually appealing way.
 
-## ✨ Características
+## ✨ Features
 
-- 📝 **Procesamiento de Markdown**: Convierte automáticamente contenido markdown en slides navegables
-- 🎨 **Personalización completa**: 
-  - 4 familias de fuentes (Serif, Sans-serif, Monospace, System)
-  - 4 tamaños de texto (Pequeño, Mediano, Grande, Extra Grande)
-  - 2 temas (Claro con gradiente ámbar, Oscuro con gradiente violeta)
-- 💻 **Bloques de código modernos**: Renderizado profesional con botón de copiar y detección de lenguaje
-- 📊 **Listas inteligentes**: Soporte completo para listas con viñetas y numeradas con contexto de padre
-- 🔍 **Navegación fluida**: Navega entre slides con teclado o botones
-- 💾 **Persistencia local**: Todas tus lecturas y configuraciones se guardan en localStorage
+- 📝 **Markdown Processing**: Automatically converts markdown content into navigable slides
+- 🎨 **Complete Customization**:
+  - 4 font families (Serif, Sans-serif, Monospace, System)
+  - 4 text sizes (Small, Medium, Large, Extra Large)
+  - 2 themes (Light with amber gradient, Dark with purple gradient)
+- 💻 **Modern Code Blocks**: Professional rendering with copy button and language detection
+- 📊 **Smart Lists**: Full support for bulleted and numbered lists with parent context
+- 🔍 **Smooth Navigation**: Navigate between slides with keyboard or buttons
+- 💾 **Local Persistence**: All your readings and settings are saved in localStorage
 
-## 🚀 Inicio Rápido
+## 🚀 Quick Start
 
-### Desarrollo Local
+### Local Development
 
-1. Clona el repositorio:
+1. Clone the repository:
+
 ```bash
 git clone git@github.com:matiasz8/telling-quote.git
 cd telling-quote
 ```
 
-2. Instala las dependencias:
+2. Install dependencies:
+
 ```bash
 npm install
 ```
 
-3. Inicia el servidor de desarrollo:
+3. Start the development server:
+
 ```bash
 npm run dev
 ```
 
-4. Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### Build de Producción
+### Production Build
 
 ```bash
 npm run build
 npm start
 ```
 
-## 📦 Despliegue
+## 📦 Deployment
 
-### Vercel (Recomendado)
+### Vercel (Recommended)
 
-La forma más fácil de desplegar esta aplicación Next.js es usando [Vercel](https://vercel.com):
+The easiest way to deploy this Next.js application is using [Vercel](https://vercel.com):
 
-1. Sube tu repositorio a GitHub
-2. Importa el proyecto en [Vercel](https://vercel.com/new)
-3. Vercel detectará automáticamente Next.js y configurará el build
+1. Push your repository to GitHub
+2. Import the project in [Vercel](https://vercel.com/new)
+3. Vercel will automatically detect Next.js and configure the build
 
 ### GitHub Pages
 
-Para desplegar en GitHub Pages con exportación estática:
+To deploy on GitHub Pages with static export:
 
-1. Actualiza `next.config.ts` para habilitar export estático:
+1. Update `next.config.ts` to enable static export:
+
 ```typescript
 const nextConfig = {
   output: 'export',
-  basePath: '/telling-quote', // Nombre de tu repositorio
+  basePath: '/telling-quote', // Your repository name
   images: {
     unoptimized: true,
   },
 };
 ```
 
-2. Agrega un script en `package.json`:
+2. Add a script in `package.json`:
+
 ```json
 "scripts": {
   "export": "next build"
 }
 ```
 
-3. Crea `.github/workflows/deploy.yml`:
+3. Create `.github/workflows/deploy.yml`:
+
 ```yaml
 name: Deploy to GitHub Pages
 
@@ -107,73 +113,73 @@ jobs:
           publish_dir: ./out
 ```
 
-4. En GitHub, ve a Settings → Pages → Source y selecciona la rama `gh-pages`
+4. In GitHub, go to Settings → Pages → Source and select the `gh-pages` branch
 
-## 🛠️ Tecnologías
+## 🛠️ Technologies
 
-- **Framework**: Next.js 16.0.1 con App Router
+- **Framework**: Next.js 16.0.1 with App Router
 - **UI**: React 19.2.0
-- **Estilos**: Tailwind CSS con gradientes personalizados
-- **Tipado**: TypeScript
-- **Almacenamiento**: localStorage con sincronización entre componentes
+- **Styling**: Tailwind CSS with custom gradients
+- **Typing**: TypeScript
+- **Storage**: localStorage with cross-component synchronization
 
-## 📁 Estructura del Proyecto
+## 📁 Project Structure
 
-```
+```text
 telling-quote/
 ├── app/
-│   ├── page.tsx              # Dashboard con grid de lecturas
-│   ├── reader/[id]/page.tsx  # Visor de slides
+│   ├── page.tsx              # Dashboard with readings grid
+│   ├── reader/[id]/page.tsx  # Slide viewer
 │   └── layout.tsx
 ├── components/
-│   ├── CodeBlock.tsx         # Renderizado de bloques de código
-│   ├── SettingsModal.tsx     # Modal de configuración
-│   ├── Header.tsx            # Cabecera con navegación
-│   ├── ReadingCard.tsx       # Card de lectura en dashboard
-│   ├── NewReadingModal.tsx   # Modal para crear lecturas
-│   └── EditTitleModal.tsx    # Modal para editar títulos
+│   ├── CodeBlock.tsx         # Code block rendering
+│   ├── SettingsModal.tsx     # Settings modal
+│   ├── Header.tsx            # Header with navigation
+│   ├── ReadingCard.tsx       # Reading card in dashboard
+│   ├── NewReadingModal.tsx   # Modal to create readings
+│   └── EditTitleModal.tsx    # Modal to edit titles
 ├── hooks/
-│   ├── useLocalStorage.ts    # Hook para persistencia
-│   └── useSettings.ts        # Hook para configuración
+│   ├── useLocalStorage.ts    # Persistence hook
+│   └── useSettings.ts        # Settings hook
 ├── utils/
-│   ├── textProcessor.ts      # Procesamiento de markdown
-│   ├── markdownFormatter.ts  # Limpieza de markdown
-│   └── styleHelpers.ts       # Mapeo de estilos
+│   ├── textProcessor.ts      # Markdown processing
+│   ├── markdownFormatter.ts  # Markdown cleanup
+│   └── styleHelpers.ts       # Style mapping
 └── types/
-    └── index.ts              # Definiciones de tipos
+    └── index.ts              # Type definitions
 ```
 
-## 🎯 Uso
+## 🎯 Usage
 
-1. **Crear una lectura**: Click en "Nueva Lectura" en el dashboard
-2. **Pegar contenido markdown**: Títulos (##), listas, código, etc.
-3. **Navegar**: Usa las flechas del teclado o los botones para moverte entre slides
-4. **Personalizar**: Click en el ícono de configuración (⚙️) para ajustar fuente, tamaño y tema
-5. **Copiar código**: Los bloques de código tienen un botón de copiar integrado
+1. **Create a reading**: Click "New Reading" on the dashboard
+2. **Paste markdown content**: Titles (##), lists, code, etc.
+3. **Navigate**: Use keyboard arrows or buttons to move between slides
+4. **Customize**: Click the settings icon (⚙️) to adjust font, size and theme
+5. **Copy code**: Code blocks have an integrated copy button
 
-## 📝 Formato Markdown Soportado
+## 📝 Supported Markdown Format
 
-- **Títulos**: `## Subtítulo` divide el contenido en secciones
-- **Listas con viñetas**: `- Item` o `* Item`
-- **Listas numeradas**: `1. Item` con contexto de padre
-- **Código inline**: `` `código` ``
-- **Bloques de código**: 
+- **Titles**: `## Subtitle` divides content into sections
+- **Bulleted lists**: `- Item` or `* Item`
+- **Numbered lists**: `1. Item` with parent context
+- **Inline code**: `` `code` ``
+- **Code blocks**: 
   ````markdown
   ```javascript
-  console.log('Hola');
+  console.log('Hello');
   ```
   ````
-- **Negrita**: `**texto**`
-- **Enlaces**: `[texto](url)`
+- **Bold**: `**text**`
+- **Links**: `[text](url)`
 
-## 🤝 Contribuciones
+## 🤝 Contributions
 
-Las contribuciones son bienvenidas. Si encuentras un bug o tienes una sugerencia, por favor abre un issue.
+Contributions are welcome. If you find a bug or have a suggestion, please open an issue.
 
-## 📄 Licencia
+## 📄 License
 
 MIT
 
 ---
 
-Desarrollado con ❤️ usando Next.js
+Built with ❤️ using Next.js
