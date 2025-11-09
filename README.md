@@ -55,33 +55,27 @@ The easiest way to deploy this Next.js application is using [Vercel](https://ver
 1. Push your repository to GitHub
 2. Import the project in [Vercel](https://vercel.com/new)
 3. Vercel will automatically detect Next.js and configure the build
-4. Your app will be deployed with full SSR support
+4. Your app will be deployed with full SSR support and dynamic routing
 
-**Note**: The `next.config.ts` is already configured for Vercel deployment by default.
+**Live Demo**: Deploy your own instance in minutes!
 
-### GitHub Pages (Alternative)
+**Note**: This app uses client-side localStorage for data persistence, so each user's data stays in their browser.
 
-To deploy on GitHub Pages with static export, you need to modify the configuration:
+### GitHub Pages (Not Recommended)
 
-1. Uncomment the export settings in `next.config.ts`:
+GitHub Pages requires static export, which has limitations with this app:
 
-```typescript
-const nextConfig = {
-  output: 'export',
-  basePath: '/telling-quote', // Your repository name
-  images: {
-    unoptimized: true,
-  },
-};
-```
+- Dynamic routes (`/reader/[id]`) require `generateStaticParams()` 
+- Since data is in localStorage, pages cannot be pre-generated
+- Limited functionality compared to Vercel deployment
 
-2. The GitHub Actions workflow in `.github/workflows/deploy.yml` is already configured
+If you still want to try GitHub Pages:
 
-3. In GitHub, go to Settings → Pages → Source and select "GitHub Actions"
+1. Uncomment the export settings in `next.config.ts`
+2. Add `generateStaticParams()` to dynamic routes
+3. Enable the GitHub Actions workflow in `.github/workflows/deploy.yml`
 
-4. Push to main branch and the deployment will run automatically
-
-**Note**: With static export, all data is stored in browser localStorage only. For Vercel deployment, you can keep the dynamic routing without modifications.
+**Recommendation**: Use Vercel for the best experience with full app functionality.
 
 ## 🛠️ Technologies
 

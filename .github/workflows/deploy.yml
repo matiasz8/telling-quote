@@ -1,9 +1,21 @@
 name: Deploy to GitHub Pages
 
+# This workflow is disabled by default because the app uses dynamic routes
+# that require server-side rendering or generateStaticParams().
+# 
+# Since data is stored in localStorage, static generation is not suitable.
+# For deployment, use Vercel which supports SSR out of the box.
+#
+# To enable this workflow, uncomment the 'on' section below and ensure
+# you've added generateStaticParams() to all dynamic routes.
+
+# on:
+#   push:
+#     branches: [ main ]
+#   workflow_dispatch:
+
 on:
-  push:
-    branches: [ main ]
-  workflow_dispatch:
+  workflow_dispatch:  # Manual trigger only
 
 permissions:
   contents: read
@@ -26,9 +38,28 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          
+      
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+        
       - name: Install dependencies
         run: npm ci
+      
+      - name: Enable static export
+        run: |
+          cat > next.config.ts << 'EOF'
+          import type { NextConfig } from "next";
+
+          const nextConfig: NextConfig = {
+            output: 'export',
+            basePath: '/telling-quote',
+            images: {
+              unoptimized: true,
+            },
+          };
+
+          export default nextConfig;
+          EOF
         
       - name: Build with Next.js
         run: npm run build
