@@ -9,6 +9,7 @@ import ReadingCard from '@/components/ReadingCard';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useSettings } from '@/hooks/useSettings';
 import { Reading } from '@/types';
+import { STORAGE_KEYS } from '@/lib/constants';
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,7 +17,7 @@ export default function Home() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [editingReading, setEditingReading] = useState<Reading | null>(null);
   const [deletingReading, setDeletingReading] = useState<Reading | null>(null);
-  const [readings, setReadings] = useLocalStorage<Reading[]>('readings', []);
+  const [readings, setReadings] = useLocalStorage<Reading[]>(STORAGE_KEYS.READINGS, []);
   const { settings } = useSettings();
 
   const handleSave = (reading: Reading) => {
@@ -103,6 +104,7 @@ export default function Home() {
       />
       {editingReading && (
         <EditTitleModal
+          key={editingReading.id}
           isOpen={isEditModalOpen}
           currentTitle={editingReading.title}
           onClose={() => {

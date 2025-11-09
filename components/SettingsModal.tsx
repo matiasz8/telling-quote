@@ -1,6 +1,7 @@
 'use client';
 
 import { Settings, FontFamily, FontSize, Theme } from '@/types';
+import { FONT_FAMILY_OPTIONS, FONT_SIZE_OPTIONS, THEME_OPTIONS } from '@/lib/constants';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -8,25 +9,6 @@ interface SettingsModalProps {
   settings: Settings;
   onSave: (settings: Settings) => void;
 }
-
-const fontFamilyOptions: { value: FontFamily; label: string; className: string }[] = [
-  { value: 'serif', label: 'Serif', className: 'font-serif' },
-  { value: 'sans', label: 'Sans Serif', className: 'font-sans' },
-  { value: 'mono', label: 'Monospace', className: 'font-mono' },
-  { value: 'system', label: 'System', className: '' },
-];
-
-const fontSizeOptions: { value: FontSize; label: string }[] = [
-  { value: 'small', label: 'Small' },
-  { value: 'medium', label: 'Medium' },
-  { value: 'large', label: 'Large' },
-  { value: 'xlarge', label: 'Extra Large' },
-];
-
-const themeOptions: { value: Theme; label: string }[] = [
-  { value: 'light', label: 'Light' },
-  { value: 'dark', label: 'Dark' },
-];
 
 export default function SettingsModal({ isOpen, onClose, settings, onSave }: SettingsModalProps) {
   if (!isOpen) return null;
@@ -66,7 +48,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
             Font Family
           </label>
           <div className="grid grid-cols-2 gap-2">
-            {fontFamilyOptions.map((option) => (
+            {FONT_FAMILY_OPTIONS.map((option) => (
               <button
                 key={option.value}
                 onClick={() => handleFontFamilyChange(option.value)}
@@ -92,7 +74,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
             Font Size
           </label>
           <div className="grid grid-cols-2 gap-2">
-            {fontSizeOptions.map((option) => (
+            {FONT_SIZE_OPTIONS.map((option) => (
               <button
                 key={option.value}
                 onClick={() => handleFontSizeChange(option.value)}
@@ -118,7 +100,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
             Theme
           </label>
           <div className="grid grid-cols-2 gap-2">
-            {themeOptions.map((option) => (
+            {THEME_OPTIONS.map((option) => (
               <button
                 key={option.value}
                 onClick={() => handleThemeChange(option.value)}

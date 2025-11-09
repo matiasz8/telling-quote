@@ -58,7 +58,7 @@ export default function ConfirmDeleteModal({
         </div>
 
         <p className="text-gray-700 mb-6 ml-16">
-          Are you sure you want to delete <span className="font-semibold text-gray-900">"{title}"</span>? This action cannot be undone.
+          Are you sure you want to delete <span className="font-semibold text-gray-900">&ldquo;{title}&rdquo;</span>? This action cannot be undone.
         </p>
 
         <div className="flex gap-3 justify-end ml-16">

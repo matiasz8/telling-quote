@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Reading } from "@/types";
-import { formatMarkdown } from "@/utils/markdownFormatter";
+import { formatMarkdown } from "@/lib/utils";
 
 interface NewReadingModalProps {
   isOpen: boolean;
@@ -22,14 +22,23 @@ export default function NewReadingModal({
   if (!isOpen) return null;
 
   const handleSave = () => {
-    if (!text.trim()) {
+    // Validate content
+    const trimmedText = text.trim();
+    if (!trimmedText) {
       setError("Please paste the content of the reading.");
       return;
     }
 
+    // Validate title
     const trimmedTitle = titleInput.trim();
     if (!trimmedTitle) {
       setError("Title is required.");
+      return;
+    }
+
+    // Validate minimum content length
+    if (trimmedText.length < 10) {
+      setError("Content is too short. Please add more text.");
       return;
     }
 
@@ -41,7 +50,7 @@ export default function NewReadingModal({
       .trim();
 
     // Formatear el contenido para eliminar líneas vacías innecesarias
-    const formattedContent = formatMarkdown(text.trim());
+    const formattedContent = formatMarkdown(trimmedText);
 
     const newReading: Reading = {
       id: crypto.randomUUID(),

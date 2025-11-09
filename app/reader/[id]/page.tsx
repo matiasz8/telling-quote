@@ -6,10 +6,10 @@ import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useSettings } from '@/hooks/useSettings';
 import { Reading } from '@/types';
-import { processContent } from '@/utils/textProcessor';
+import { processContent, getFontFamilyClass, getFontSizeClasses, getThemeClasses } from '@/lib/utils';
+import { STORAGE_KEYS, NAVIGATION_KEYS, TOUCH_SWIPE_THRESHOLD } from '@/lib/constants';
 import confetti from 'canvas-confetti';
 import { theme } from '@/config/theme';
-import { getFontFamilyClass, getFontSizeClasses, getThemeClasses } from '@/utils/styleHelpers';
 import CodeBlock from '@/components/CodeBlock';
 
 // Helper function to get inline code classes based on theme
@@ -45,7 +45,7 @@ function formatInlineCode(text: string, isDark: boolean) {
 export default function ReaderPage() {
   const params = useParams();
   const id = typeof params.id === 'string' ? params.id : Array.isArray(params.id) ? params.id[0] : '';
-  const [readings] = useLocalStorage<Reading[]>('readings', []);
+  const [readings] = useLocalStorage<Reading[]>(STORAGE_KEYS.READINGS, []);
   const { settings } = useSettings();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [lastReadingId, setLastReadingId] = useState(id);
@@ -97,10 +97,10 @@ export default function ReaderPage() {
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      if (NAVIGATION_KEYS.NEXT.includes(e.key)) {
         e.preventDefault();
         handleNext();
-      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      } else if (NAVIGATION_KEYS.PREVIOUS.includes(e.key)) {
         e.preventDefault();
         handlePrevious();
       }
@@ -122,9 +122,8 @@ export default function ReaderPage() {
 
     const handleTouchEnd = () => {
       const diffX = touchStartX.current - touchEndX.current;
-      const threshold = 50; // Minimum swipe distance in pixels
 
-      if (Math.abs(diffX) > threshold) {
+      if (Math.abs(diffX) > TOUCH_SWIPE_THRESHOLD) {
         if (diffX > 0) {
           // Swiped left -> next slide
           handleNext();

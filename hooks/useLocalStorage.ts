@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { STORAGE_EVENTS } from '@/lib/constants';
 
 export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((val: T) => T)) => void] {
   // Initialize with a function to read from localStorage
@@ -27,10 +28,11 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T 
       
       if (typeof window !== 'undefined') {
         window.localStorage.setItem(key, JSON.stringify(valueToStore));
-        // Dispatch custom event for same-page sync
-        window.dispatchEvent(new CustomEvent('local-storage-change', { 
-          detail: { key, value: valueToStore } 
-        }));
+        // Trigger custom event for same-page sync
+        const event = new CustomEvent(STORAGE_EVENTS.CHANGE, {
+          detail: { key, value: valueToStore },
+        });
+        window.dispatchEvent(event);
       }
     } catch (error) {
       console.error(error);
@@ -59,11 +61,11 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T 
     };
 
     window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('local-storage-change', handleCustomStorageChange);
+    window.addEventListener(STORAGE_EVENTS.CHANGE, handleCustomStorageChange);
     
     return () => {
       window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('local-storage-change', handleCustomStorageChange);
+      window.removeEventListener(STORAGE_EVENTS.CHANGE, handleCustomStorageChange);
     };
   }, [key]);
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 interface EditTitleModalProps {
   isOpen: boolean;
@@ -17,21 +17,27 @@ export default function EditTitleModal({
 }: EditTitleModalProps) {
   const [title, setTitle] = useState(currentTitle);
 
-  useEffect(() => {
-    if (isOpen) {
-      setTitle(currentTitle);
-    }
-  }, [isOpen, currentTitle]);
-
   if (!isOpen) return null;
 
   const handleSave = () => {
-    if (!title.trim()) return;
-    onSave(title.trim());
+    const trimmedTitle = title.trim();
+    
+    if (!trimmedTitle) {
+      // Don't save empty titles
+      return;
+    }
+    
+    if (trimmedTitle.length > 200) {
+      // Prevent excessively long titles
+      return;
+    }
+    
+    onSave(trimmedTitle);
     onClose();
   };
 
   const handleCancel = () => {
+    // Reset to current title on cancel
     setTitle(currentTitle);
     onClose();
   };
