@@ -27,6 +27,22 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const settings = JSON.parse(localStorage.getItem('settings') || '{}');
+                  if (settings.theme === 'dark') {
+                    document.documentElement.classList.add('dark-theme');
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

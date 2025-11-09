@@ -2,20 +2,22 @@
 
 import { useState, useEffect } from 'react';
 
+function getStorageValue<T>(key: string, initialValue: T): T {
+  if (typeof window === 'undefined') {
+    return initialValue;
+  }
+  try {
+    const item = window.localStorage.getItem(key);
+    return item ? JSON.parse(item) : initialValue;
+  } catch (error) {
+    console.error(error);
+    return initialValue;
+  }
+}
+
 export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((val: T) => T)) => void] {
   // State to store our value - use lazy initializer to read from localStorage only once
-  const [storedValue, setStoredValue] = useState<T>(() => {
-    if (typeof window === 'undefined') {
-      return initialValue;
-    }
-    try {
-      const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValue;
-    } catch (error) {
-      console.error(error);
-      return initialValue;
-    }
-  });
+  const [storedValue, setStoredValue] = useState<T>(() => getStorageValue(key, initialValue));
 
   // Return a wrapped version of useState's setter function that
   // persists the new value to localStorage.
