@@ -26,18 +26,18 @@ export default function ReadingCard({ reading, onEdit, onDelete, isDark = false,
 
   return (
     <div className={`w-full ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow border relative group`}>
-      {/* Completion indicator */}
-      {isCompleted && (
+      {/* Pending indicator - shown when reading is NOT completed */}
+      {!isCompleted && (
         <div 
           className={`absolute top-3 left-3 w-3 h-3 rounded-full ${
             isDark ? 'bg-purple-500' : 'bg-lime-500'
           } shadow-sm`}
-          title="Reading completed"
+          title="Pending reading"
         />
       )}
       
       <Link href={`/reader/${reading.id}`} className="block">
-        <h3 className={`text-lg font-semibold ${isDark ? 'text-gray-100' : 'text-gray-900'} line-clamp-2 ${isCompleted ? 'pl-6' : ''} pr-8`}>{reading.title}</h3>
+        <h3 className={`text-lg font-semibold ${isDark ? 'text-gray-100' : 'text-gray-900'} line-clamp-2 ${!isCompleted ? 'pl-6' : ''} pr-8`}>{reading.title}</h3>
       </Link>
       <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
         <button

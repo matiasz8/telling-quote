@@ -218,11 +218,12 @@ All settings are automatically saved in your browser.
 
 tellingQuote automatically tracks which readings you've completed:
 
-- **Completion Indicator**: A small colored dot appears on completed reading cards
+- **Pending Indicator**: A small colored dot appears on NEW/pending reading cards
   - 🟢 **Green dot** in light theme
   - 🟣 **Purple dot** in dark theme
-- **Automatic Marking**: Readings are marked complete when you reach the final slide
+- **Automatic Removal**: The dot disappears when you complete the reading (reach the final slide)
 - **Persistent**: Completion status is saved in your browser
+- **Visual Feedback**: Quickly identify which readings you haven't finished yet
 
 ### Editing a Title
 
