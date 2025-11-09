@@ -2,6 +2,7 @@
 
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useSettings } from '@/hooks/useSettings';
@@ -49,7 +50,30 @@ function formatText(text: string, isDark: boolean): React.ReactNode {
     return segments.length > 0 ? segments : [part];
   });
   
-  // 2. Process bold (**text**)
+  // 2. Process highlighting (==text==)
+  parts = parts.flatMap(part => {
+    if (part.type !== 'text') return [part];
+    const segments: TextPart[] = [];
+    const highlightRegex = /(==[^=]+==)/g;
+    let lastIndex = 0;
+    let match;
+    
+    while ((match = highlightRegex.exec(part.content)) !== null) {
+      if (match.index > lastIndex) {
+        segments.push({ type: 'text', content: part.content.slice(lastIndex, match.index) });
+      }
+      segments.push({ type: 'highlight', content: match[1].slice(2, -2) });
+      lastIndex = match.index + match[0].length;
+    }
+    
+    if (lastIndex < part.content.length) {
+      segments.push({ type: 'text', content: part.content.slice(lastIndex) });
+    }
+    
+    return segments.length > 0 ? segments : [part];
+  });
+  
+  // 3. Process bold (**text**)
   parts = parts.flatMap(part => {
     if (part.type !== 'text') return [part];
     const segments: TextPart[] = [];
@@ -72,7 +96,7 @@ function formatText(text: string, isDark: boolean): React.ReactNode {
     return segments.length > 0 ? segments : [part];
   });
   
-  // 3. Process strikethrough (~~text~~)
+  // 4. Process strikethrough (~~text~~)
   parts = parts.flatMap(part => {
     if (part.type !== 'text') return [part];
     const segments: TextPart[] = [];
@@ -149,6 +173,16 @@ function formatText(text: string, isDark: boolean): React.ReactNode {
           <span key={idx} className={getInlineCodeClasses(isDark)}>
             {part.content}
           </span>
+        );
+      case 'highlight':
+        return (
+          <mark key={idx} className={`px-1 rounded ${
+            isDark 
+              ? 'bg-yellow-500/40 text-yellow-100' 
+              : 'bg-yellow-200 text-yellow-900'
+          }`}>
+            {part.content}
+          </mark>
         );
       case 'bold':
         return <strong key={idx} className="font-bold">{part.content}</strong>;
@@ -438,13 +472,32 @@ export default function ReaderPage() {
             )}
           </div>
           
-          {/* Content area - code blocks, bullets, blockquotes or regular text */}
+          {/* Content area - code blocks, images, bullets, blockquotes or regular text */}
           {currentSentence.isCodeBlock ? (
             <CodeBlock 
               code={currentSentence.sentence} 
               language={currentSentence.codeLanguage || 'text'} 
               isDark={isDark} 
             />
+          ) : currentSentence.isImage ? (
+            <div className="my-12 flex flex-col items-center justify-center min-h-[400px]">
+              <div className={`relative w-full max-w-4xl h-[60vh] rounded-lg overflow-hidden shadow-lg ${
+                isDark ? 'shadow-purple-900/50' : 'shadow-gray-400/50'
+              }`}>
+                <Image 
+                  src={currentSentence.imageUrl || ''} 
+                  alt={currentSentence.imageAlt || currentSentence.sentence}
+                  fill
+                  className="object-contain"
+                  unoptimized
+                />
+              </div>
+              {currentSentence.imageAlt && (
+                <p className={`mt-4 ${themeClasses.textSecondary} ${fontSizeClasses.subtitle} italic text-center`}>
+                  {currentSentence.imageAlt}
+                </p>
+              )}
+            </div>
           ) : currentSentence.isBlockquote ? (
             <blockquote className={`my-12 px-6 py-4 border-l-4 ${
               isDark 

@@ -121,6 +121,8 @@ telling-quote/
 
 ## 📝 Supported Markdown Format
 
+### Basic Formatting (Phase 1)
+
 - **Headings**: `## Subtitle` divides content into sections
 - **Bold**: `**text**` for strong emphasis
 - **Italic**: `*text*` or `_text_` for subtle emphasis
@@ -129,13 +131,20 @@ telling-quote/
 - **Numbered lists**: `1. Item` with parent context
 - **Blockquotes**: `> quote` for highlighting important citations
 - **Inline code**: `` `code` ``
-- **Code blocks**: 
+- **Code blocks**:
+
   ````markdown
   ```javascript
   console.log('Hello');
   ```
   ````
+
 - **Links**: `[text](url)` with hover effect
+
+### Rich Media (Phase 2)
+
+- **Images**: `![alt text](image-url)` - displayed centered with optimized size
+- **Highlighting**: `==highlighted text==` - theme-aware background color for emphasis
 
 **Note**: Horizontal rules (`---`, `***`) are recognized but omitted in slide view as they serve as visual separators in source markdown.
 

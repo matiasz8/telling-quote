@@ -108,6 +108,28 @@ Los separadores horizontales ayudan a dividir secciones temáticas:
 
 ***
 
+## Imágenes y Destacados (Phase 2)
+
+### Imágenes
+
+Puedes incluir imágenes usando la sintaxis markdown estándar:
+
+![Logo de tellingQuote](https://via.placeholder.com/600x400/4F46E5/FFFFFF?text=tellingQuote)
+
+Las imágenes se muestran centradas y con el tamaño optimizado para la lectura.
+
+![Diagrama de flujo](https://via.placeholder.com/800x300/10B981/FFFFFF?text=Diagrama+de+Flujo)
+
+### Texto Destacado
+
+Puedes ==destacar texto importante== usando la sintaxis de highlighting.
+
+Este formato es perfecto para ==resaltar conceptos clave== o ==términos importantes== que quieres que el lector recuerde.
+
+También puedes combinar: **negrita con ==destacado==** o *cursiva con ==highlighting==*.
+
+---
+
 ## Sección Final
 
 ### Resumen de Formatos Soportados

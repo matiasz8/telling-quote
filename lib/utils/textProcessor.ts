@@ -15,6 +15,9 @@ export interface ProcessedText {
   codeLanguage?: string; // Lenguaje del código (bash, javascript, etc.)
   isBlockquote?: boolean; // Marca si es una cita/blockquote
   isHorizontalRule?: boolean; // Marca si es un separador horizontal
+  isImage?: boolean; // Marca si es una imagen
+  imageUrl?: string; // URL de la imagen
+  imageAlt?: string; // Texto alternativo de la imagen
 }
 
 interface Section {
@@ -220,6 +223,57 @@ export function processContent(title: string, content: string): ProcessedText[] 
         }
         
         // Simplemente omitir el separador, no crear un slide para él
+        continue;
+      }
+
+      // Detectar imágenes en formato markdown ![alt](url)
+      const imageMatch = trimmedLine.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+      if (imageMatch) {
+        // Procesar párrafo acumulado antes de la imagen
+        if (currentParagraph.length > 0) {
+          const paragraphText = currentParagraph.join(' ').trim();
+          if (paragraphText.length > 0) {
+            const cleanText = paragraphText
+              .replace(/\*\*/g, '')
+              .replace(/\*/g, '')
+              .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
+            
+            const sentences = cleanText.match(/[^.!?]+[.!?]/g) || [];
+            if (sentences.length > 0) {
+              for (const sentence of sentences) {
+                const trimmedSentence = sentence.trim();
+                if (trimmedSentence.length > 0) {
+                  processedText.push({
+                    id: globalIndex++,
+                    title: title,
+                    subtitle: section.subtitle,
+                    sentence: trimmedSentence,
+                  });
+                }
+              }
+            } else if (cleanText.length > 0) {
+              processedText.push({
+                id: globalIndex++,
+                title: title,
+                subtitle: section.subtitle,
+                sentence: cleanText,
+              });
+            }
+          }
+          currentParagraph = [];
+        }
+        
+        // Agregar la imagen como slide
+        const [, alt, url] = imageMatch;
+        processedText.push({
+          id: globalIndex++,
+          title: title,
+          subtitle: section.subtitle,
+          sentence: alt || 'Image',
+          isImage: true,
+          imageUrl: url,
+          imageAlt: alt,
+        });
         continue;
       }
 
