@@ -438,7 +438,7 @@ export default function ReaderPage() {
             )}
           </div>
           
-          {/* Content area - code blocks, bullets, blockquotes, separators or regular text */}
+          {/* Content area - code blocks, bullets, blockquotes or regular text */}
           {currentSentence.isCodeBlock ? (
             <CodeBlock 
               code={currentSentence.sentence} 
@@ -455,12 +455,6 @@ export default function ReaderPage() {
                 {formatText(currentSentence.sentence, isDark)}
               </p>
             </blockquote>
-          ) : currentSentence.isHorizontalRule ? (
-            <div className="my-12 flex items-center justify-center">
-              <hr className={`w-full max-w-md border-t-2 ${
-                isDark ? 'border-gray-700' : 'border-gray-300'
-              }`} />
-            </div>
           ) : currentSentence.isBulletPoint ? (
             <div className={`my-12 ${themeClasses.text} min-h-[200px] flex flex-col justify-center max-w-2xl mx-auto`}>
               {/* Parent bullet if this is a sub-bullet */}

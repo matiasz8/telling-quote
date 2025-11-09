@@ -183,7 +183,7 @@ export function processContent(title: string, content: string): ProcessedText[] 
       const indentMatch = line.match(/^(\s*)/);
       const indentLevel = indentMatch ? Math.floor(indentMatch[1].length / 2) : 0; // Cada 2 espacios = 1 nivel
 
-      // Detectar separadores horizontales (---, ***, ___)
+      // Detectar separadores horizontales (---, ***, ___) y omitirlos
       if (/^[-*_]{3,}$/.test(trimmedLine)) {
         // Procesar párrafo acumulado antes del separador
         if (currentParagraph.length > 0) {
@@ -219,14 +219,7 @@ export function processContent(title: string, content: string): ProcessedText[] 
           currentParagraph = [];
         }
         
-        // Agregar el separador horizontal
-        processedText.push({
-          id: globalIndex++,
-          title: title,
-          subtitle: section.subtitle,
-          sentence: '---',
-          isHorizontalRule: true,
-        });
+        // Simplemente omitir el separador, no crear un slide para él
         continue;
       }
 

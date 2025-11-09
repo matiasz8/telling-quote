@@ -128,7 +128,6 @@ telling-quote/
 - **Bulleted lists**: `- Item` or `* Item`
 - **Numbered lists**: `1. Item` with parent context
 - **Blockquotes**: `> quote` for highlighting important citations
-- **Horizontal rules**: `---` or `***` for section separators
 - **Inline code**: `` `code` ``
 - **Code blocks**: 
   ````markdown
@@ -137,6 +136,8 @@ telling-quote/
   ```
   ````
 - **Links**: `[text](url)` with hover effect
+
+**Note**: Horizontal rules (`---`, `***`) are recognized but omitted in slide view as they serve as visual separators in source markdown.
 
 ## 🤝 Contributions
 
