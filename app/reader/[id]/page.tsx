@@ -3,7 +3,7 @@
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback, Fragment } from 'react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useSettings } from '@/hooks/useSettings';
 import { Reading } from '@/types';
@@ -166,46 +166,50 @@ function formatText(text: string, isDark: boolean): React.ReactNode {
   });
   
   // Render the parts
-  return parts.map((part, idx) => {
-    switch (part.type) {
-      case 'code':
-        return (
-          <span key={idx} className={getInlineCodeClasses(isDark)}>
-            {part.content}
-          </span>
-        );
-      case 'highlight':
-        return (
-          <mark key={idx} className={`px-1 rounded ${
-            isDark 
-              ? 'bg-yellow-500/40 text-yellow-100' 
-              : 'bg-yellow-200 text-yellow-900'
-          }`}>
-            {part.content}
-          </mark>
-        );
-      case 'bold':
-        return <strong key={idx} className="font-bold">{part.content}</strong>;
-      case 'italic':
-        return <em key={idx} className="italic">{part.content}</em>;
-      case 'strike':
-        return <del key={idx} className="line-through opacity-70">{part.content}</del>;
-      case 'link':
-        return (
-          <a
-            key={idx}
-            href={part.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`underline ${isDark ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'}`}
-          >
-            {part.content}
-          </a>
-        );
-      default:
-        return <span key={idx}>{part.content}</span>;
-    }
-  });
+  return (
+    <>
+      {parts.map((part, idx) => {
+        switch (part.type) {
+          case 'code':
+            return (
+              <span key={idx} className={getInlineCodeClasses(isDark)}>
+                {part.content}
+              </span>
+            );
+          case 'highlight':
+            return (
+              <mark key={idx} className={`px-1 rounded ${
+                isDark 
+                  ? 'bg-yellow-500/40 text-yellow-100' 
+                  : 'bg-yellow-200 text-yellow-900'
+              }`}>
+                {part.content}
+              </mark>
+            );
+          case 'bold':
+            return <strong key={idx}>{part.content}</strong>;
+          case 'italic':
+            return <em key={idx}>{part.content}</em>;
+          case 'strike':
+            return <del key={idx} className="line-through opacity-70">{part.content}</del>;
+          case 'link':
+            return (
+              <a
+                key={idx}
+                href={part.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`underline ${isDark ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'}`}
+              >
+                {part.content}
+              </a>
+            );
+          default:
+            return <Fragment key={idx}>{part.content}</Fragment>;
+        }
+      })}
+    </>
+  );
 }
 
 export default function ReaderPage() {
