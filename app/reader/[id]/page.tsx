@@ -52,6 +52,8 @@ export default function ReaderPage() {
   const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pageRef = useRef<HTMLDivElement | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const touchStartX = useRef<number>(0);
+  const touchEndX = useRef<number>(0);
 
   const fontFamilyClass = getFontFamilyClass(settings.fontFamily);
   const fontSizeClasses = getFontSizeClasses(settings.fontSize);
@@ -106,6 +108,49 @@ export default function ReaderPage() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleNext, handlePrevious]);
+
+  // Touch gestures for mobile
+  useEffect(() => {
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartX.current = e.touches[0].clientX;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      touchEndX.current = e.touches[0].clientX;
+    };
+
+    const handleTouchEnd = () => {
+      const diffX = touchStartX.current - touchEndX.current;
+      const threshold = 50; // Minimum swipe distance in pixels
+
+      if (Math.abs(diffX) > threshold) {
+        if (diffX > 0) {
+          // Swiped left -> next slide
+          handleNext();
+        } else {
+          // Swiped right -> previous slide
+          handlePrevious();
+        }
+      }
+
+      // Reset values
+      touchStartX.current = 0;
+      touchEndX.current = 0;
+    };
+
+    const element = pageRef.current;
+    if (element) {
+      element.addEventListener('touchstart', handleTouchStart);
+      element.addEventListener('touchmove', handleTouchMove);
+      element.addEventListener('touchend', handleTouchEnd);
+
+      return () => {
+        element.removeEventListener('touchstart', handleTouchStart);
+        element.removeEventListener('touchmove', handleTouchMove);
+        element.removeEventListener('touchend', handleTouchEnd);
+      };
+    }
   }, [handleNext, handlePrevious]);
 
   // Track fullscreen changes
