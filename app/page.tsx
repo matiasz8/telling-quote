@@ -19,7 +19,13 @@ export default function Home() {
   const [deletingReading, setDeletingReading] = useState<Reading | null>(null);
   const [readings, setReadings] = useLocalStorage<Reading[]>(STORAGE_KEYS.READINGS, []);
   const [completedReadings] = useLocalStorage<string[]>('completedReadings', []);
+  const [activeTab, setActiveTab] = useLocalStorage<'active' | 'completed'>('dashboardTab', 'active');
   const { settings } = useSettings();
+
+  // Filter readings based on active tab
+  const activeReadings = readings.filter(r => !completedReadings.includes(r.id));
+  const completedReadingsList = readings.filter(r => completedReadings.includes(r.id));
+  const displayedReadings = activeTab === 'active' ? activeReadings : completedReadingsList;
 
   const handleSave = (reading: Reading) => {
     setReadings((prev) => [...prev, reading]);
@@ -84,9 +90,90 @@ export default function Home() {
             <div className={`absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${isDark ? 'bg-linear-to-r from-purple-400 via-violet-400 to-fuchsia-400' : 'bg-linear-to-r from-lime-400 via-emerald-400 to-teal-400'} blur-xl -z-10`}></div>
           </button>
         </div>
+
+        {/* Tabs */}
         {readings.length > 0 && (
+          <div className="mb-6">
+            <div className="flex gap-2 justify-center border-b border-gray-300 dark:border-gray-700">
+              <button
+                onClick={() => setActiveTab('active')}
+                className={`
+                  relative px-6 py-3 font-semibold text-base transition-all duration-200
+                  ${activeTab === 'active'
+                    ? isDark
+                      ? 'text-purple-400'
+                      : 'text-lime-600'
+                    : isDark
+                      ? 'text-gray-400 hover:text-gray-300'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }
+                `}
+              >
+                <span className="flex items-center gap-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  </svg>
+                  Active
+                  <span className={`
+                    ml-1 px-2 py-0.5 rounded-full text-xs font-bold
+                    ${activeTab === 'active'
+                      ? isDark
+                        ? 'bg-purple-500/20 text-purple-300'
+                        : 'bg-lime-500/20 text-lime-700'
+                      : 'bg-gray-500/20 text-gray-500'
+                    }
+                  `}>
+                    {activeReadings.length}
+                  </span>
+                </span>
+                {activeTab === 'active' && (
+                  <div className={`absolute bottom-0 left-0 right-0 h-0.5 ${isDark ? 'bg-purple-500' : 'bg-lime-500'}`} />
+                )}
+              </button>
+
+              <button
+                onClick={() => setActiveTab('completed')}
+                className={`
+                  relative px-6 py-3 font-semibold text-base transition-all duration-200
+                  ${activeTab === 'completed'
+                    ? isDark
+                      ? 'text-purple-400'
+                      : 'text-lime-600'
+                    : isDark
+                      ? 'text-gray-400 hover:text-gray-300'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }
+                `}
+              >
+                <span className="flex items-center gap-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Completed
+                  <span className={`
+                    ml-1 px-2 py-0.5 rounded-full text-xs font-bold
+                    ${activeTab === 'completed'
+                      ? isDark
+                        ? 'bg-purple-500/20 text-purple-300'
+                        : 'bg-lime-500/20 text-lime-700'
+                      : 'bg-gray-500/20 text-gray-500'
+                    }
+                  `}>
+                    {completedReadingsList.length}
+                  </span>
+                </span>
+                {activeTab === 'completed' && (
+                  <div className={`absolute bottom-0 left-0 right-0 h-0.5 ${isDark ? 'bg-purple-500' : 'bg-lime-500'}`} />
+                )}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Reading Cards */}
+        {readings.length > 0 && displayedReadings.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
-            {readings.map((reading) => (
+            {displayedReadings.map((reading) => (
               <ReadingCard
                 key={reading.id}
                 reading={reading}
@@ -96,6 +183,29 @@ export default function Home() {
                 isCompleted={completedReadings.includes(reading.id)}
               />
             ))}
+          </div>
+        )}
+
+        {/* Empty State */}
+        {readings.length > 0 && displayedReadings.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-16 px-4">
+            <div className={`text-center ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+              <svg className="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {activeTab === 'active' ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                )}
+              </svg>
+              <p className="text-lg font-medium mb-2">
+                {activeTab === 'active' ? 'All readings completed!' : 'No completed readings yet'}
+              </p>
+              <p className="text-sm">
+                {activeTab === 'active' 
+                  ? 'Create a new reading to get started.' 
+                  : 'Finish a reading to see it here.'}
+              </p>
+            </div>
           </div>
         )}
       </main>

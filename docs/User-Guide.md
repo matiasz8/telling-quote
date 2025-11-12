@@ -214,6 +214,29 @@ All settings are automatically saved in your browser.
 
 ## Managing Readings
 
+### Dashboard Organization
+
+tellingQuote organizes your readings into two tabs:
+
+**📚 Active Tab**:
+- Shows readings you haven't completed yet
+- Each card displays a colored dot (🟢 green / 🟣 purple) indicating it's pending
+- Counter badge shows number of active readings
+- Default view when opening the dashboard
+
+**✓ Completed Tab**:
+- Shows readings you've finished
+- No dot indicator (clean, completed status)
+- Counter badge shows number of completed readings
+- Automatically populated when you finish a reading
+
+**Tab Features**:
+- Theme-aware colors (purple for dark, lime for light)
+- Persistent: Remembers which tab you were viewing
+- Counters update automatically
+- Smooth transitions between tabs
+- Works seamlessly on mobile and desktop
+
 ### Reading Completion Tracking
 
 tellingQuote automatically tracks which readings you've completed:
@@ -221,7 +244,7 @@ tellingQuote automatically tracks which readings you've completed:
 - **Pending Indicator**: A small colored dot appears on NEW/pending reading cards
   - 🟢 **Green dot** in light theme
   - 🟣 **Purple dot** in dark theme
-- **Automatic Removal**: The dot disappears when you complete the reading (reach the final slide)
+- **Automatic Movement**: When you complete a reading (reach the final slide), it automatically moves to the "Completed" tab
 - **Persistent**: Completion status is saved in your browser
 - **Visual Feedback**: Quickly identify which readings you haven't finished yet
 

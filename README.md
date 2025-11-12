@@ -4,7 +4,14 @@ An interactive reading application that converts markdown content into slide-sty
 
 ## ✨ Features
 
-- 📝 **Markdown Processing**: Automatically converts markdown content into navigable slides
+### Dashboard & Organization
+- � **Tab-Based Organization**: Separate "Active" and "Completed" readings with visual counters
+- 🟢 **Visual Indicators**: Colored dots on pending readings (green/purple based on theme)
+- 🔄 **Auto-Categorization**: Readings move to "Completed" tab when finished
+- 💾 **Persistent State**: Tab selection and completion status saved in localStorage
+
+### Reading Experience
+- �📝 **Markdown Processing**: Automatically converts markdown content into navigable slides
 - 🎨 **Complete Customization**:
   - 4 font families (Serif, Sans-serif, Monospace, System)
   - 4 text sizes (Small, Medium, Large, Extra Large)
@@ -12,7 +19,7 @@ An interactive reading application that converts markdown content into slide-sty
 - 💻 **Modern Code Blocks**: Professional rendering with copy button and language detection
 - 📊 **Smart Lists**: Full support for bulleted and numbered lists with parent context
 - 🔍 **Smooth Navigation**: Navigate between slides with keyboard or buttons
-- 💾 **Local Persistence**: All your readings and settings are saved in localStorage
+- 🎊 **Completion Celebration**: Confetti animation when finishing a reading
 
 ## 🚀 Quick Start
 
