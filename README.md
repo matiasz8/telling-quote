@@ -5,7 +5,8 @@ An interactive reading application that converts markdown content into slide-sty
 ## ✨ Features
 
 ### Dashboard & Organization
-- � **Tab-Based Organization**: Separate "Active" and "Completed" readings with visual counters
+
+- **Tab-Based Organization**: Separate "Active" and "Completed" readings with visual counters
 - 🟢 **Visual Indicators**: Colored dots on pending readings (green/purple based on theme)
 - 🔄 **Auto-Categorization**: Readings move to "Completed" tab when finished
 - 💾 **Persistent State**: Tab selection and completion status saved in localStorage
