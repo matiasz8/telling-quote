@@ -41,6 +41,12 @@ Technical overview of tellingQuote's architecture, design patterns, and componen
 │  - textProcessor (markdown → slides)        │
 │  - markdownFormatter (cleanup)              │
 │  - styleHelpers (theme utilities)           │
+│  Constants:                                 │
+│  - settings (defaults, options)             │
+│  - storage (keys, events)                   │
+│  - navigation (keys, thresholds)            │
+│  Configuration:                             │
+│  - theme (styling constants)                │
 └─────────────────────────────────────────────┘
            │
            ▼
@@ -48,6 +54,8 @@ Technical overview of tellingQuote's architecture, design patterns, and componen
 │       Browser localStorage                  │
 │  - readings: Reading[]                      │
 │  - settings: Settings                       │
+│  - completedReadings: string[]              │
+│  - dashboardTab: 'active' | 'completed'     │
 └─────────────────────────────────────────────┘
 ```
 
@@ -108,17 +116,41 @@ All components re-render with new theme
 ### Pages
 
 #### `app/page.tsx` - Dashboard
-- Lists all saved readings
+
+**Features**:
+- Tab-based organization (Active/Completed)
+- Lists all saved readings in responsive grid
 - Grid layout (responsive 1-4 columns)
 - Create, edit, and delete operations
 - Theme-aware background gradients
+- Persistent tab selection
+- Reading counters per tab
+
+**State Management**:
+- `readings`: All Reading objects
+- `completedReadings`: Array of completed reading IDs
+- `activeTab`: Current tab ('active' | 'completed')
+- Filters readings based on completion status
 
 #### `app/reader/[id]/page.tsx` - Reader
+
+**Features**:
 - Dynamic route for reading content
 - Processes markdown into slides
 - Keyboard and touch navigation
-- Fullscreen support
+- Scroll navigation with debounce
+- Fullscreen toggle support
+- Progress bar with slide counter
 - Confetti animation on completion
+- Automatic completion tracking
+
+**Navigation Controls**:
+- Arrow keys (← → ↑ ↓)
+- Touch swipe gestures (mobile)
+- Mouse wheel scrolling
+- On-screen buttons
+- Go to start button
+- Finish reading button (on last slide)
 
 #### `app/layout.tsx` - Root Layout
 - Global HTML structure
@@ -135,10 +167,21 @@ All components re-render with new theme
 - Theme-aware styling
 
 #### `ReadingCard.tsx`
+
+**Features**:
 - Displays reading in grid
+- Visual pending indicator (colored dot)
 - Edit/delete hover actions
 - Link to reader page
 - Theme-adaptive card style
+- Completion status display
+
+**Props**:
+- `reading`: Reading object
+- `onEdit`: Edit callback
+- `onDelete`: Delete callback
+- `isDark`: Theme flag
+- `isCompleted`: Completion status
 
 #### `SettingsModal.tsx`
 - Font family selection (4 options)
@@ -257,6 +300,63 @@ const [value, setValue] = useLocalStorage<T>('key', defaultValue);
 - `getFontSizeClasses()`: Size to responsive classes
 - `getThemeClasses()`: Theme to color classes
 
+## Configuration & Constants
+
+### `config/theme.ts`
+
+**Purpose**: Centralized theme configuration for consistent styling
+
+**Configuration Sections**:
+```typescript
+export const theme = {
+  inlineCode: {
+    background: 'bg-gray-800',
+    text: 'text-green-400',
+    font: 'font-mono',
+    // ... more styles
+  },
+  bullets: {
+    level0: { /* Parent bullet styles */ },
+    level1: { /* Sub-bullet styles */ },
+    history: { /* Previous bullets */ },
+    parent: { /* Parent context */ }
+  },
+  subtitleIntro: {
+    size: 'text-5xl',
+    weight: 'font-bold',
+    style: 'italic',
+  },
+  progressBar: {
+    background: 'bg-gray-200',
+    fill: 'bg-linear-to-r from-blue-500 to-blue-600',
+  }
+}
+```
+
+### `lib/constants/`
+
+#### `settings.ts`
+- `FONT_FAMILY_OPTIONS`: Available font families
+- `FONT_SIZE_OPTIONS`: Available font sizes
+- `THEME_OPTIONS`: Light/Dark themes
+- `DEFAULT_SETTINGS`: Default user preferences
+
+#### `storage.ts`
+- `STORAGE_KEYS`: localStorage key names
+  - `READINGS`: 'readings'
+  - `SETTINGS`: 'settings'
+- `STORAGE_EVENTS`: Custom event names
+  - `CHANGE`: 'local-storage-change'
+
+#### `navigation.ts`
+- `NAVIGATION_KEYS`: Keyboard shortcuts
+  - `NEXT`: ['ArrowRight', 'ArrowDown']
+  - `PREVIOUS`: ['ArrowLeft', 'ArrowUp']
+  - `ESCAPE`: 'Escape' (fullscreen exit)
+  - `ENTER`: 'Enter' (modals)
+- `TOUCH_SWIPE_THRESHOLD`: 50px (mobile swipe detection)
+- `SCROLL_DEBOUNCE_TIME`: 100ms (scroll navigation delay)
+
 ## Type System
 
 ### Core Types (`types/index.ts`)
@@ -273,15 +373,33 @@ export interface ProcessedText {
   title: string;
   subtitle: string | null;
   sentence: string;
-  isBullet?: boolean;
-  isNumbered?: boolean;
-  isCodeBlock?: boolean;
-  codeLanguage?: string;
-  bulletSymbol?: string;
-  parentBullet?: string | null;
-  indentLevel?: number;
-  parentIsNumbered?: boolean;
-  parentNumberIndex?: number;
+  isSubtitleIntro?: boolean;      // Marks if this is the subtitle introduction slide
+  isBulletPoint?: boolean;         // Marks if it's a list item
+  bulletHistory?: string[];        // Previous bullets in this list
+  isNumberedList?: boolean;        // Marks if it's a numbered list
+  indentLevel?: number;            // Indentation level (0 = root, 1 = sub-bullet, etc.)
+  parentBullet?: string;           // Parent bullet if this is a sub-bullet
+  parentIsNumbered?: boolean;      // If parent is a numbered list
+  parentNumberIndex?: number;      // Numeric index of parent if numbered list
+  isCodeBlock?: boolean;           // Marks if it's a code block
+  codeLanguage?: string;           // Code language (bash, javascript, etc.)
+  isBlockquote?: boolean;          // Marks if it's a quote/blockquote
+  isHorizontalRule?: boolean;      // Marks if it's a horizontal separator
+  isImage?: boolean;               // Marks if it's an image
+  imageUrl?: string;               // Image URL
+  imageAlt?: string;               // Image alt text
+  isTable?: boolean;               // Marks if it's a table
+  tableHeaders?: string[];         // Table headers
+  tableRows?: string[][];          // Table data rows
+  isCheckbox?: boolean;            // Marks if it's a task checkbox
+  isChecked?: boolean;             // If checkbox is checked
+  isFootnoteRef?: boolean;         // Marks if it's a footnote reference [^1]
+  footnoteId?: string;             // Footnote ID
+  isFootnoteDef?: boolean;         // Marks if it's a footnote definition [^1]: text
+  footnoteText?: string;           // Footnote text
+  isMathInline?: boolean;          // Marks if it's inline math $...$
+  isMathBlock?: boolean;           // Marks if it's block math $$...$$
+  mathContent?: string;            // Math equation content
 }
 
 export type FontFamily = 'serif' | 'sans' | 'mono' | 'system';
@@ -312,9 +430,20 @@ export interface Settings {
     "fontFamily": "serif",
     "fontSize": "medium",
     "theme": "dark"
-  }
+  },
+  "completedReadings": [
+    "uuid-v4-1",
+    "uuid-v4-2"
+  ],
+  "dashboardTab": "active"
 }
 ```
+
+**Storage Keys:**
+- `readings`: Array of Reading objects
+- `settings`: User preferences (font, size, theme)
+- `completedReadings`: Array of reading IDs marked as completed
+- `dashboardTab`: Active tab on dashboard ("active" | "completed")
 
 ### State Synchronization
 
