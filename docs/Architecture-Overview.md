@@ -374,6 +374,7 @@ export const theme = {
   - `CHANGE`: 'local-storage-change'
 
 #### `navigation.ts`
+
 - `NAVIGATION_KEYS`: Keyboard shortcuts
   - `NEXT`: ['ArrowRight', 'ArrowDown']
   - `PREVIOUS`: ['ArrowLeft', 'ArrowUp']
@@ -465,6 +466,7 @@ export interface Settings {
 ```
 
 **Storage Keys:**
+
 - `readings`: Array of Reading objects
 - `settings`: User preferences (font, size, theme)
 - `completedReadings`: Array of reading IDs marked as completed
@@ -488,12 +490,14 @@ export interface Settings {
 ### Theme System
 
 **Light Theme**:
+
 - Background: Yellow → Lime → Emerald gradient
 - Text: Gray-900
 - Cards: White with light borders
 - Header: Yellow-100 → Lime-100 gradient
 
 **Dark Theme**:
+
 - Background: Purple → Gray → Black gradient
 - Text: Gray-100
 - Cards: Gray-800 with dark borders
