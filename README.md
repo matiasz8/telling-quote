@@ -91,29 +91,39 @@ If you still want to try GitHub Pages:
 - **Styling**: Tailwind CSS with custom gradients
 - **Typing**: TypeScript
 - **Storage**: localStorage with cross-component synchronization
+- **Animations**: canvas-confetti for completion celebrations
+- **Math Rendering**: KaTeX for mathematical equations
 
 ## 📁 Project Structure
 
 ```text
 telling-quote/
 ├── app/
-│   ├── page.tsx              # Dashboard with readings grid
-│   ├── reader/[id]/page.tsx  # Slide viewer
-│   └── layout.tsx
+│   ├── page.tsx              # Dashboard with tabs and readings grid
+│   ├── reader/[id]/page.tsx  # Slide viewer with navigation
+│   └── layout.tsx            # Root layout
 ├── components/
-│   ├── CodeBlock.tsx         # Code block rendering
+│   ├── CodeBlock.tsx         # Code block rendering with copy
 │   ├── SettingsModal.tsx     # Settings modal
 │   ├── Header.tsx            # Header with navigation
-│   ├── ReadingCard.tsx       # Reading card in dashboard
+│   ├── ReadingCard.tsx       # Reading card with status indicator
 │   ├── NewReadingModal.tsx   # Modal to create readings
-│   └── EditTitleModal.tsx    # Modal to edit titles
+│   ├── EditTitleModal.tsx    # Modal to edit titles
+│   └── ConfirmDeleteModal.tsx # Deletion confirmation
 ├── hooks/
-│   ├── useLocalStorage.ts    # Persistence hook
+│   ├── useLocalStorage.ts    # Persistence hook with sync
 │   └── useSettings.ts        # Settings hook
-├── utils/
-│   ├── textProcessor.ts      # Markdown processing
-│   ├── markdownFormatter.ts  # Markdown cleanup
-│   └── styleHelpers.ts       # Style mapping
+├── lib/
+│   ├── constants/
+│   │   ├── settings.ts       # Font, size, theme options
+│   │   ├── storage.ts        # localStorage keys
+│   │   └── navigation.ts     # Keyboard & touch constants
+│   └── utils/
+│       ├── textProcessor.ts  # Markdown → slides processing
+│       ├── markdownFormatter.ts # Markdown cleanup
+│       └── styleHelpers.ts   # Style mapping utilities
+├── config/
+│   └── theme.ts              # Theme configuration constants
 └── types/
     └── index.ts              # Type definitions
 ```
