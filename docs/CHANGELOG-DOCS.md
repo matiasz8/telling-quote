@@ -188,9 +188,3 @@ All documentation changes have been verified against:
 - No code changes required - all features were already implemented
 - Documentation now accurately reflects the rich functionality available
 - All markdown lint warnings are cosmetic (list spacing) and don't affect readability
-
----
-
-**Contributors**: Nicolas Quiroga  
-**Date**: November 20, 2025  
-**Branch**: `docs/fix-inconsistencies`
