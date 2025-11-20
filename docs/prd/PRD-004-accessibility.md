@@ -33,18 +33,21 @@ This excludes users with disabilities from effectively using the app.
 ## Goals & Objectives
 
 ### Primary Goals
+
 - Achieve WCAG 2.1 Level AA compliance
 - Support common assistive technologies
 - Provide dyslexia-friendly options
 - Enable motor accessibility (keyboard-only use)
 
 ### Secondary Goals
+
 - Support screen readers (NVDA, JAWS, VoiceOver)
 - Provide customizable reading experience
 - Respect OS accessibility preferences
 - Build foundation for Level AAA compliance
 
 ### Success Metrics
+
 - WCAG 2.1 AA automated test pass rate: 100%
 - Screen reader testing: All core flows work
 - User testing with accessibility community
@@ -90,11 +93,13 @@ This excludes users with disabilities from effectively using the app.
 **Feature**: Add dyslexia-friendly fonts to font selector
 
 **Fonts to Add**:
+
 - **OpenDyslexic**: Specifically designed for dyslexia
 - **Comic Sans MS**: Proven helpful for dyslexia
 - **Atkinson Hyperlegible**: High legibility font
 
 **Implementation**:
+
 - Add to `FONT_FAMILY_OPTIONS`
 - Import OpenDyslexic via @font-face
 - Update font selector UI
@@ -107,7 +112,7 @@ This excludes users with disabilities from effectively using the app.
 
 **Options**:
 
-```
+```bash
 Letter Spacing:
   ○ Normal (default)
   ○ Wide (+0.05em)
@@ -132,6 +137,7 @@ Word Spacing:
 **Feature**: Ultra-high contrast theme for low vision
 
 **Specifications**:
+
 - Background: Pure black (#000000)
 - Text: Pure white (#FFFFFF)
 - Contrast ratio: 21:1
@@ -140,12 +146,14 @@ Word Spacing:
 - Thicker borders (2px)
 
 **Activation**:
+
 - Toggle in Settings: "High Contrast Mode"
 - Respect OS preference: `prefers-contrast: high`
 
 #### FR-4: Screen Reader Optimization
 
 **ARIA Labels** - Add to all interactive elements:
+
 ```html
 <!-- Buttons -->
 <button aria-label="Create new reading">New Reading</button>
@@ -164,6 +172,7 @@ Word Spacing:
 ```
 
 **Live Regions** - Announce dynamic changes:
+
 ```html
 <!-- When slide changes -->
 <div aria-live="polite" aria-atomic="true">
@@ -177,6 +186,7 @@ Word Spacing:
 ```
 
 **Semantic HTML**:
+
 - Use `<article>` for readings
 - Use `<h1>`, `<h2>` properly
 - Use `<nav>` for navigation
@@ -187,6 +197,7 @@ Word Spacing:
 **Current**: Arrow keys work in reader
 
 **Enhance with**:
+
 - `Tab` / `Shift+Tab`: Focus navigation
 - `Enter` / `Space`: Activate buttons
 - `Esc`: Close modals
@@ -194,12 +205,14 @@ Word Spacing:
 - `/`: Focus search (when implemented)
 
 **Visual Focus Indicators**:
+
 - 2px solid outline
 - High contrast color
 - Visible on all focusable elements
 - Skip link for screen readers
 
 **Skip Links**:
+
 ```html
 <a href="#main-content" class="skip-link">
   Skip to main content
@@ -211,6 +224,7 @@ Word Spacing:
 **Feature**: Respect `prefers-reduced-motion`
 
 **Implementation**:
+
 ```css
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -223,6 +237,7 @@ Word Spacing:
 ```
 
 **Affected Elements**:
+
 - Disable confetti animation
 - Disable theme transition animations
 - Disable modal slide-ins
@@ -235,14 +250,17 @@ Word Spacing:
 **Feature**: Ensure all information isn't color-only
 
 **Current Issues**:
+
 - Pending indicator (colored dot) - color-only
 
 **Solution**:
+
 - Add icon/pattern in addition to color
 - Pending: 🟢 → ◉ (dot + ring)
 - Completed: ✓ icon
 
 **Testing**: Test with color blindness simulators
+
 - Protanopia (red-blind)
 - Deuteranopia (green-blind)
 - Tritanopia (blue-blind)
@@ -252,7 +270,8 @@ Word Spacing:
 **Feature**: Limit line length for readability
 
 **Options**:
-```
+
+```bash
 Content Width:
   ○ Narrow (45ch) - optimal for dyslexia
   ○ Medium (65ch) - default
@@ -267,6 +286,7 @@ Content Width:
 **Feature**: Dim everything except current slide
 
 **Implementation**:
+
 - Optional "Focus Mode" toggle
 - Dims header, nav, buttons (opacity: 0.3)
 - Brightens current slide
@@ -279,12 +299,14 @@ Content Width:
 #### NFR-1: WCAG 2.1 Compliance
 
 **Level AA Requirements**:
+
 - ✅ 1.4.3 Contrast (Minimum): 4.5:1 for text
 - ✅ 2.1.1 Keyboard: All functionality keyboard-accessible
 - ✅ 2.4.7 Focus Visible: Clear focus indicators
 - ✅ 4.1.2 Name, Role, Value: All UI components identified
 
 **Testing Tools**:
+
 - axe DevTools
 - WAVE
 - Lighthouse Accessibility
@@ -293,6 +315,7 @@ Content Width:
 #### NFR-2: Performance
 
 **Image Descriptions**:
+
 - Auto-generate alt text using image filename
 - Allow user to edit alt text
 - Never leave alt="" unless decorative
@@ -300,6 +323,7 @@ Content Width:
 #### NFR-3: Documentation
 
 **Accessibility Statement Page**:
+
 - Document all accessibility features
 - Provide contact for accessibility issues
 - List keyboard shortcuts
@@ -311,7 +335,7 @@ Content Width:
 
 ### Accessibility Settings Section
 
-```
+```bash
 ┌────────────────────────────────────────┐
 │  ⚙️ Settings                           │
 ├────────────────────────────────────────┤
@@ -353,13 +377,15 @@ Content Width:
 
 ## Future Enhancements (v2+)
 
-### Phase 2:
+### Phase 2
+
 - AI-generated image descriptions
 - Reading progress persistence per slide
 - Bookmarks/annotations
 - Text-to-speech integration
 
-### Phase 3:
+### Phase 3
+
 - Customizable color palettes
 - Multiple reading modes (speed reading, etc.)
 - Integration with accessibility tools
@@ -385,11 +411,13 @@ Content Width:
 ## Testing Plan
 
 ### Automated Testing
+
 - Run axe DevTools on all pages
 - Run Lighthouse Accessibility audit
 - Use WAVE browser extension
 
 ### Manual Testing
+
 - **Screen Readers**:
   - NVDA (Windows)
   - JAWS (Windows)
@@ -405,6 +433,7 @@ Content Width:
   - Verify no color-only information
 
 ### User Testing
+
 - Recruit users with disabilities
 - Test core user flows
 - Gather qualitative feedback
@@ -414,6 +443,7 @@ Content Width:
 ## Success Criteria
 
 ### MVP
+
 - ✅ WCAG 2.1 AA compliance
 - ✅ Dyslexia-friendly fonts added
 - ✅ Screen reader optimized
@@ -423,6 +453,7 @@ Content Width:
 - ✅ Lighthouse Accessibility 95+
 
 ### Future
+
 - WCAG 2.1 AAA compliance
 - User testimonials from accessibility community
 

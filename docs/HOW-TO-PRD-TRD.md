@@ -9,9 +9,11 @@ This guide explains how to create Product Requirements Documents (PRDs) and Tech
 ## 📋 What are PRDs and TRDs?
 
 ### Product Requirements Document (PRD)
+
 **Purpose**: Define **WHAT** to build and **WHY**
 
 A PRD is a product manager's document that:
+
 - Describes the feature from a user perspective
 - Explains the problem being solved
 - Defines success criteria
@@ -20,9 +22,11 @@ A PRD is a product manager's document that:
 **Target Audience**: Product team, stakeholders, developers, designers
 
 ### Technical Requirements Document (TRD)
+
 **Purpose**: Define **HOW** to build it
 
 A TRD is an engineering document that:
+
 - Describes technical architecture and implementation
 - Specifies data models, APIs, and components
 - Includes testing and deployment strategies
@@ -34,7 +38,7 @@ A TRD is an engineering document that:
 
 ## 📁 Directory Structure
 
-```
+```bash
 docs/
 ├── prd/                    # Product Requirements Documents
 │   ├── README.md          # Index of all PRDs
@@ -52,6 +56,7 @@ docs/
 ## 🔢 Naming Convention
 
 ### PRD Naming
+
 Format: `PRD-XXX-feature-name.md`
 
 - **XXX**: Three-digit number (001, 002, 003...)
@@ -59,17 +64,20 @@ Format: `PRD-XXX-feature-name.md`
 - Numbers are sequential and never reused
 
 **Examples**:
+
 - `PRD-001-example-document.md`
 - `PRD-002-tags-system.md`
 - `PRD-003-detox-theme.md`
 
 ### TRD Naming
+
 Format: `TRD-XXX-feature-name.md`
 
 - Must match corresponding PRD number
 - Same feature name as PRD
 
 **Examples**:
+
 - `TRD-001-example-document.md` (implements PRD-001)
 - `TRD-002-tags-system.md` (implements PRD-002)
 
@@ -78,6 +86,7 @@ Format: `TRD-XXX-feature-name.md`
 ## 📝 When to Create a PRD
 
 Create a PRD when:
+
 - ✅ Adding a new user-facing feature
 - ✅ Making significant changes to existing features
 - ✅ The change affects user experience
@@ -85,6 +94,7 @@ Create a PRD when:
 - ✅ The feature requires cross-team coordination
 
 Skip PRD for:
+
 - ❌ Bug fixes
 - ❌ Code refactoring (no user impact)
 - ❌ Dependency updates
@@ -96,6 +106,7 @@ Skip PRD for:
 ## 🔧 When to Create a TRD
 
 Create a TRD when:
+
 - ✅ PRD is approved and ready for implementation
 - ✅ Technical complexity is medium-high
 - ✅ Multiple components/services affected
@@ -104,6 +115,7 @@ Create a TRD when:
 - ✅ External service integration needed
 
 Skip TRD for:
+
 - ❌ Simple, straightforward implementations
 - ❌ Well-established patterns
 - ❌ Small component updates
@@ -114,11 +126,13 @@ Skip TRD for:
 ## ✍️ How to Write a PRD
 
 ### 1. Copy the Template
+
 ```bash
 cp docs/prd/TEMPLATE.md docs/prd/PRD-XXX-your-feature.md
 ```
 
 ### 2. Fill in Header Information
+
 ```markdown
 **Status**: 📝 Draft
 **Priority**: High/Medium/Low
@@ -130,6 +144,7 @@ cp docs/prd/TEMPLATE.md docs/prd/PRD-XXX-your-feature.md
 ### 3. Complete Each Section
 
 **Essential Sections**:
+
 1. **Overview** (1-2 sentences)
 2. **Problem Statement** (What problem are we solving?)
 3. **Goals & Objectives** (What success looks like)
@@ -139,6 +154,7 @@ cp docs/prd/TEMPLATE.md docs/prd/PRD-XXX-your-feature.md
 7. **Out of Scope** (What we're NOT doing)
 
 **Optional Sections**:
+
 - Design mockups
 - User flows
 - Open questions
@@ -147,6 +163,7 @@ cp docs/prd/TEMPLATE.md docs/prd/PRD-XXX-your-feature.md
 ### 4. Review Checklist
 
 Before submitting PRD:
+
 - [ ] Problem clearly stated
 - [ ] Success metrics defined
 - [ ] User stories included
@@ -160,10 +177,12 @@ Before submitting PRD:
 ## 🛠️ How to Write a TRD
 
 ### 1. Wait for PRD Approval
+
 - TRD should only be written after PRD is approved
 - Reference approved PRD number
 
 ### 2. Copy the Template
+
 ```bash
 cp docs/trd/TEMPLATE.md docs/trd/TRD-XXX-your-feature.md
 ```
@@ -171,6 +190,7 @@ cp docs/trd/TEMPLATE.md docs/trd/TRD-XXX-your-feature.md
 ### 3. Fill in Technical Details
 
 **Essential Sections**:
+
 1. **Overview** (Brief technical summary)
 2. **Related PRD** (Link to PRD-XXX)
 3. **Technical Architecture** (Diagrams, system design)
@@ -182,14 +202,16 @@ cp docs/trd/TEMPLATE.md docs/trd/TRD-XXX-your-feature.md
 9. **Rollback Plan** (How to undo if needed)
 
 **Optional Sections**:
+
 - API design
 - Performance considerations
 - Security considerations
 - Migration strategy
 
-### 4. Review Checklist
+### 4. Review Checklist TRD
 
 Before implementation:
+
 - [ ] Architecture diagram included
 - [ ] Data models defined
 - [ ] All affected components listed
@@ -206,7 +228,7 @@ Before implementation:
 
 ### Standard Feature Development Flow
 
-```
+```bash
 1. IDEATION
    └─> Discuss feature idea with team
 
@@ -270,6 +292,7 @@ Before implementation:
 ## 📚 Examples
 
 ### Example PRD (Minimal)
+
 ```markdown
 # PRD-001: Example Document
 
@@ -293,6 +316,7 @@ New users see empty dashboard, don't understand app.
 ```
 
 ### Example TRD (Minimal)
+
 ```markdown
 # TRD-001: Example Document Implementation
 
@@ -308,14 +332,15 @@ const EXAMPLE_READING: Reading = {
 ```
 
 ## Implementation
+
 1. Check if readings array empty on mount
 2. If empty, add EXAMPLE_READING
 3. Store flag: exampleDismissed = false
 
 ## Testing
+
 - Unit: Test reading creation logic
 - E2E: Verify example appears on first visit
-```
 
 ---
 
@@ -324,6 +349,7 @@ const EXAMPLE_READING: Reading = {
 ### PRD Best Practices
 
 ✅ **DO**:
+
 - Focus on user value and problems
 - Include user stories
 - Define clear success metrics
@@ -332,6 +358,7 @@ const EXAMPLE_READING: Reading = {
 - Include mockups when helpful
 
 ❌ **DON'T**:
+
 - Specify technical implementation
 - Include code samples
 - Dictate architecture decisions
@@ -341,6 +368,7 @@ const EXAMPLE_READING: Reading = {
 ### TRD Best Practices
 
 ✅ **DO**:
+
 - Include architecture diagrams
 - Define data models precisely
 - Plan for rollback scenarios
@@ -349,6 +377,7 @@ const EXAMPLE_READING: Reading = {
 - Break into atomic tasks
 
 ❌ **DON'T**:
+
 - Skip the testing strategy
 - Ignore edge cases
 - Forget about backward compatibility
@@ -388,6 +417,7 @@ const EXAMPLE_READING: Reading = {
 ## 📖 Templates
 
 Templates are available:
+
 - [PRD Template](./prd/TEMPLATE.md)
 - [TRD Template](./trd/TEMPLATE.md)
 

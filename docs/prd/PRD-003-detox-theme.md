@@ -34,16 +34,19 @@ While visually appealing, some users prefer:
 ## Goals & Objectives
 
 ### Primary Goals
+
 - Provide distraction-free reading experience
 - Support digital wellbeing practices
 - Offer professional/minimal aesthetic option
 
 ### Secondary Goals
+
 - Maintain accessibility (WCAG 2.1 AA contrast ratios)
 - Keep consistent UX across all three themes
 - Support smooth theme transitions
 
 ### Success Metrics
+
 - 15-25% of users try Detox mode
 - 10-15% of users make it their default
 - Positive feedback on focus/readability
@@ -75,6 +78,7 @@ So that reading doesn't cause eye strain or headaches
 ### Functional Requirements
 
 #### FR-1: Theme Option
+
 - Add "Detox" to theme selector in SettingsModal
 - Three radio options: Light | Dark | Detox
 - Persist selection in localStorage
@@ -82,7 +86,8 @@ So that reading doesn't cause eye strain or headaches
 #### FR-2: Color Palette
 
 **Detox Theme Colors**:
-```
+
+```bash
 Background Hierarchy:
   - Page Background: #FFFFFF (white)
   - Card Background: #F9FAFB (gray-50)
@@ -103,23 +108,27 @@ Accents (minimal, subtle):
 #### FR-3: Component Styling
 
 **Dashboard**:
+
 - White background (#FFFFFF)
 - Gray cards (#F9FAFB)
 - Gray borders instead of gradients
 - Monochrome button (gray-800)
 
 **Reader**:
+
 - White background
 - Black text on white (#111827 on #FFFFFF)
 - Gray progress bar
 - Minimal shadows
 
 **Modals**:
+
 - White background
 - Gray borders
 - Subtle shadows (grayscale only)
 
 **Code Blocks**:
+
 - Light gray background (#F3F4F6)
 - Dark gray text (#1F2937)
 - Minimal syntax highlighting (use gray tones)
@@ -127,30 +136,36 @@ Accents (minimal, subtle):
 #### FR-4: Special Elements
 
 **Pending Indicator Dot**:
+
 - Light theme: Lime (🟢)
 - Dark theme: Purple (🟣)
 - **Detox theme**: Dark gray (⚫) #374151
 
 **Tags** (if implemented):
+
 - All tags use gray tones
 - Differentiate by border style (solid/dashed) instead of color
 
 **Confetti** (completion):
+
 - Use grayscale confetti or disable entirely
 - Proposal: Keep but use white/gray particles
 
 ### Non-Functional Requirements
 
 #### NFR-1: Accessibility
+
 - WCAG 2.1 AA contrast ratios (minimum 4.5:1)
 - Test with color blindness simulators
 - Maintain keyboard navigation visibility
 
 #### NFR-2: Performance
+
 - No performance impact from theme switching
 - CSS-only changes (no JS-heavy computations)
 
 #### NFR-3: Consistency
+
 - All UI elements styled consistently
 - No color leaks from other themes
 
@@ -209,7 +224,7 @@ export const getThemeClasses = (theme: Theme) => {
 
 ### Theme Switching Flow
 
-```
+```bash
 User opens Settings
     ↓
 Sees three theme options:
@@ -228,7 +243,7 @@ Clean, minimal interface
 
 ### Visual Comparison
 
-```
+```bash
 BEFORE (Light Theme):
 ┌─────────────────────────────────┐
 │  Yellow → Lime gradient bg      │  
@@ -275,6 +290,7 @@ AFTER (Detox Theme):
 ## Success Criteria
 
 ### MVP
+
 - ✅ Detox theme option in settings
 - ✅ Complete monochrome color palette
 - ✅ All components styled for Detox
@@ -282,6 +298,7 @@ AFTER (Detox Theme):
 - ✅ WCAG AA contrast compliance
 
 ### Future Enhancements
+
 - Detox theme variants (high contrast)
 - Auto-switch to Detox during "focus hours"
 - Detox + focus mode combo
@@ -291,11 +308,13 @@ AFTER (Detox Theme):
 ## Accessibility Considerations
 
 **Contrast Ratios (WCAG 2.1 AA):**
+
 - Gray-900 on White: 19.0:1 ✅
 - Gray-500 on White: 4.6:1 ✅
 - Gray-700 on White: 10.5:1 ✅
 
 **Focus Indicators:**
+
 - Use gray-700 outline
 - 2px solid border
 - Visible on all interactive elements

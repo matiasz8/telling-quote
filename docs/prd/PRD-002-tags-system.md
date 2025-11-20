@@ -28,16 +28,19 @@ Currently, all readings are displayed in a flat list (Active/Completed tabs only
 ## Goals & Objectives
 
 ### Primary Goals
+
 - Enable users to categorize readings with tags
 - Provide visual tag indicators on reading cards
 - Improve reading discoverability and organization
 
 ### Secondary Goals
+
 - Lay foundation for tag-based filtering (future)
 - Support multiple tags per reading
 - Make tagging optional (don't force complexity)
 
 ### Success Metrics
+
 - 60%+ of users add at least one tag
 - Average 1-3 tags per reading
 - Users report improved organization (qualitative)
@@ -69,6 +72,7 @@ So that I'm not forced to categorize everything
 ### Functional Requirements
 
 #### FR-1: Tag Creation
+
 - **Where**: NewReadingModal and EditTitleModal
 - **UI**: Input field for tags (comma-separated or chip-based)
 - **Validation**:
@@ -80,20 +84,23 @@ So that I'm not forced to categorize everything
 - **Storage**: Array of strings in Reading object
 
 #### FR-2: Tag Display on Cards
+
 - **Location**: ReadingCard component
 - **Design**: Small badge/pill with tag name
-- **Styling**: 
+- **Styling**:
   - Tailwind badge component
   - Theme-aware colors (light/dark mode)
   - Limit to 2-3 visible tags, show "+X more" if needed
 - **Icon**: Tag icon from Heroicons or similar
 
 #### FR-3: Tag Colors (Optional for v1)
+
 - Auto-assign colors based on tag name (hash-based)
 - Consistent color for same tag across cards
 - Accessible color combinations
 
 #### FR-4: Tag Editing
+
 - Users can add/remove tags from existing readings
 - EditTitleModal expands to include tag management
 - Or separate "Edit Tags" action
@@ -101,6 +108,7 @@ So that I'm not forced to categorize everything
 ### Non-Functional Requirements
 
 #### NFR-1: Data Model
+
 ```typescript
 interface Reading {
   id: string;
@@ -113,10 +121,12 @@ interface Reading {
 ```
 
 #### NFR-2: Migration
+
 - Existing readings without `tags` field should still work
 - Backward compatible with current localStorage data
 
 #### NFR-3: Performance
+
 - Tag rendering should not impact card load time
 - Efficient tag normalization and storage
 
@@ -126,11 +136,11 @@ interface Reading {
 
 ### Reading Card with Tags
 
-```
+```bash
 ┌─────────────────────────────────────┐
 │ 🟢 Reading Title                    │ ← Pending indicator
 │                                     │
-│ 🏷️ javascript  🏷️ react            │ ← Tag badges
+│ 🏷️ javascript  🏷️ react             │ ← Tag badges
 │                                     │
 │               [✏️ Edit] [🗑️ Delete] │
 └─────────────────────────────────────┘
@@ -138,7 +148,7 @@ interface Reading {
 
 ### Tag Input in Modal
 
-```
+```bash
 ┌──────────────────────────────────────┐
 │  Create New Reading                  │
 ├──────────────────────────────────────┤
@@ -163,7 +173,7 @@ interface Reading {
 
 ### Creating Reading with Tags
 
-```
+```bash
 User clicks "New Reading"
     ↓
 Modal opens
@@ -232,17 +242,20 @@ function getTagColor(tagName: string, isDark: boolean): string {
 ## Future Enhancements (v2+)
 
 ### Phase 2: Tag Filtering
+
 - Filter dashboard by selected tag(s)
 - "Show only: [JavaScript]" button
 - Multi-tag filtering (AND/OR logic)
 
 ### Phase 3: Tag Management
+
 - Tag library/autocomplete
 - Global tag renaming
 - Tag usage statistics
 - Popular tags section
 
 ### Phase 4: Smart Tags
+
 - Auto-suggest tags based on content
 - AI-powered tag generation
 
@@ -267,6 +280,7 @@ function getTagColor(tagName: string, isDark: boolean): string {
 ## Success Criteria
 
 ### MVP (v1)
+
 - ✅ Users can add tags when creating readings
 - ✅ Users can edit tags on existing readings
 - ✅ Tags display on reading cards with icon
@@ -274,6 +288,7 @@ function getTagColor(tagName: string, isDark: boolean): string {
 - ✅ Backward compatible with existing data
 
 ### v2 (Future)
+
 - Tag-based filtering
 - Tag autocomplete
 - Tag statistics

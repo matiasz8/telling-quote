@@ -19,12 +19,14 @@ Implement optional Google authentication via Firebase to enable cross-device syn
 Currently, tellingQuote stores all data in browser localStorage:
 
 **Problems**:
+
 1. **Data loss risk**: Clearing browser cache = lost readings
 2. **No cross-device sync**: Can't access readings from phone/tablet/work computer
 3. **No backup**: No way to export/restore readings
 4. **Single browser limitation**: Data siloed per browser
 
 **User Pain Points**:
+
 - "I cleared my browser and lost everything!"
 - "I want to read on my phone during commute"
 - "Can't access my study materials from library computer"
@@ -34,22 +36,26 @@ Currently, tellingQuote stores all data in browser localStorage:
 ## Goals & Objectives
 
 ### Primary Goals
+
 - Enable optional Google sign-in
 - Sync readings across devices
 - Maintain offline-first functionality
 - Preserve privacy (no forced account)
 
 ### Secondary Goals
+
 - Backup readings to cloud
 - Future: collaboration/sharing
 - Analytics (optional, privacy-respecting)
 
 ### Non-Goals
+
 - Email/password authentication (v1)
 - Social sharing features (v1)
 - Public reading library (v1)
 
 ### Success Metrics
+
 - 30-40% sign-up rate among active users
 - 70%+ of signed-in users use multiple devices
 - Zero data loss incidents
@@ -88,19 +94,22 @@ So that I don't have to manually export/import
 #### FR-1: Anonymous Mode (Default)
 
 **Behavior**:
+
 - App works exactly as now (localStorage)
 - No account required
 - "Sign In" button visible in header
 - Optional: Banner suggesting sync benefits
 
 **Data Flow**:
-```
+
+```bash
 User → localStorage → Local browser only
 ```
 
 #### FR-2: Google Sign-In
 
 **Implementation**:
+
 - Firebase Authentication
 - Google OAuth provider
 - "Sign in with Google" button
@@ -110,7 +119,8 @@ User → localStorage → Local browser only
   - Settings page
 
 **User Flow**:
-```
+
+```bash
 User clicks "Sign In with Google"
     ↓
 Firebase OAuth popup
@@ -127,15 +137,18 @@ Enable sync
 #### FR-3: Data Migration on First Sign-In
 
 **Process**:
+
 1. User signs in for first time
 2. Check if localStorage has data
 3. If yes, show migration modal:
-   ```
+
+   ```bash
    "We found X readings on this device.
    Do you want to sync them to your account?"
    
    [Yes, Sync] [No, Start Fresh]
    ```
+
 4. If "Yes, Sync":
    - Upload all localStorage readings to Firestore
    - Mark as synced
@@ -144,13 +157,15 @@ Enable sync
    - Start with empty account
 
 **Edge Cases**:
+
 - Account has data + localStorage has data → Merge or choose?
 - Proposal: Merge with duplicate detection
 
 #### FR-4: Cloud Storage (Firestore)
 
 **Data Structure**:
-```
+
+```bash
 users/
   {uid}/
     profile/
@@ -179,6 +194,7 @@ users/
 ```
 
 **Security Rules**:
+
 ```javascript
 rules_version = '2';
 service cloud.firestore {
@@ -194,11 +210,13 @@ service cloud.firestore {
 #### FR-5: Real-Time Sync
 
 **Behavior**:
+
 - Changes sync automatically when online
 - Firestore real-time listeners
 - Optimistic UI updates
 
 **Sync Logic**:
+
 ```typescript
 // On create/update/delete reading
 if (user.isSignedIn) {
@@ -214,6 +232,7 @@ if (user.isSignedIn) {
 ```
 
 **Conflict Resolution**:
+
 - Last-write-wins (simple v1)
 - Use `updatedAt` timestamps
 - Future: Operational Transforms for true conflict resolution
@@ -221,27 +240,32 @@ if (user.isSignedIn) {
 #### FR-6: Offline Support
 
 **Requirements**:
+
 - App works offline always
 - Firestore offline persistence enabled
 - Queue writes when offline
 - Sync when back online
 
 **Implementation**:
+
 ```typescript
 const db = firebase.firestore();
 db.enablePersistence({ synchronizeTabs: true });
 ```
 
 **User Feedback**:
+
 - Show sync status indicator
 - "Synced ✓" / "Syncing..." / "Offline ⚠️"
 
 #### FR-7: Sign Out
 
 **Process**:
+
 1. User clicks "Sign Out"
 2. Confirmation modal:
-   ```
+
+   ```bash
    "Sign out?
    
    Your readings will remain synced in the cloud
@@ -250,18 +274,21 @@ db.enablePersistence({ synchronizeTabs: true });
    
    [Cancel] [Sign Out]"
    ```
+
 3. On confirm:
    - Sign out from Firebase
    - Clear localStorage (optional)
    - Redirect to empty dashboard
 
 **Options**:
+
 - "Keep local copy" checkbox
 - If checked, keep localStorage after sign-out
 
 #### FR-8: Account Deletion
 
 **Process**:
+
 1. Settings → "Delete Account"
 2. Serious warning modal
 3. Type confirmation ("DELETE")
@@ -271,6 +298,7 @@ db.enablePersistence({ synchronizeTabs: true });
 7. Redirect to homepage
 
 **GDPR Compliance**:
+
 - Complete data deletion
 - Confirmation email
 - 30-day grace period (optional)
@@ -282,11 +310,13 @@ db.enablePersistence({ synchronizeTabs: true });
 #### NFR-1: Security
 
 **Authentication**:
+
 - Firebase Auth handles tokens
 - HTTPS only
 - No passwords stored (OAuth only in v1)
 
 **Data Protection**:
+
 - Firestore security rules
 - User data isolation
 - No public access
@@ -294,12 +324,14 @@ db.enablePersistence({ synchronizeTabs: true });
 #### NFR-2: Privacy
 
 **Data Collection**:
+
 - Only collect: email, name (from Google)
 - No analytics without consent
 - No third-party tracking
 - Clear privacy policy
 
 **User Control**:
+
 - Export all data (JSON download)
 - Delete account anytime
 - Transparent data usage
@@ -307,11 +339,13 @@ db.enablePersistence({ synchronizeTabs: true });
 #### NFR-3: Performance
 
 **Sync Performance**:
+
 - Initial sync < 5 seconds
 - Incremental sync < 1 second
 - Offline-first (no blocking)
 
 **Costs** (Firebase Free Tier):
+
 - Reads: 50K/day
 - Writes: 20K/day
 - Storage: 1GB
@@ -322,11 +356,13 @@ db.enablePersistence({ synchronizeTabs: true });
 #### NFR-4: Reliability
 
 **Error Handling**:
+
 - Graceful fallback to localStorage
 - Retry failed syncs
 - User-friendly error messages
 
 **Monitoring**:
+
 - Firebase Analytics (optional)
 - Error logging (Sentry/similar)
 - Sync success rate
@@ -337,23 +373,23 @@ db.enablePersistence({ synchronizeTabs: true });
 
 ### Sign-In Button (Header)
 
-```
-┌────────────────────────────────────────┐
+```bash
+┌─────────────────────────────────────────┐
 │  tellingQuote    [⚙️ Settings] [Sign In]│
-└────────────────────────────────────────┘
+└─────────────────────────────────────────┘
 
 After sign-in:
 ┌────────────────────────────────────────┐
-│  tellingQuote    [⚙️] [👤 Nicolas ▼]   │
+│  tellingQuote    [⚙️] [👤 Bob ▼]   │
 └────────────────────────────────────────┘
 ```
 
 ### User Menu (Signed In)
 
-```
+```bash
 ┌──────────────────────┐
-│  👤 Nicolas Quiroga  │
-│  nicolas@example.com │
+│  👤 Bob Bobby        │
+│  bob@example.com     │
 ├──────────────────────┤
 │  ⚙️ Settings         │
 │  💾 Export Data      │
@@ -365,7 +401,7 @@ After sign-in:
 
 ### Sync Status Indicator
 
-```
+```bash
 Dashboard Footer:
 ┌────────────────────────────────────────┐
 │                                        │
@@ -467,11 +503,13 @@ export function useSync() {
 ## Migration Strategy
 
 ### Phase 1: Dual Mode (localStorage + Firestore)
+
 - Anonymous users: localStorage only
 - Signed-in users: Firestore + localStorage cache
 - Both work independently
 
 ### Phase 2: Firestore Primary
+
 - Signed-in users: Firestore is source of truth
 - localStorage as cache only
 - Offline-first architecture
@@ -491,13 +529,15 @@ export function useSync() {
 
 ## Future Enhancements (v2+)
 
-### Phase 2:
+### Phase 2
+
 - Email/password auth option
 - Profile customization
 - Reading statistics (time spent, completion rate)
 - Export to PDF/EPUB
 
-### Phase 3:
+### Phase 3
+
 - Share readings (read-only links)
 - Collaborative readings (edit together)
 - Public reading library
@@ -527,6 +567,7 @@ export function useSync() {
 ### Privacy Policy Updates Needed
 
 Must add:
+
 - What data we collect (email, name, readings)
 - How we use it (sync only)
 - Third parties (Firebase/Google)
@@ -546,17 +587,20 @@ Must add:
 ## Testing Plan
 
 ### Unit Tests
+
 - Auth flows (sign-in, sign-out)
 - Sync logic (create, update, delete)
 - Conflict resolution
 - Offline behavior
 
 ### Integration Tests
+
 - localStorage → Firestore migration
 - Multi-device sync
 - Offline → online transitions
 
 ### User Acceptance Testing
+
 - Sign-in flow (multiple browsers)
 - Cross-device sync (laptop + phone)
 - Offline usage
@@ -567,6 +611,7 @@ Must add:
 ## Success Criteria
 
 ### MVP
+
 - ✅ Google sign-in works
 - ✅ Readings sync across devices
 - ✅ Offline functionality maintained
@@ -575,6 +620,7 @@ Must add:
 - ✅ < 2 second sync time
 
 ### Future
+
 - 50%+ of users sign in
 - Multi-device usage common
 - High user satisfaction
@@ -619,11 +665,13 @@ Must add:
 ## Cost Estimate (Firebase)
 
 **Free Tier Limits**:
+
 - Auth: Unlimited
 - Firestore: 50K reads, 20K writes, 1GB storage/day
 - Hosting: 10GB storage, 360MB/day bandwidth
 
 **Expected Usage (1000 active users)**:
+
 - Reads: ~10K/day (within free tier ✅)
 - Writes: ~5K/day (within free tier ✅)
 - Storage: ~500MB (within free tier ✅)
