@@ -5,13 +5,15 @@ An interactive reading application that converts markdown content into slide-sty
 ## ✨ Features
 
 ### Dashboard & Organization
-- � **Tab-Based Organization**: Separate "Active" and "Completed" readings with visual counters
+
+- **Tab-Based Organization**: Separate "Active" and "Completed" readings with visual counters
 - 🟢 **Visual Indicators**: Colored dots on pending readings (green/purple based on theme)
 - 🔄 **Auto-Categorization**: Readings move to "Completed" tab when finished
 - 💾 **Persistent State**: Tab selection and completion status saved in localStorage
 
 ### Reading Experience
-- �📝 **Markdown Processing**: Automatically converts markdown content into navigable slides
+
+- 📝 **Markdown Processing**: Automatically converts markdown content into navigable slides
 - 🎨 **Complete Customization**:
   - 4 font families (Serif, Sans-serif, Monospace, System)
   - 4 text sizes (Small, Medium, Large, Extra Large)
@@ -72,7 +74,7 @@ The easiest way to deploy this Next.js application is using [Vercel](https://ver
 
 GitHub Pages requires static export, which has limitations with this app:
 
-- Dynamic routes (`/reader/[id]`) require `generateStaticParams()` 
+- Dynamic routes (`/reader/[id]`) require `generateStaticParams()`
 - Since data is in localStorage, pages cannot be pre-generated
 - Limited functionality compared to Vercel deployment
 

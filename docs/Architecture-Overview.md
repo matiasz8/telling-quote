@@ -4,7 +4,7 @@ Technical overview of tellingQuote's architecture, design patterns, and componen
 
 ## System Architecture
 
-```
+```bash
 ┌─────────────────────────────────────────────┐
 │           Next.js App Router                │
 ├─────────────────────────────────────────────┤
@@ -63,7 +63,7 @@ Technical overview of tellingQuote's architecture, design patterns, and componen
 
 ### Creating a Reading
 
-```
+```bash
 User Input (Markdown)
     ↓
 NewReadingModal
@@ -81,7 +81,7 @@ Dashboard re-renders with new reading
 
 ### Viewing a Reading
 
-```
+```bash
 User clicks ReadingCard
     ↓
 Navigate to /reader/[id]
@@ -97,7 +97,7 @@ Render current slide with navigation
 
 ### Changing Settings
 
-```
+```bash
 User opens SettingsModal
     ↓
 Select font/size/theme
@@ -118,6 +118,7 @@ All components re-render with new theme
 #### `app/page.tsx` - Dashboard
 
 **Features**:
+
 - Tab-based organization (Active/Completed)
 - Lists all saved readings in responsive grid
 - Grid layout (responsive 1-4 columns)
@@ -127,6 +128,7 @@ All components re-render with new theme
 - Reading counters per tab
 
 **State Management**:
+
 - `readings`: All Reading objects
 - `completedReadings`: Array of completed reading IDs
 - `activeTab`: Current tab ('active' | 'completed')
@@ -135,6 +137,7 @@ All components re-render with new theme
 #### `app/reader/[id]/page.tsx` - Reader
 
 **Features**:
+
 - Dynamic route for reading content
 - Processes markdown into slides
 - Keyboard and touch navigation
@@ -145,6 +148,7 @@ All components re-render with new theme
 - Automatic completion tracking
 
 **Navigation Controls**:
+
 - Arrow keys (← → ↑ ↓)
 - Touch swipe gestures (mobile)
 - Mouse wheel scrolling
@@ -153,6 +157,7 @@ All components re-render with new theme
 - Finish reading button (on last slide)
 
 #### `app/layout.tsx` - Root Layout
+
 - Global HTML structure
 - Metadata configuration
 - Font loading (Geist Sans & Mono)
@@ -161,6 +166,7 @@ All components re-render with new theme
 ### UI Components
 
 #### `Header.tsx`
+
 - Application branding
 - GitHub repository link
 - Settings button
@@ -169,6 +175,7 @@ All components re-render with new theme
 #### `ReadingCard.tsx`
 
 **Features**:
+
 - Displays reading in grid
 - Visual pending indicator (colored dot)
 - Edit/delete hover actions
@@ -177,6 +184,7 @@ All components re-render with new theme
 - Completion status display
 
 **Props**:
+
 - `reading`: Reading object
 - `onEdit`: Edit callback
 - `onDelete`: Delete callback
@@ -184,6 +192,7 @@ All components re-render with new theme
 - `isCompleted`: Completion status
 
 #### `SettingsModal.tsx`
+
 - Font family selection (4 options)
 - Font size selection (4 options)
 - Theme toggle (light/dark)
@@ -191,22 +200,26 @@ All components re-render with new theme
 - Persistent settings
 
 #### `NewReadingModal.tsx`
+
 - Title input
 - Markdown content textarea
 - Markdown formatting on save
 - Validation
 
 #### `EditTitleModal.tsx`
+
 - Simple title editor
 - Keyboard shortcuts (Enter/Escape)
 - Inline validation
 
 #### `ConfirmDeleteModal.tsx`
+
 - Deletion confirmation
 - Visual warning indicators
 - Keyboard navigation
 
 #### `CodeBlock.tsx`
+
 - Syntax-aware display
 - Copy to clipboard
 - Language label
@@ -219,6 +232,7 @@ All components re-render with new theme
 **Purpose**: Persist state in browser storage with React integration
 
 **Features**:
+
 - Type-safe localStorage wrapper
 - SSR-compatible initialization
 - Cross-component synchronization
@@ -226,11 +240,13 @@ All components re-render with new theme
 - Storage event listening (cross-tab sync)
 
 **Usage**:
+
 ```typescript
 const [value, setValue] = useLocalStorage<T>('key', defaultValue);
 ```
 
 **Implementation Details**:
+
 - Lazy initialization for SSR compatibility
 - Custom events for same-page sync
 - Storage events for cross-tab sync
@@ -241,11 +257,13 @@ const [value, setValue] = useLocalStorage<T>('key', defaultValue);
 **Purpose**: Manage application settings
 
 **Features**:
+
 - Default settings fallback
 - Type-safe settings object
 - Built on useLocalStorage
 
 **Default Settings**:
+
 ```typescript
 {
   fontFamily: 'serif',
@@ -263,6 +281,7 @@ const [value, setValue] = useLocalStorage<T>('key', defaultValue);
 **Key Function**: `processContent(title: string, content: string): ProcessedText[]`
 
 **Processing Steps**:
+
 1. Split content by headings (`##`)
 2. Identify code blocks (```)
 3. Process lists (bullets and numbers)
@@ -271,6 +290,7 @@ const [value, setValue] = useLocalStorage<T>('key', defaultValue);
 6. Generate unique IDs for each slide
 
 **Output**: Array of `ProcessedText` objects with:
+
 - `id`: Unique identifier
 - `title`: Main title
 - `subtitle`: Section heading
@@ -287,6 +307,7 @@ const [value, setValue] = useLocalStorage<T>('key', defaultValue);
 **Purpose**: Clean markdown before storage
 
 **Features**:
+
 - Remove empty lines within lists
 - Preserve paragraph spacing
 - Clean up extra whitespace
@@ -296,6 +317,7 @@ const [value, setValue] = useLocalStorage<T>('key', defaultValue);
 **Purpose**: Map settings to Tailwind classes
 
 **Functions**:
+
 - `getFontFamilyClass()`: Font to CSS class
 - `getFontSizeClasses()`: Size to responsive classes
 - `getThemeClasses()`: Theme to color classes
@@ -307,6 +329,7 @@ const [value, setValue] = useLocalStorage<T>('key', defaultValue);
 **Purpose**: Centralized theme configuration for consistent styling
 
 **Configuration Sections**:
+
 ```typescript
 export const theme = {
   inlineCode: {
@@ -336,12 +359,14 @@ export const theme = {
 ### `lib/constants/`
 
 #### `settings.ts`
+
 - `FONT_FAMILY_OPTIONS`: Available font families
 - `FONT_SIZE_OPTIONS`: Available font sizes
 - `THEME_OPTIONS`: Light/Dark themes
 - `DEFAULT_SETTINGS`: Default user preferences
 
 #### `storage.ts`
+
 - `STORAGE_KEYS`: localStorage key names
   - `READINGS`: 'readings'
   - `SETTINGS`: 'settings'
@@ -349,6 +374,7 @@ export const theme = {
   - `CHANGE`: 'local-storage-change'
 
 #### `navigation.ts`
+
 - `NAVIGATION_KEYS`: Keyboard shortcuts
   - `NEXT`: ['ArrowRight', 'ArrowDown']
   - `PREVIOUS`: ['ArrowLeft', 'ArrowUp']
@@ -440,6 +466,7 @@ export interface Settings {
 ```
 
 **Storage Keys:**
+
 - `readings`: Array of Reading objects
 - `settings`: User preferences (font, size, theme)
 - `completedReadings`: Array of reading IDs marked as completed
@@ -463,12 +490,14 @@ export interface Settings {
 ### Theme System
 
 **Light Theme**:
+
 - Background: Yellow → Lime → Emerald gradient
 - Text: Gray-900
 - Cards: White with light borders
 - Header: Yellow-100 → Lime-100 gradient
 
 **Dark Theme**:
+
 - Background: Purple → Gray → Black gradient
 - Text: Gray-100
 - Cards: Gray-800 with dark borders
