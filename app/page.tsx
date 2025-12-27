@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import NewReadingModal from '@/components/NewReadingModal';
 import EditTitleModal from '@/components/EditTitleModal';
@@ -10,6 +10,7 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useSettings } from '@/hooks/useSettings';
 import { Reading } from '@/types';
 import { STORAGE_KEYS } from '@/lib/constants';
+import { EXAMPLE_READING, EXAMPLE_READING_ID } from '@/lib/constants/exampleReading';
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,6 +22,24 @@ export default function Home() {
   const [completedReadings] = useLocalStorage<string[]>('completedReadings', []);
   const [activeTab, setActiveTab] = useLocalStorage<'active' | 'completed'>('dashboardTab', 'active');
   const { settings } = useSettings();
+
+  // Auto-create example reading on first load
+  useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return;
+
+    // Check if readings is empty and example hasn't been dismissed
+    const hasReadings = readings.length > 0;
+    const exampleDismissed = localStorage.getItem(STORAGE_KEYS.EXAMPLE_DISMISSED) === 'true';
+
+    if (!hasReadings && !exampleDismissed) {
+      // Check if example already exists (shouldn't happen, but safety check)
+      const exampleExists = readings.some(r => r.id === EXAMPLE_READING_ID);
+      if (!exampleExists) {
+        setReadings([EXAMPLE_READING]);
+      }
+    }
+  }, []); // Only run once on mount
 
   // Filter readings based on active tab
   const activeReadings = readings.filter(r => !completedReadings.includes(r.id));
@@ -52,6 +71,12 @@ export default function Home() {
 
   const handleDeleteConfirm = () => {
     if (!deletingReading) return;
+    
+    // If deleting the example reading, mark it as dismissed
+    if (deletingReading.id === EXAMPLE_READING_ID) {
+      localStorage.setItem(STORAGE_KEYS.EXAMPLE_DISMISSED, 'true');
+    }
+    
     setReadings((prev) => prev.filter((r) => r.id !== deletingReading.id));
     setIsDeleteModalOpen(false);
     setDeletingReading(null);
@@ -181,6 +206,7 @@ export default function Home() {
                 onDelete={handleDelete}
                 isDark={settings.theme === 'dark'}
                 isCompleted={completedReadings.includes(reading.id)}
+                isExample={reading.id === EXAMPLE_READING_ID}
               />
             ))}
           </div>

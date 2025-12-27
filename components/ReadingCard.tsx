@@ -9,9 +9,10 @@ interface ReadingCardProps {
   onDelete: (reading: Reading) => void;
   isDark?: boolean;
   isCompleted?: boolean;
+  isExample?: boolean;
 }
 
-export default function ReadingCard({ reading, onEdit, onDelete, isDark = false, isCompleted = false }: ReadingCardProps) {
+export default function ReadingCard({ reading, onEdit, onDelete, isDark = false, isCompleted = false, isExample = false }: ReadingCardProps) {
   const handleEditClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -36,8 +37,27 @@ export default function ReadingCard({ reading, onEdit, onDelete, isDark = false,
         />
       )}
       
+      {/* Example badge */}
+      {isExample && (
+        <div 
+          className={`absolute top-3 ${!isCompleted ? 'left-8' : 'left-3'} px-2 py-0.5 rounded text-xs font-bold ${
+            isDark 
+              ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' 
+              : 'bg-yellow-100 text-yellow-700 border border-yellow-300'
+          } shadow-sm`}
+          title="Example reading"
+        >
+          Example
+        </div>
+      )}
+      
       <Link href={`/reader/${reading.id}`} className="block">
-        <h3 className={`text-lg font-semibold ${isDark ? 'text-gray-100' : 'text-gray-900'} line-clamp-2 ${!isCompleted ? 'pl-6' : ''} pr-8`}>{reading.title}</h3>
+        <h3 className={`text-lg font-semibold ${isDark ? 'text-gray-100' : 'text-gray-900'} line-clamp-2 ${
+          !isCompleted && isExample ? 'pl-24' : // Pending indicator + badge
+          !isCompleted && !isExample ? 'pl-6' : // Pending indicator only
+          isCompleted && isExample ? 'pl-20' : // Badge only
+          '' // No padding needed
+        } pr-8`}>{reading.title}</h3>
       </Link>
       <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
         <button
