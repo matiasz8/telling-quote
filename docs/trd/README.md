@@ -12,7 +12,7 @@ This directory contains Technical Requirements Documents for tellingQuote featur
 
 | TRD | Feature | PRD | Status | Priority |
 |-----|---------|-----|--------|----------|
-| [TRD-001](./TRD-001-example-document.md) | Example Document Implementation | [PRD-001](../prd/PRD-001-example-document.md) | 📝 Draft | High |
+| [TRD-001](./TRD-001-example-document.md) | Example Document Implementation | [PRD-001](../prd/PRD-001-example-document.md) | ✔️ Completed | High |
 | [TRD-002](./TRD-002-tags-system.md) | Tags System Implementation | [PRD-002](../prd/PRD-002-tags-system.md) | 📝 Draft | High |
 | [TRD-003](./TRD-003-detox-theme.md) | Detox Theme Implementation | [PRD-003](../prd/PRD-003-detox-theme.md) | 📝 Draft | Medium |
 | [TRD-004](./TRD-004-accessibility.md) | Accessibility Implementation | [PRD-004](../prd/PRD-004-accessibility.md) | 📝 Draft | High |
