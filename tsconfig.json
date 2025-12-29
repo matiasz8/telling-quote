@@ -8,17 +8,17 @@
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "node",             // 1. Cambiado de 'bundler' a 'node' para mejor compatibilidad
+    "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",                      // 2. Cambiado a 'preserve' (Recomendado para Next.js)
+    "jsx": "preserve",
     "incremental": true,
     "plugins": [
       {
         "name": "next"
       }
     ],
-    "baseUrl": ".",                         // 3. ¡IMPORTANTE! Añade esta línea
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./*"]
     }

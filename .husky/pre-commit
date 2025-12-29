@@ -1,10 +1,10 @@
 #!/usr/bin/env sh
 
-# 1. Chequeo de tipos global (esto es lo que ya te funciona)
+# Run type checking
 echo "🔍 Running TypeScript type check..."
 npm run type-check || exit 1
 
-# 2. Linting y correcciones automáticas solo en archivos staged
+# Run ESLint on staged files
 echo "🧹 Running ESLint on staged files..."
 npx lint-staged || exit 1
 
