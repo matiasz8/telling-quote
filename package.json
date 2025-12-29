@@ -18,7 +18,7 @@
       "eslint --fix"
     ],
     "*.{ts,tsx}": [
-      "tsc --noEmit"
+      "bash -c 'tsc --noEmit'" 
     ]
   },
   "dependencies": {
