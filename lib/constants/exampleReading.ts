@@ -1,6 +1,6 @@
-import { Reading } from '@/types';
+import { Reading } from "@/types";
 
-export const EXAMPLE_READING_ID = 'example-reading-v1';
+export const EXAMPLE_READING_ID = "example-reading-v1";
 
 const EXAMPLE_MARKDOWN_CONTENT = `# Ejemplo Completo de Markdown - tellingQuote
 
@@ -256,7 +256,7 @@ $$f(x) = \\begin{cases} x^2 & \\text{if } x \\geq 0 \\\\ -x & \\text{if } x < 0 
 
 export const EXAMPLE_READING: Reading = {
   id: EXAMPLE_READING_ID,
-  title: 'Welcome to tellingQuote - Example Reading',
+  title: "Welcome to tellingQuote - Example Reading",
   content: EXAMPLE_MARKDOWN_CONTENT,
 };
 
@@ -266,5 +266,3 @@ export const EXAMPLE_READING: Reading = {
 export function isExampleReading(reading: Reading | null | undefined): boolean {
   return reading?.id === EXAMPLE_READING_ID;
 }
-
-
