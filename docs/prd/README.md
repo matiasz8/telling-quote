@@ -12,7 +12,7 @@ This directory contains Product Requirements Documents for tellingQuote features
 
 | PRD | Feature | Status | Priority |
 |-----|---------|--------|----------|
-| [PRD-001](./PRD-001-example-document.md) | Example Document on First Load | 📝 Draft | High |
+| [PRD-001](./PRD-001-example-document.md) | Example Document on First Load | ✔️ Completed | High |
 | [PRD-002](./PRD-002-tags-system.md) | Tags System | 📝 Draft | High |
 | [PRD-003](./PRD-003-detox-theme.md) | Detox Theme Mode | 📝 Draft | Medium |
 | [PRD-004](./PRD-004-accessibility.md) | Accessibility Features | 📝 Draft | High |

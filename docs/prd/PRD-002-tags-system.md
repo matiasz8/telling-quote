@@ -328,4 +328,18 @@ function getTagColor(tagName: string, isDark: boolean): string {
 ## Related Documents
 
 - [TRD-002: Tags System Implementation](../trd/TRD-002-tags-system.md)
-- [PRD-001: Example Document](./PRD-001-example-document.md) (example should have tags)
+- [PRD-001: Example Document](./PRD-001-example-document.md) (example will be updated with tags after this PRD is implemented)
+
+## Implementation Notes
+
+### Example Reading Integration
+
+After implementing the tags system, the example reading from PRD-001 should be updated to include example tags demonstrating the tagging feature. This will help new users understand how tags work.
+
+**Proposed tags for example reading**:
+- `tutorial`
+- `markdown`
+- `example`
+- `getting-started`
+
+This update will be done as part of PRD-002 implementation, not as a separate task.
