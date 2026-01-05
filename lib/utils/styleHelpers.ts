@@ -1,13 +1,16 @@
 import { FontFamily, FontSize, Theme } from '@/types';
 
 export const getFontFamilyClass = (fontFamily: FontFamily): string => {
-  const classes = {
+  const classes: Record<FontFamily, string> = {
     serif: 'font-serif',
     sans: 'font-sans',
     mono: 'font-mono',
     system: '',
+    opendyslexic: 'font-opendyslexic',
+    'comic-sans': 'font-comic-sans',
+    atkinson: 'font-atkinson',
   };
-  return classes[fontFamily];
+  return classes[fontFamily] || '';
 };
 
 export const getFontSizeClasses = (fontSize: FontSize) => {
