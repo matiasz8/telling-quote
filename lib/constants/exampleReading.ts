@@ -258,6 +258,7 @@ export const EXAMPLE_READING: Reading = {
   id: EXAMPLE_READING_ID,
   title: "Welcome to tellingQuote - Example Reading",
   content: EXAMPLE_MARKDOWN_CONTENT,
+  tags: ["tutorial", "markdown", "example", "getting-started"],
 };
 
 /**

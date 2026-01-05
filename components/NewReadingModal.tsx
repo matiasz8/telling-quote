@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Reading } from "@/types";
-import { formatMarkdown } from "@/lib/utils";
+import { formatMarkdown, normalizeTags } from "@/lib/utils";
 
 interface NewReadingModalProps {
   isOpen: boolean;
@@ -17,6 +17,7 @@ export default function NewReadingModal({
 }: NewReadingModalProps) {
   const [text, setText] = useState("");
   const [titleInput, setTitleInput] = useState("");
+  const [tagsInput, setTagsInput] = useState("");
   const [error, setError] = useState<string | null>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
 
@@ -67,11 +68,13 @@ export default function NewReadingModal({
       id: crypto.randomUUID(),
       title: derivedTitle || "Untitled",
       content: formattedContent,
+      tags: normalizeTags(tagsInput),
     };
 
     onSave(newReading);
     setText("");
     setTitleInput("");
+    setTagsInput("");
     setError(null);
     onClose();
   };
@@ -79,6 +82,7 @@ export default function NewReadingModal({
   const handleCancel = () => {
     setText("");
     setTitleInput("");
+    setTagsInput("");
     setError(null);
     onClose();
   };
@@ -102,6 +106,26 @@ export default function NewReadingModal({
           className="w-full mb-4 p-3 border border-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400 text-gray-700"
           placeholder="Add a title"
         />
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Tags (optional)
+          </label>
+          <input
+            type="text"
+            value={tagsInput}
+            onChange={(e) => {
+              setTagsInput(e.target.value);
+              if (error) {
+                setError(null);
+              }
+            }}
+            placeholder="javascript, react, tutorial"
+            className="w-full p-3 border border-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400 text-gray-700"
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            Separate tags with commas. Max 5 tags, 20 characters each.
+          </p>
+        </div>
         {error && <p className="text-sm text-red-600 mb-2">{error}</p>}
         <textarea
           value={text}

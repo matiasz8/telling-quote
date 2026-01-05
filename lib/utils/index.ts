@@ -2,3 +2,4 @@
 export * from './textProcessor';
 export * from './markdownFormatter';
 export * from './styleHelpers';
+export * from './tagHelpers';

@@ -79,11 +79,13 @@ export default function Home() {
     setIsEditModalOpen(true);
   };
 
-  const handleEditSave = (newTitle: string) => {
+  const handleEditSave = (newTitle: string, newTags: string[] = []) => {
     if (!editingReading) return;
     setReadings((prev) =>
       prev.map((r) =>
-        r.id === editingReading.id ? { ...r, title: newTitle } : r
+        r.id === editingReading.id
+          ? { ...r, title: newTitle, tags: newTags }
+          : r
       )
     );
     setIsEditModalOpen(false);
@@ -347,6 +349,7 @@ export default function Home() {
           key={editingReading.id}
           isOpen={isEditModalOpen}
           currentTitle={editingReading.title}
+          currentTags={editingReading.tags}
           onClose={() => {
             setIsEditModalOpen(false);
             setEditingReading(null);

@@ -2,6 +2,7 @@ export type Reading = {
   id: string;
   title: string;
   content: string;
+  tags?: string[]; // Optional, default empty array
 };
 
 export type FontFamily = 'serif' | 'sans' | 'mono' | 'system';

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Reading } from "@/types";
+import { getTagColor } from "@/lib/utils";
 
 interface ReadingCardProps {
   reading: Reading;
@@ -80,6 +81,34 @@ export default function ReadingCard({
         >
           {reading.title}
         </h3>
+        {/* Tags */}
+        {reading.tags && reading.tags.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-2 mb-2">
+            {reading.tags.slice(0, 3).map((tag, index) => (
+              <span
+                key={index}
+                className={`px-2 py-1 rounded-full text-xs font-medium ${
+                  isDark
+                    ? `${getTagColor(tag, true)} text-white`
+                    : `${getTagColor(tag, false)} text-white`
+                }`}
+              >
+                🏷️ {tag}
+              </span>
+            ))}
+            {reading.tags.length > 3 && (
+              <span
+                className={`px-2 py-1 rounded-full text-xs font-medium ${
+                  isDark
+                    ? "bg-gray-700 text-gray-300"
+                    : "bg-gray-200 text-gray-700"
+                }`}
+              >
+                +{reading.tags.length - 3} more
+              </span>
+            )}
+          </div>
+        )}
       </Link>
       <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
         <button

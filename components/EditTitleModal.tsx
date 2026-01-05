@@ -1,21 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { normalizeTags } from "@/lib/utils";
 
 interface EditTitleModalProps {
   isOpen: boolean;
   currentTitle: string;
+  currentTags?: string[];
   onClose: () => void;
-  onSave: (newTitle: string) => void;
+  onSave: (newTitle: string, newTags: string[]) => void;
 }
 
 export default function EditTitleModal({
   isOpen,
   currentTitle,
+  currentTags,
   onClose,
   onSave,
 }: EditTitleModalProps) {
   const [title, setTitle] = useState(currentTitle);
+  const [tagsInput, setTagsInput] = useState(currentTags?.join(", ") || "");
+
+  // Update title and tags when current values change
+  useEffect(() => {
+    setTitle(currentTitle);
+  }, [currentTitle]);
+
+  useEffect(() => {
+    setTagsInput(currentTags?.join(", ") || "");
+  }, [currentTags]);
 
   if (!isOpen) return null;
 
@@ -32,13 +45,14 @@ export default function EditTitleModal({
       return;
     }
     
-    onSave(trimmedTitle);
+    onSave(trimmedTitle, normalizeTags(tagsInput));
     onClose();
   };
 
   const handleCancel = () => {
-    // Reset to current title on cancel
+    // Reset to current title and tags on cancel
     setTitle(currentTitle);
+    setTagsInput(currentTags?.join(", ") || "");
     onClose();
   };
 
@@ -63,6 +77,18 @@ export default function EditTitleModal({
           placeholder="Enter title"
           autoFocus
         />
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Tags (optional)
+          </label>
+          <input
+            type="text"
+            value={tagsInput}
+            onChange={(e) => setTagsInput(e.target.value)}
+            placeholder="javascript, react, tutorial"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400 text-gray-700"
+          />
+        </div>
         <div className="flex gap-4">
           <button
             onClick={handleSave}
