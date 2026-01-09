@@ -261,3 +261,37 @@ html.high-contrast-theme article {
   border: 2px solid #ffffff;
   color: #ffffff;
 }
+/* ===== Focus Mode Styles ===== */
+/* When focus mode is enabled, dim everything except main content */
+body.focus-mode {
+  --focus-mode-dim-opacity: 0.4;
+}
+
+body.focus-mode header {
+  opacity: var(--focus-mode-dim-opacity);
+  pointer-events: none;
+}
+
+body.focus-mode footer {
+  opacity: var(--focus-mode-dim-opacity);
+  pointer-events: none;
+}
+
+/* Highlight the main reader content container */
+body.focus-mode #reader-main-content {
+  opacity: 1;
+  pointer-events: auto;
+  position: relative;
+  z-index: 10;
+}
+
+body.focus-mode .sticky {
+  opacity: var(--focus-mode-dim-opacity);
+  pointer-events: none;
+}
+
+/* Allow navigation buttons in progress bar to still work */
+body.focus-mode .sticky.top-0 a {
+  opacity: 1;
+  pointer-events: auto;
+}
