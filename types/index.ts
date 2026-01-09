@@ -17,6 +17,8 @@ export type LineHeightOption = 'compact' | 'normal' | 'relaxed' | 'loose';
 
 export type WordSpacing = 'normal' | 'wide';
 
+export type ContentWidth = 'narrow' | 'medium' | 'wide';
+
 export type AccessibilitySettings = {
   fontFamily: FontFamily;
   letterSpacing: LetterSpacing;
@@ -24,6 +26,8 @@ export type AccessibilitySettings = {
   wordSpacing: WordSpacing;
   highContrast: boolean;
   reduceMotion: boolean;
+  contentWidth?: ContentWidth;
+  focusMode?: boolean;
 };
 
 export type Settings = {

@@ -63,6 +63,8 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
     wordSpacing: 'normal',
     highContrast: false,
     reduceMotion: false,
+    contentWidth: 'medium',
+    focusMode: false,
   };
 
   const handleFontFamilyChange = (fontFamily: FontFamily) => {
@@ -341,6 +343,63 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                   className="w-4 h-4 cursor-pointer"
                 />
                 <span className="text-sm">Reduce Motion & Animations</span>
+              </label>
+
+              {/* Content Width */}
+              <div>
+                <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
+                  Content Width
+                </label>
+                <div className="space-y-2">
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="contentWidth"
+                      value="narrow"
+                      checked={accessibility.contentWidth === 'narrow'}
+                      onChange={() => handleAccessibilityChange('contentWidth', 'narrow')}
+                      aria-label="Content width: Narrow (45 characters)"
+                      className="w-4 h-4 cursor-pointer"
+                    />
+                    <span className="text-sm">Narrow (45 chars) - Better for reading</span>
+                  </label>
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="contentWidth"
+                      value="medium"
+                      checked={accessibility.contentWidth === 'medium' || !accessibility.contentWidth}
+                      onChange={() => handleAccessibilityChange('contentWidth', 'medium')}
+                      aria-label="Content width: Medium (65 characters)"
+                      className="w-4 h-4 cursor-pointer"
+                    />
+                    <span className="text-sm">Medium (65 chars) - Default</span>
+                  </label>
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="contentWidth"
+                      value="wide"
+                      checked={accessibility.contentWidth === 'wide'}
+                      onChange={() => handleAccessibilityChange('contentWidth', 'wide')}
+                      aria-label="Content width: Wide (80 characters)"
+                      className="w-4 h-4 cursor-pointer"
+                    />
+                    <span className="text-sm">Wide (80 chars) - More content visible</span>
+                  </label>
+                </div>
+              </div>
+
+              {/* Focus Mode Toggle */}
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={accessibility.focusMode}
+                  onChange={(e) => handleAccessibilityChange('focusMode', e.target.checked)}
+                  aria-label="Enable focus mode to dim UI except current content"
+                  className="w-4 h-4 cursor-pointer"
+                />
+                <span className="text-sm">Focus Mode - Dim UI, focus on content</span>
               </label>
             </div>
           )}
