@@ -519,6 +519,23 @@ export default function ReaderPage() {
 
   return (
     <div ref={pageRef} className={`min-h-screen ${themeClasses.bg} ${fontFamilyClass}`}>
+      {/* Skip link for keyboard navigation */}
+      <a
+        href="#reader-main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-50 focus:bg-black focus:text-white focus:p-4 focus:rounded-b"
+      >
+        Skip to main reading content
+      </a>
+
+      {/* Live region for screen reader announcements */}
+      <div
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+        role="status"
+      >
+        Slide {safeIndex + 1} of {processedText.length}. {currentSentence?.title || ''}
+      </div>
       {/* Progress Bar */}
       <div className={`sticky top-0 z-10 ${themeClasses.cardBg} border-b ${themeClasses.border} shadow-sm`}>
         <div className="container mx-auto px-4 py-3">
@@ -540,7 +557,7 @@ export default function ReaderPage() {
       </div>
 
       {/* Content */}
-      <div className="container mx-auto px-4 py-12">
+      <div id="reader-main-content" className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8 text-center">
             <h2 className={`${fontSizeClasses.title} font-semibold ${themeClasses.text} mb-2`}>

@@ -18,6 +18,44 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
   if (!isOpen) return null;
 
   const isDark = settings.theme === 'dark';
+  const isDetox = settings.theme === 'detox';
+  const isHighContrast = settings.theme === 'high-contrast';
+  
+  const getBgClass = () => {
+    if (isHighContrast) return 'bg-black text-white border-2 border-white';
+    if (isDetox) return 'bg-white text-gray-900 border border-gray-200';
+    return isDark ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-900';
+  };
+  
+  const getTextClass = () => {
+    if (isHighContrast) return 'text-gray-300';
+    if (isDetox) return 'text-gray-700';
+    return isDark ? 'text-gray-300' : 'text-gray-700';
+  };
+  
+  const getAccentClass = () => {
+    if (isHighContrast) return 'border-white bg-black';
+    if (isDetox) return 'border-gray-200 bg-gray-50';
+    return isDark ? 'border-gray-600 bg-gray-700' : 'border-gray-200 bg-gray-50';
+  };
+  
+  const getActiveAccentClass = () => {
+    if (isHighContrast) return 'border-white bg-white text-black';
+    if (isDetox) return 'border-gray-300 bg-gray-100';
+    return isDark ? 'border-purple-500 bg-purple-900/30' : 'border-emerald-500 bg-emerald-50';
+  };
+  
+  const getHoverClass = () => {
+    if (isHighContrast) return 'hover:bg-white hover:text-black';
+    if (isDetox) return 'hover:bg-gray-50';
+    return isDark ? 'hover:bg-gray-700 hover:text-gray-200' : 'hover:bg-gray-50 hover:text-gray-900';
+  };
+  
+  const getHeaderBgClass = () => {
+    if (isHighContrast) return 'bg-black text-white';
+    if (isDetox) return 'bg-gray-50 text-gray-900';
+    return isDark ? 'bg-purple-900/30 text-purple-300' : 'bg-emerald-50 text-emerald-700';
+  };
   const accessibility = settings.accessibility || {
     fontFamily: settings.fontFamily,
     letterSpacing: 'normal',
@@ -54,13 +92,18 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className={`${isDark ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-900'} rounded-lg shadow-xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto`}>
+      <div
+        className={`${getBgClass()} rounded-lg shadow-xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto`}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="settings-title"
+      >
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">Settings</h2>
+          <h2 id="settings-title" className="text-2xl font-bold">Settings</h2>
           <button
             onClick={onClose}
             aria-label="Close settings"
-            className={`${isDark ? 'text-gray-400 hover:text-gray-200' : 'text-gray-400 hover:text-gray-600'} transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 rounded`}
+            className={`${isHighContrast ? 'text-white hover:text-black' : isDetox ? 'text-gray-400 hover:text-gray-600' : isDark ? 'text-gray-400 hover:text-gray-200' : 'text-gray-400 hover:text-gray-600'} transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 rounded`}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -74,8 +117,8 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
             onClick={() => setExpandedSection(expandedSection === 'general' ? 'accessibility' : 'general')}
             className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors ${
               expandedSection === 'general'
-                ? isDark ? 'bg-purple-900/30 text-purple-300' : 'bg-emerald-50 text-emerald-700'
-                : isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-50'
+                ? getHeaderBgClass()
+                : getHoverClass()
             }`}
             aria-expanded={expandedSection === 'general'}
             aria-label="General settings section"
@@ -90,7 +133,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
             <div className="mt-4 space-y-6">
               {/* Font Family */}
               <div>
-                <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-3`}>
+                <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
                   Font Family
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -101,12 +144,8 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                       aria-label={`Select ${option.label} font`}
                       className={`p-3 border-2 rounded-lg transition-all duration-200 ${option.className} ${
                         settings.fontFamily === option.value
-                          ? isDark
-                            ? 'border-purple-500 bg-purple-900/30 shadow-md'
-                            : 'border-emerald-500 bg-emerald-50 shadow-md'
-                          : isDark
-                          ? 'border-gray-600 hover:border-gray-500 bg-gray-700'
-                          : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                          ? getActiveAccentClass()
+                          : getAccentClass()
                       }`}
                     >
                       {option.label}
@@ -117,7 +156,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
 
               {/* Font Size */}
               <div>
-                <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-3`}>
+                <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
                   Font Size
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -128,12 +167,8 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                       aria-label={`Select ${option.label} font size`}
                       className={`p-3 border-2 rounded-lg transition-all duration-200 ${
                         settings.fontSize === option.value
-                          ? isDark
-                            ? 'border-purple-500 bg-purple-900/30 shadow-md'
-                            : 'border-emerald-500 bg-emerald-50 shadow-md'
-                          : isDark
-                          ? 'border-gray-600 hover:border-gray-500 bg-gray-700'
-                          : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                          ? getActiveAccentClass()
+                          : getAccentClass()
                       }`}
                     >
                       {option.label}
@@ -144,7 +179,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
 
               {/* Theme */}
               <div>
-                <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-3`}>
+                <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
                   Theme
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -155,12 +190,8 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                       aria-label={`Select ${option.label} theme`}
                       className={`p-3 border-2 rounded-lg transition-all duration-200 ${
                         settings.theme === option.value
-                          ? isDark
-                            ? 'border-purple-500 bg-purple-900/30 shadow-md'
-                            : 'border-emerald-500 bg-emerald-50 shadow-md'
-                          : isDark
-                          ? 'border-gray-600 hover:border-gray-500 bg-gray-700'
-                          : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                          ? getActiveAccentClass()
+                          : getAccentClass()
                       }`}
                     >
                       {option.label}
@@ -178,8 +209,8 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
             onClick={() => setExpandedSection(expandedSection === 'accessibility' ? 'general' : 'accessibility')}
             className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors ${
               expandedSection === 'accessibility'
-                ? isDark ? 'bg-purple-900/30 text-purple-300' : 'bg-emerald-50 text-emerald-700'
-                : isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-50'
+                ? getHeaderBgClass()
+                : getHoverClass()
             }`}
             aria-expanded={expandedSection === 'accessibility'}
             aria-label="Accessibility settings section"
@@ -194,7 +225,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
             <div className="mt-4 space-y-6">
               {/* Dyslexia-friendly Font */}
               <div>
-                <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
+                <label className={`block text-sm font-medium ${getTextClass()} mb-2`}>
                   Dyslexia-Friendly Font
                 </label>
                 <select
@@ -202,7 +233,11 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                   onChange={(e) => handleAccessibilityChange('fontFamily', e.target.value as FontFamily)}
                   aria-label="Select dyslexia-friendly font"
                   className={`w-full p-2 rounded-lg border-2 transition-all ${
-                    isDark
+                    isHighContrast
+                      ? 'bg-black border-white text-white'
+                      : isDetox
+                      ? 'bg-white border-gray-300 text-gray-900'
+                      : isDark
                       ? 'bg-gray-700 border-gray-600 text-gray-100'
                       : 'bg-white border-gray-300 text-gray-900'
                   } focus:outline-none focus:ring-2 focus:ring-purple-500`}
@@ -217,7 +252,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
 
               {/* Letter Spacing */}
               <div>
-                <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-3`}>
+                <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
                   Letter Spacing
                 </label>
                 <div className="space-y-2">
@@ -240,7 +275,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
 
               {/* Line Height */}
               <div>
-                <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-3`}>
+                <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
                   Line Height
                 </label>
                 <div className="space-y-2">
@@ -263,7 +298,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
 
               {/* Word Spacing */}
               <div>
-                <label className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'} mb-3`}>
+                <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
                   Word Spacing
                 </label>
                 <div className="space-y-2">
@@ -311,12 +346,18 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
           )}
         </div>
 
-        <div className="flex justify-end pt-4 border-t border-gray-300 dark:border-gray-700">
+        <div className={`flex justify-end pt-4 border-t ${
+          isHighContrast ? 'border-white' : isDetox ? 'border-gray-300' : 'border-gray-300 dark:border-gray-700'
+        }`}>
           <button
             onClick={onClose}
             aria-label="Close settings modal"
             className={`px-6 py-2.5 rounded-lg transition-all duration-200 font-medium shadow-md hover:shadow-lg ${
-              isDark
+              isHighContrast
+                ? 'bg-white text-black hover:bg-gray-200'
+                : isDetox
+                ? 'bg-gray-200 text-gray-900 hover:bg-gray-300'
+                : isDark
                 ? 'bg-linear-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white'
                 : 'bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white'
             }`}

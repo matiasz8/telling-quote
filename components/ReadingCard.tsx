@@ -42,11 +42,19 @@ export default function ReadingCard({
       {/* Pending indicator - shown when reading is NOT completed */}
       {!isCompleted && (
         <div
-          className={`absolute top-3 left-3 w-3 h-3 rounded-full ${
+          className={`absolute top-3 left-3 w-4 h-4 rounded-full flex items-center justify-center ${
             isDark ? "bg-purple-500" : "bg-lime-500"
-          } shadow-sm`}
+          } shadow-sm border-2 border-current`}
           title="Pending reading"
-        />
+          aria-label="This reading is pending"
+        >
+          {/* Inner ring pattern for color blind support */}
+          <div
+            className={`w-2 h-2 rounded-full ${
+              isDark ? "bg-purple-900" : "bg-lime-900"
+            }`}
+          />
+        </div>
       )}
 
       {/* Example badge */}
@@ -114,6 +122,7 @@ export default function ReadingCard({
         <button
           onClick={handleEditClick}
           className="p-1.5 bg-linear-to-r from-emerald-500 to-teal-500 text-white rounded hover:from-emerald-600 hover:to-teal-600 transition-all duration-200 shadow-sm"
+          aria-label={`Edit reading title: ${reading.title}`}
           title="Edit title"
         >
           <svg
@@ -133,6 +142,7 @@ export default function ReadingCard({
         <button
           onClick={handleDeleteClick}
           className="p-1.5 bg-linear-to-r from-red-500 to-rose-500 text-white rounded hover:from-red-600 hover:to-rose-600 transition-all duration-200 shadow-sm"
+          aria-label={`Delete reading: ${reading.title}`}
           title="Delete reading"
         >
           <svg
