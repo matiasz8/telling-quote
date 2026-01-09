@@ -169,3 +169,95 @@ html.reduce-motion *::after {
   word-spacing: 0.1em;
 }
 
+/* ===== Theme Styles ===== */
+
+/* Dark Theme */
+html.dark-theme {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+}
+
+html.dark-theme body {
+  background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+  color: #ededed;
+}
+
+html.dark-theme header {
+  background: linear-gradient(to right, #1a0f2e 0%, #0a0a0a 100%);
+  border-color: #3d2645;
+}
+
+html.dark-theme button {
+  color: #ededed;
+}
+
+/* Detox Theme */
+html.detox-theme {
+  --background: #ffffff;
+  --foreground: #111827;
+}
+
+html.detox-theme body {
+  background: #ffffff;
+  color: #111827;
+}
+
+html.detox-theme header {
+  background: #ffffff;
+  border-color: #e5e7eb;
+}
+
+html.detox-theme button {
+  color: #111827;
+  border-color: #e5e7eb;
+  background: #f9fafb;
+}
+
+html.detox-theme button:hover {
+  background: #f3f4f6;
+}
+
+html.detox-theme .card,
+html.detox-theme article {
+  background: #f9fafb;
+  border-color: #e5e7eb;
+}
+
+/* High Contrast Theme */
+html.high-contrast-theme {
+  --background: #000000;
+  --foreground: #ffffff;
+}
+
+html.high-contrast-theme body {
+  background: #000000;
+  color: #ffffff;
+}
+
+html.high-contrast-theme header {
+  background: #000000;
+  border: 2px solid #ffffff;
+}
+
+html.high-contrast-theme button {
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  background: #000000;
+}
+
+html.high-contrast-theme button:hover {
+  background: #ffffff;
+  color: #000000;
+}
+
+html.high-contrast-theme button:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+html.high-contrast-theme .card,
+html.high-contrast-theme article {
+  background: #000000;
+  border: 2px solid #ffffff;
+  color: #ffffff;
+}

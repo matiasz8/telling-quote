@@ -35,10 +35,16 @@ export default function RootLayout({
               (function() {
                 try {
                   const settings = JSON.parse(localStorage.getItem('settings') || '{}');
+                  const root = document.documentElement;
                   
                   // Apply theme
+                  root.classList.remove('dark-theme', 'detox-theme', 'high-contrast-theme');
                   if (settings.theme === 'dark') {
-                    document.documentElement.classList.add('dark-theme');
+                    root.classList.add('dark-theme');
+                  } else if (settings.theme === 'detox') {
+                    root.classList.add('detox-theme');
+                  } else if (settings.theme === 'high-contrast') {
+                    root.classList.add('high-contrast-theme');
                   }
                   
                   // Apply accessibility settings
@@ -46,7 +52,7 @@ export default function RootLayout({
                   
                   // Apply font family
                   if (a11y.fontFamily) {
-                    document.documentElement.style.fontFamily = getFontFamily(a11y.fontFamily);
+                    root.style.fontFamily = getFontFamily(a11y.fontFamily);
                   }
                   
                   // Apply text spacing
@@ -56,7 +62,7 @@ export default function RootLayout({
                       'wide': '0.05em',
                       'extra-wide': '0.1em'
                     };
-                    document.documentElement.style.letterSpacing = letterSpacingMap[a11y.letterSpacing] || 'normal';
+                    root.style.letterSpacing = letterSpacingMap[a11y.letterSpacing] || 'normal';
                   }
                   
                   if (a11y.lineHeight) {
@@ -66,7 +72,7 @@ export default function RootLayout({
                       'relaxed': '1.8',
                       'loose': '2.0'
                     };
-                    document.documentElement.style.lineHeight = lineHeightMap[a11y.lineHeight] || '1.6';
+                    root.style.lineHeight = lineHeightMap[a11y.lineHeight] || '1.6';
                   }
                   
                   if (a11y.wordSpacing) {
@@ -74,22 +80,22 @@ export default function RootLayout({
                       'normal': 'normal',
                       'wide': '0.1em'
                     };
-                    document.documentElement.style.wordSpacing = wordSpacingMap[a11y.wordSpacing] || 'normal';
+                    root.style.wordSpacing = wordSpacingMap[a11y.wordSpacing] || 'normal';
                   }
                   
                   // Apply high contrast mode
                   if (a11y.highContrast) {
-                    document.documentElement.classList.add('high-contrast');
+                    root.classList.add('high-contrast');
                   }
                   
                   // Apply reduce motion
                   if (a11y.reduceMotion) {
-                    document.documentElement.classList.add('reduce-motion');
+                    root.classList.add('reduce-motion');
                   }
                   
                   // Check for system preference for reduced motion
                   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                    document.documentElement.classList.add('reduce-motion');
+                    root.classList.add('reduce-motion');
                   }
                   
                   // Helper function to get font family
