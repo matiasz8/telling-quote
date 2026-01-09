@@ -66,8 +66,13 @@ export default function EditTitleModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-4 text-gray-600">Edit Title</h2>
+      <div
+        className="bg-white rounded-lg p-6 w-full max-w-md"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="edit-title-heading"
+      >
+        <h2 id="edit-title-heading" className="text-xl font-semibold mb-4 text-gray-600">Edit Title</h2>
         <input
           type="text"
           value={title}
@@ -92,12 +97,14 @@ export default function EditTitleModal({
         <div className="flex gap-4">
           <button
             onClick={handleSave}
+            aria-label="Save title and tags changes"
             className="flex-1 px-4 py-2.5 bg-linear-to-r from-emerald-600 to-teal-600 text-white rounded-lg hover:from-emerald-700 hover:to-teal-700 transition-all duration-200 font-medium shadow-md hover:shadow-lg"
           >
             Save
           </button>
           <button
             onClick={handleCancel}
+            aria-label="Cancel editing"
             className="flex-1 px-4 py-2.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all duration-200 font-medium"
           >
             Cancel
