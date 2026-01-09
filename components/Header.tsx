@@ -132,7 +132,8 @@ export default function Header() {
               }`}
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2 7a2 2 0 012-2h16a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V7z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 11h.01M12 11h.01M18 11h.01" />
               </svg>
             </button>
           </nav>
