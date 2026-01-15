@@ -8,7 +8,7 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useSettings } from '@/hooks/useSettings';
 import { Reading } from '@/types';
 import { processContent, getFontFamilyClass, getFontSizeClasses, getThemeClasses } from '@/lib/utils';
-import { STORAGE_KEYS, NAVIGATION_KEYS, TOUCH_SWIPE_THRESHOLD } from '@/lib/constants';
+import { STORAGE_KEYS, NAVIGATION_KEYS, TOUCH_SWIPE_THRESHOLD, ANNOUNCE_DEBOUNCE_TIME } from '@/lib/constants';
 import confetti from 'canvas-confetti';
 import { theme } from '@/config/theme';
 import CodeBlock from '@/components/CodeBlock';
@@ -328,10 +328,10 @@ export default function ReaderPage() {
       clearTimeout(announceTimeoutRef.current);
     }
 
-    // Set a new timeout to update the announcement after 400ms of no navigation
+    // Set a new timeout to update the announcement after navigation stops
     announceTimeoutRef.current = setTimeout(() => {
       setAnnouncedIndex(currentIndex);
-    }, 400);
+    }, ANNOUNCE_DEBOUNCE_TIME);
 
     // Cleanup on unmount or when currentIndex changes
     return () => {
