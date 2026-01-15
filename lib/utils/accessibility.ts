@@ -4,7 +4,7 @@
  * and ensure consistent behavior.
  */
 
-import type { AccessibilitySettings, FontFamily, LetterSpacing, LineHeightOption, WordSpacing } from '@/types';
+import type { FontFamily, LetterSpacing, LineHeightOption, WordSpacing } from '@/types';
 
 /**
  * Font family mapping - single source of truth
