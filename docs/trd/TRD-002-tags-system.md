@@ -370,13 +370,13 @@ import { getTagColor } from "@/lib/utils/tagHelpers";
 
 ### Phase 2: Type System ✅
 
-2. ✅ Update `types/index.ts`
+1. ✅ Update `types/index.ts`
    - Add `tags?: string[]` to Reading type
    - Ensure backward compatibility
 
 ### Phase 3: Tag Creation ✅
 
-3. ✅ Modify `components/NewReadingModal.tsx`
+1. ✅ Modify `components/NewReadingModal.tsx`
    - Add tags input field
    - Add tagsInput state
    - Normalize tags on save
@@ -384,7 +384,7 @@ import { getTagColor } from "@/lib/utils/tagHelpers";
 
 ### Phase 4: Tag Display ✅
 
-4. ✅ Modify `components/ReadingCard.tsx`
+1. ✅ Modify `components/ReadingCard.tsx`:
    - Import tag helpers
    - Render tag badges
    - Handle empty tags gracefully
@@ -393,25 +393,25 @@ import { getTagColor } from "@/lib/utils/tagHelpers";
 
 ### Phase 5: Tag Editing ✅
 
-5. ✅ Modify `components/EditTitleModal.tsx`
+1. ✅ Modify `components/EditTitleModal.tsx`
    - Add currentTags prop
    - Add tags input field
    - Update onSave signature
    - Normalize tags on save
 
-6. ✅ Update `app/page.tsx`
+2. ✅ Update `app/page.tsx`
    - Update handleEditSave to accept tags
    - Pass currentTags to EditTitleModal
    - Update Reading object with tags
 
 ### Phase 6: Testing & Polish ✅
 
-7. ✅ Test backward compatibility
+1. ✅ Test backward compatibility
    - Verify readings without tags work
    - Test empty tags array
    - Test undefined tags
 
-8. ✅ Test tag validation
+2. ✅ Test tag validation
    - Test max length (20 chars)
    - Test max count (5 tags)
    - Test invalid characters

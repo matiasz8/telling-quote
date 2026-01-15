@@ -86,6 +86,7 @@ So that I can fix tagging inconsistencies without re-tagging everything
 **Where**: Dashboard (Active/Completed tabs)
 
 **Feature**:
+
 - Clickable tag pills at top of dashboard (tag cloud or filter bar)
 - Single tag selection: Show readings with that tag
 - Multi-tag filtering:
@@ -95,16 +96,17 @@ So that I can fix tagging inconsistencies without re-tagging everything
 - Persists selected filters in localStorage
 
 **UI Design**:
-```
+
+```bash
 Dashboard: Active Readings
-┌──────────────────────────────────────┐
-│ 🏷️ Filter by tags:                   │
-│ [javascript] [react] [tutorial] [+more]
-│ [Clear All]                          │
-│                                      │
-│ AND mode: Match all selected tags    │
-│ OR mode:  Match any selected tag     │
-└──────────────────────────────────────┘
+┌────────────────────────────────────────┐
+│ 🏷️ Filter by tags:                     │
+│ [javascript] [react] [tutorial] [+more]│
+│ [Clear All]                            │
+│                                        │
+│ AND mode: Match all selected tags      │
+│ OR mode:  Match any selected tag       │
+└────────────────────────────────────────┘
 ```
 
 #### FR-2: Tag Autocomplete
@@ -112,6 +114,7 @@ Dashboard: Active Readings
 **Where**: NewReadingModal, EditTitleModal
 
 **Feature**:
+
 - Input field shows suggestions as user types
 - Suggestions based on existing tags in library
 - Frequency-weighted (popular tags first)
@@ -120,7 +123,8 @@ Dashboard: Active Readings
 - Arrow keys to select, Enter to add
 
 **Example**:
-```
+
+```bash
 User types: "java"
 Suggestions:
   1. javascript (12 readings)
@@ -133,6 +137,7 @@ User selects "javascript", tag is added
 **Where**: New "Tag Manager" modal (accessible from Settings)
 
 **Features**:
+
 - List all tags in library with:
   - Tag name
   - Usage count (how many readings)
@@ -146,7 +151,8 @@ User selects "javascript", tag is added
 - Search/filter tags in list
 
 **UI Design**:
-```
+
+```bash
 Tag Manager
 ┌────────────────────────────────┐
 │ Tags in Your Library (12 total)│
@@ -167,6 +173,7 @@ Tag Manager
 **Feature**: Rename a tag across all readings simultaneously
 
 **Behavior**:
+
 - User clicks "Rename" on tag in Tag Manager
 - Modal opens: "Rename 'javascript' to..."
 - Confirmation: "This will update 12 readings"
@@ -178,6 +185,7 @@ Tag Manager
 **Feature**: Delete a tag from all readings
 
 **Behavior**:
+
 - User clicks "Delete" on tag in Tag Manager
 - Confirmation modal: "Remove 'javascript' from 12 readings?"
 - On confirm: Tag removed from all readings
@@ -190,6 +198,7 @@ Tag Manager
 **Example**: Merge "javascript", "JS", "js" → "javascript"
 
 **Behavior**:
+
 - User in Tag Manager: "Merge with..."
 - Select target tag
 - "Merge 'js' (3 readings) into 'javascript'?"
@@ -201,6 +210,7 @@ Tag Manager
 **Where**: Dashboard sidebar or below tag filter
 
 **Feature**:
+
 - Show top 5-10 most-used tags
 - Clickable to filter by that tag
 - Visual: larger text = more frequently used (tag cloud style)
@@ -211,12 +221,14 @@ Tag Manager
 **Where**: NewReadingModal, EditTitleModal (optional)
 
 **Feature** (Phase 2.0 - Keyword Based):
+
 - Extract nouns from reading title
 - Match against existing tags
 - Suggest best matches (max 3)
 - User can accept/reject suggestions
 
 **Future** (Phase 2.1 - AI Powered):
+
 - ML model analyzes title + first 100 chars of content
 - Suggests 3-5 relevant tags
 - User can accept/reject suggestions
@@ -268,7 +280,7 @@ Tag Manager
 
 ### Filtering by Tags
 
-```
+```bash
 User views dashboard
     ↓
 Sees tag cloud at top
@@ -292,7 +304,7 @@ Returns to showing all readings
 
 ### Renaming a Tag Globally
 
-```
+```bash
 User clicks Settings
     ↓
 Clicks "Tag Manager" button
@@ -318,7 +330,7 @@ Undo button available (10 seconds)
 
 ### Tag Autocomplete
 
-```
+```bash
 User creates new reading
     ↓
 Enters title + content
@@ -416,6 +428,7 @@ Tag added to reading
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
+
 | Bulk rename/delete slow with 1000+ readings | Medium | Lazy load operations, show progress bar |
 | Users accidentally delete tags | Medium | Clear confirmation + undo window (10s) |
 | Autocomplete too aggressive | Low | Configurable threshold (80%+ match) |
@@ -455,7 +468,7 @@ type FilterState = {
 
 ### Component Structure
 
-```
+```bash
 Dashboard
 ├── TagFilterBar (NEW)
 │   ├── TagPills
@@ -570,6 +583,7 @@ useTagAutocomplete(): {
 
 | Date | Version | Author | Changes |
 |------|---------|--------|---------|
+
 | 2026-01-09 | 0.1 | Agent | Initial draft based on Phase 1 analysis |
 | - | 0.2 | TBD | Stakeholder review and feedback |
 | - | 1.0 | TBD | Approved for Phase 2.0 development |

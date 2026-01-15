@@ -87,6 +87,7 @@ So that I can trust the accessibility isn't just theoretical
 **Where**: GitHub Actions CI/CD pipeline
 
 **Feature**:
+
 - Axe-core runs on every PR and merge
 - Tests all pages (dashboard, reader, accessibility statement)
 - Checks for:
@@ -101,6 +102,7 @@ So that I can trust the accessibility isn't just theoretical
   - Color-only information
 
 **Configuration**:
+
 ```javascript
 // axe-core config
 const config = {
@@ -119,6 +121,7 @@ const config = {
 ```
 
 **Output**:
+
 - JSON report with violations/warnings
 - PR comment with results summary
 - Build failure if violations > threshold (default: 0)
@@ -128,18 +131,21 @@ const config = {
 **Where**: Automated tests + Manual validation
 
 **Automated** (Phase 2.0):
+
 - NVDA accessibility tree inspection
 - Focus order validation
 - ARIA announcement verification
 - Role and label discovery
 
 **Manual** (Phase 2.0 - first pass):
+
 - NVDA testing checklist
 - JAWS testing checklist
 - VoiceOver testing checklist
 - Keyboard navigation validation
 
 **Tools**:
+
 - Selenium + NVDA SDK (Windows)
 - WebAIM NVDA scripts
 - Manual test scripts for JAWS (Mac, Windows)
@@ -150,6 +156,7 @@ const config = {
 **Where**: CI/CD pipeline
 
 **Feature**:
+
 - Lighthouse runs on every build
 - Checks accessibility score (target: 95+/100)
 - Tracks trends over time
@@ -162,6 +169,7 @@ const config = {
   - Page structure
 
 **Output**:
+
 - Lighthouse JSON report
 - Historical tracking dashboard
 - Trends chart
@@ -171,6 +179,7 @@ const config = {
 **Where**: Local dev environment + CI/CD
 
 **Feature**:
+
 - Pa11y CLI runs on all pages
 - WCAG 2.1 AA level testing
 - Multiple browser engines (Chromium, Firefox)
@@ -178,6 +187,7 @@ const config = {
 - Custom rules for project-specific a11y requirements
 
 **Configuration**:
+
 ```javascript
 {
   standard: 'WCAG2AA',
@@ -194,6 +204,7 @@ const config = {
 **Where**: CI/CD + Local
 
 **Feature**:
+
 - Tab order validation
 - Focus visible indicator checking
 - Keyboard-only interaction testing
@@ -201,6 +212,7 @@ const config = {
 - Skip links functionality
 
 **Test Cases**:
+
 - Dashboard: Tab through all elements in order
 - Modal: Tab cycles only within modal
 - Esc: Closes modal
@@ -213,12 +225,14 @@ const config = {
 **Where**: Automated (axe, pa11y, custom)
 
 **Feature**:
+
 - Automated ratio checking against WCAG AA (4.5:1)
 - Theme-aware testing (light, dark, detox, high-contrast)
 - Reporting with actual vs required ratios
 - Visual diff highlighting violations
 
 **Thresholds**:
+
 - Normal text: 4.5:1 (AA) / 7:1 (AAA)
 - Large text: 3:1 (AA) / 4.5:1 (AAA)
 - UI components: 3:1 (AA)
@@ -228,6 +242,7 @@ const config = {
 **Where**: GitHub Releases, Documentation site
 
 **Feature**:
+
 - Generated after each release
 - Includes:
   - WCAG 2.1 AA criteria checklist
@@ -239,6 +254,7 @@ const config = {
   - Roadmap for remaining issues
 
 **Format**:
+
 ```markdown
 # Accessibility Audit Report - v2.0.0
 Date: 2026-02-15
@@ -270,6 +286,7 @@ Date: 2026-02-15
 **Where**: GitHub Actions workflow
 
 **Feature**:
+
 - PR status checks:
   - ✅ Axe-core must pass (0 violations)
   - ✅ Lighthouse a11y score ≥ 95
@@ -280,6 +297,7 @@ Date: 2026-02-15
 - Detailed failure report with remediation steps
 
 **Workflow**:
+
 ```yaml
 name: Accessibility Tests
 on: [pull_request, push]
@@ -322,6 +340,7 @@ jobs:
 **Where**: Developer environments
 
 **Feature**:
+
 - `npm run test:a11y` - Run all accessibility tests locally
 - `npm run test:a11y:axe` - Axe-core only
 - `npm run test:a11y:pa11y` - Pa11y only
@@ -330,6 +349,7 @@ jobs:
 - `npm run a11y:report` - Generate audit report
 
 **Installation**:
+
 ```bash
 npm install --save-dev @axe-core/cli pa11y lighthouse
 npm install --save-dev jest-axe axe-playwright
@@ -381,7 +401,7 @@ npm install --save-dev @testing-library/jest-dom
 
 ### Developer Testing Workflow
 
-```
+```markdown
 Developer makes code change
     ↓
 Runs: npm run test:a11y
@@ -404,7 +424,7 @@ Violations found → Blocked 🚫
 
 ### PR Merge Workflow
 
-```
+```markdown
 Developer submits PR
     ↓
 GitHub Actions: Accessibility Tests Start
@@ -423,7 +443,7 @@ Merge to main
 
 ### Audit Report Generation
 
-```
+```markdown
 Release triggered
     ↓
 All a11y tests run
@@ -515,6 +535,7 @@ Team reviews compliance status
 - **npm scripts** - Add new test commands
 
 **External Tools** (to install):
+
 - axe-core (MIT licensed)
 - pa11y (open source)
 - lighthouse (Google, open source)
@@ -527,6 +548,7 @@ Team reviews compliance status
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
+
 | Too many false positives | High | Tune rules, document overrides |
 | Tests slow down CI/CD | High | Run in parallel, optimize |
 | Developers ignore a11y warnings | High | Merge gates (block on violations) |
@@ -541,7 +563,7 @@ Team reviews compliance status
 
 ### Test Automation Stack
 
-```
+```markdown
 CI/CD Pipeline
 ├── Axe-core
 │   ├── Color contrast checking
@@ -684,6 +706,7 @@ jobs:
 
 | Date | Version | Author | Changes |
 |------|---------|--------|---------|
+
 | 2026-01-09 | 0.1 | Agent | Initial draft - Phase 2 QA requirement |
 | - | 0.2 | TBD | Stakeholder review and feedback |
 | - | 1.0 | TBD | Approved for Phase 2.0 development |

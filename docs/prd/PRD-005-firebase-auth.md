@@ -641,6 +641,7 @@ Must add:
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
+
 | Firebase costs exceed free tier | Medium | Monitor usage, implement pagination |
 | Data loss during migration | High | Thorough testing, backups, rollback plan |
 | Sync conflicts (simultaneous edits) | Medium | Last-write-wins for v1, CRDTs for v2 |

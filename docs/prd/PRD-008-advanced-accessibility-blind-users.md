@@ -77,12 +77,14 @@ While PRD-004 achieves WCAG 2.1 AA compliance, blind and low vision users face s
 **Background**: 22-year-old computer science student, uses JAWS on Windows, experienced with adaptive tech
 
 **Goals**:
+
 - Quickly navigate to and read course materials
 - Take notes by dictating summaries
 - Tag readings for different classes
 - Find readings across devices seamlessly
 
 **Pain Points**:
+
 - Tab navigation through UI is slow
 - JAWS doesn't fully understand app structure
 - Creating notes requires switching tools
@@ -92,17 +94,19 @@ While PRD-004 achieves WCAG 2.1 AA compliance, blind and low vision users face s
 
 ---
 
-### Persona 2: María - Legal Professional (Late-Blind)
+### Persona 2: Lili - Legal Professional (Late-Blind)
 
 **Background**: 45-year-old attorney, lost vision 3 years ago, uses NVDA + VoiceOver, still learning adaptive tech
 
 **Goals**:
+
 - Create case studies and legal briefs
 - Dictate analysis directly into app
 - Access documents across Mac/Windows/iPhone
 - Maintain professional productivity
 
 **Pain Points**:
+
 - Voice dictation requires separate tool
 - Switching between NVDA and app is disorienting
 - Long legal documents exhaust screen reader users
@@ -117,12 +121,14 @@ While PRD-004 achieves WCAG 2.1 AA compliance, blind and low vision users face s
 **Background**: 35-year-old neuroscientist, born blind, uses VoiceOver on Mac, highly technical
 
 **Goals**:
+
 - Navigate complex academic papers efficiently
 - Use keyboard shortcuts for speed
 - Organize research with tags and metadata
 - Export data for analysis
 
 **Pain Points**:
+
 - Generic VoiceOver doesn't optimize for this app
 - No way to quickly jump to paper sections
 - Keyboard shortcuts not discoverable
@@ -143,7 +149,8 @@ While PRD-004 achieves WCAG 2.1 AA compliance, blind and low vision users face s
 **Voice Commands Supported**:
 
 **Navigation**:
-```
+
+```markdown
 "Open dashboard" → Goes to home
 "Go to reading [number]" → Opens nth reading
 "Open settings" → Opens settings modal
@@ -154,7 +161,8 @@ While PRD-004 achieves WCAG 2.1 AA compliance, blind and low vision users face s
 ```
 
 **Content Control**:
-```
+
+```markdown
 "Read this" → Starts text-to-speech
 "Stop reading" → Pauses
 "Resume" / "Continue" → Resumes
@@ -165,7 +173,8 @@ While PRD-004 achieves WCAG 2.1 AA compliance, blind and low vision users face s
 ```
 
 **Editing**:
-```
+
+```markdown
 "Create reading" → Opens new reading modal
 "Title: [text]" → Sets title
 "Add content: [text]" → Adds to content area
@@ -176,7 +185,8 @@ While PRD-004 achieves WCAG 2.1 AA compliance, blind and low vision users face s
 ```
 
 **Search & Filter**:
-```
+
+```markdown
 "Search for [term]" → Opens search
 "Filter by tag: [tag]" → Filters readings
 "Sort by [option]" → Changes sort order
@@ -184,6 +194,7 @@ While PRD-004 achieves WCAG 2.1 AA compliance, blind and low vision users face s
 ```
 
 **Implementation**:
+
 - Uses Web Speech API (Chrome, Edge) + fallback libraries
 - Real-time transcription with feedback
 - Voice confidence threshold (95%+ for critical actions)
@@ -198,6 +209,7 @@ While PRD-004 achieves WCAG 2.1 AA compliance, blind and low vision users face s
 **Features**:
 
 **Basic Reading**:
+
 - Click/voice command "Read this" → Begins narration
 - Natural-sounding voices (not robotic)
 - Multiple voice options (male, female, different accents)
@@ -206,6 +218,7 @@ While PRD-004 achieves WCAG 2.1 AA compliance, blind and low vision users face s
 - Pause/resume/stop controls
 
 **Advanced Controls**:
+
 - Jump to paragraph
 - Skip to next/previous section
 - Bookmark current position
@@ -214,6 +227,7 @@ While PRD-004 achieves WCAG 2.1 AA compliance, blind and low vision users face s
 - Adjust voice: {speed, pitch, volume} independently
 
 **Visual Synchronization**:
+
 - Word highlighting as it's spoken
 - Current paragraph highlighted
 - Progress indicator shows reading progress
@@ -221,7 +235,8 @@ While PRD-004 achieves WCAG 2.1 AA compliance, blind and low vision users face s
 - Braille display synchronization (if device present)
 
 **Multi-Format Support**:
-```
+
+```markdown
 Text Content:
 - Paragraphs
 - Lists (announces: "3 items in list")
@@ -238,6 +253,7 @@ Metadata:
 ```
 
 **Voice Options** (built-in):
+
 - en-US: Google Neural Network (natural)
 - en-US: Microsoft Zira (clear, professional)
 - en-UK: Daniel (British)
@@ -249,6 +265,7 @@ Metadata:
 **Where**: All pages, all components
 
 **NVDA Optimization** (Windows):
+
 - Custom ARIA live regions for dynamic updates
 - Landmark navigation (H key) works on all sections
 - Reading mode announcements
@@ -257,6 +274,7 @@ Metadata:
 - Buttons announced with state (pressed, disabled)
 
 **JAWS Optimization** (Windows):
+
 - Virtual cursor mode optimizations
 - Focus mode announcements
 - Forms mode clarity
@@ -265,6 +283,7 @@ Metadata:
 - Form field labels clearly associated
 
 **VoiceOver Optimization** (Mac/iOS):
+
 - Rotor navigation (VO+U) shows headings, links, form controls
 - Action hints for interactive elements
 - Gesture support on iOS
@@ -273,6 +292,7 @@ Metadata:
 - iCloud sync for settings
 
 **Shared Enhancements**:
+
 - Concise but informative announcements
 - Announced page title on load
 - Announced number of items in lists
@@ -287,7 +307,8 @@ Metadata:
 **Where**: All pages
 
 **Global Shortcuts**:
-```
+
+```markdown
 Alt+/ → Show help
 Alt+S → Toggle settings
 Alt+H → Home/Dashboard
@@ -297,7 +318,8 @@ Alt+F → Focus to main content
 ```
 
 **Navigation Shortcuts**:
-```
+
+```markdown
 J → Next reading
 K → Previous reading
 G → Go to (with number input)
@@ -308,7 +330,8 @@ M → Next main content
 ```
 
 **Content Shortcuts**:
-```
+
+```markdown
 R → Read this content
 Space → Pause/Resume reading
 [ → Slower
@@ -321,7 +344,8 @@ Escape → Close modal
 ```
 
 **Screen Reader Specific**:
-```
+
+```markdown
 Insert+H (JAWS/NVDA) → Show help
 VO+U (VoiceOver) → Show rotor
 Ctrl+Home/End (NVDA) → Jump to start/end
@@ -332,6 +356,7 @@ Ctrl+Home/End (NVDA) → Jump to start/end
 **Where**: Visual elements, icons, complex layouts
 
 **For Each Element**:
+
 - Icons: Spoken description (not just emoji)
 - Images: Full alt text + descriptive text
 - Buttons: Label + state (active, disabled) + hint for action
@@ -342,7 +367,8 @@ Ctrl+Home/End (NVDA) → Jump to start/end
 - Colors: Not sole indicator (always has pattern/text)
 
 **Example Announcements**:
-```
+
+```markdown
 Icon: "Check mark, indicates completed reading"
 Button: "Edit button, opens title editor, currently focused"
 Card: "JavaScript tutorial reading, tagged with javascript and tutorial, incomplete"
@@ -355,6 +381,7 @@ Table: "Results table with 3 columns and 5 rows, column headers: language, usage
 **Where**: Reader page
 
 **Features**:
+
 - Voice command: "Bookmark this" → saves position
 - Voice command: "Add note" → records voice note at position
 - Navigate bookmarks: "Go to bookmark 1, 2, 3"
@@ -366,6 +393,7 @@ Table: "Results table with 3 columns and 5 rows, column headers: language, usage
 **Where**: Reader page
 
 **Features**:
+
 - Automatic detection of:
   - Headings (create outline)
   - Sections (Abstract, Introduction, Methods, Results, Conclusion)
@@ -384,6 +412,7 @@ Table: "Results table with 3 columns and 5 rows, column headers: language, usage
 **Where**: Settings page
 
 **Features**:
+
 - Custom voice commands (user-defined aliases)
   - "Books" instead of "Readings"
   - "Quick review" instead of "Show completed"
@@ -440,17 +469,20 @@ Table: "Results table with 3 columns and 5 rows, column headers: language, usage
 #### NFR-6: Compatibility
 
 **Browsers**:
+
 - Chrome/Edge: Full support (Web Speech API)
 - Firefox: Fallback library support
 - Safari: Limited (iOS VoiceOver integration)
 
 **Screen Readers**:
+
 - NVDA 2023+: Full support
 - JAWS 2023+: Full support
 - VoiceOver (Mac/iOS): Full native support
 - ORCA (Linux): Basic support
 
 **Devices**:
+
 - Windows 10+: Full voice control
 - Mac OS 10.15+: Full voice control + VoiceOver native
 - iOS 14+: VoiceOver + partial voice control
@@ -463,7 +495,8 @@ Table: "Results table with 3 columns and 5 rows, column headers: language, usage
 ### Flow 1: Santiago - Reading a Course Material (Current vs. New)
 
 **BEFORE (Keyboard-only, JAWS):**
-```
+
+```markdown
 1. Santiago opens tellingQuote
    JAWS: "Dashboard, 5 readings"
    
@@ -486,7 +519,8 @@ EXPERIENCE: Tedious, exhausting
 ```
 
 **AFTER (Voice + TTS):**
-```
+
+```markdown
 1. Santiago opens tellingQuote
    VoiceOver: "Dashboard, 5 readings"
    
@@ -516,11 +550,12 @@ TOTAL TIME: 3-4 minutes
 EXPERIENCE: Natural, efficient, empowering
 ```
 
-### Flow 2: María - Creating a Legal Brief (Voice Dictation)
+### Flow 2: Lili - Creating a Legal Brief (Voice Dictation)
 
 **BEFORE (Keyboard + external dictation):**
-```
-1. María opens tellingQuote
+
+```markdown
+1. Lili opens tellingQuote
 2. Creates new reading manually
 3. Switches to Word Dictation tool
 4. Dictates brief: "Johnson v. Smith, argues precedent..."
@@ -534,24 +569,25 @@ FRUSTRATION: Tool-switching, context loss
 ```
 
 **AFTER (Integrated voice):**
-```
-1. María says: "Create brief"
+
+```markdown
+1. Lili says: "Create brief"
    App: "New reading dialog. Title field ready."
    
-2. María says: "Title: Johnson v. Smith Brief"
+2. Lili says: "Title: Johnson v. Smith Brief"
    App: "Title set. Content field ready."
    
-3. María says: "Content: " then dictates
+3. Lili says: "Content: " then dictates
    "Johnson v. Smith argues precedent of prior cases..."
    App: "Recording... [26 second voice note captured]"
    
-4. María says: "Add tags: litigation, precedent, civil"
+4. Lili says: "Add tags: litigation, precedent, civil"
    App: "Tags added"
    
-5. María says: "Read back"
+5. Lili says: "Read back"
    App: Reads title and content with professional voice
    
-6. María says: "Save"
+6. Lili says: "Save"
    App: "Brief saved"
 
 TOTAL TIME: 5-7 minutes
@@ -561,7 +597,8 @@ EXPERIENCE: Seamless, professional, integrated
 ### Flow 3: Juan - Navigating a Complex Research Paper
 
 **BEFORE (VoiceOver + manual navigation):**
-```
+
+```markdown
 1. Juan opens tellingQuote
 2. Searches for "Machine Learning Advances"
 3. Opens paper with VoiceOver
@@ -579,7 +616,8 @@ FRUSTRATION: Lack of structure awareness
 ```
 
 **AFTER (Voice + TTS + optimized structure):**
-```
+
+```markdown
 1. Juan opens tellingQuote
 2. Says: "Find Machine Learning Advances"
    App: "Found, opening"
@@ -635,12 +673,14 @@ EXPERIENCE: Structured, efficient, note-taking integrated
 ## Future Enhancements (v2.2+)
 
 ### Phase 2.2: Mobile Voice Control
+
 - iOS Siri integration
 - Android Google Assistant integration
 - Voice control on mobile devices
 - Offline voice models
 
 ### Phase 2.3: Advanced Audio Features
+
 - Spatial audio (3D sound for navigation)
 - Audio descriptions of visual design
 - Music/ambient sound preferences
@@ -648,12 +688,14 @@ EXPERIENCE: Structured, efficient, note-taking integrated
 - Podcast export of readings
 
 ### Phase 2.4: Collaborative Voice
+
 - Real-time voice note sharing
 - Voice-based commenting
 - Shared bookmarks with voice annotations
 - Voice-based pair programming
 
 ### Phase 2.5: Intelligence & Learning
+
 - Predictive text completion
 - Command suggestion based on usage
 - Personalized voice training
@@ -721,7 +763,7 @@ EXPERIENCE: Structured, efficient, note-taking integrated
 
 ### Voice Control Stack
 
-```
+```markdown
 User speaks
     ↓
 Web Speech API / Whisper (transcription)
@@ -739,7 +781,7 @@ Vocal/haptic feedback
 
 ### Text-to-Speech Stack
 
-```
+```markdown
 User triggers "Read this"
     ↓
 Extract readable content
@@ -757,7 +799,7 @@ Show playback controls
 
 ### Component Structure
 
-```
+```markdown
 App
 ├── VoiceControl (global)
 │   ├── SpeechRecognition
@@ -892,12 +934,14 @@ useKeyboardShortcuts(): {
 ### Testing Protocol
 
 **Phase 1: Formative Testing** (Week 2-3)
+
 - 5 blind users (mix of screen readers, experience levels)
 - Test early prototypes
 - Gather feedback on voice commands
 - Refine command vocabulary
 
 **Phase 2: Usability Testing** (Week 4)
+
 - 8 blind users representing:
   - 3 JAWS users (Windows)
   - 2 NVDA users (Windows)
@@ -908,6 +952,7 @@ useKeyboardShortcuts(): {
 - Gather satisfaction feedback
 
 **Phase 3: Accessibility Validation** (Week 5)
+
 - Professional accessibility auditor (blind expert)
 - Automated testing (axe, pa11y)
 - WCAG 2.1 AAA verification
@@ -966,6 +1011,7 @@ useKeyboardShortcuts(): {
 
 | Date | Version | Author | Changes |
 |------|---------|--------|---------|
+
 | 2026-01-09 | 0.1 | Agent | Initial draft - comprehensive blind user support |
 | - | 0.2 | TBD | Stakeholder review, blind user feedback |
 | - | 0.3 | TBD | Technical feasibility review |
