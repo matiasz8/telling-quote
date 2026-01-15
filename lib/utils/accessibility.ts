@@ -80,24 +80,31 @@ export const getWordSpacing = (wordSpacing: WordSpacing): string => {
  * The mappings are dynamically generated from the constants above to ensure consistency.
  */
 export const getAccessibilityUtilsScript = (): string => {
+  // Pre-serialize the mappings once to reduce code size
+  const fontMapJson = JSON.stringify(FONT_FAMILY_MAP);
+  const letterSpacingMapJson = JSON.stringify(LETTER_SPACING_MAP);
+  const lineHeightMapJson = JSON.stringify(LINE_HEIGHT_MAP);
+  const wordSpacingMapJson = JSON.stringify(WORD_SPACING_MAP);
+  
   return `
+    const fontMap = ${fontMapJson};
+    const letterSpacingMap = ${letterSpacingMapJson};
+    const lineHeightMap = ${lineHeightMapJson};
+    const wordSpacingMap = ${wordSpacingMapJson};
+    
     function getFontFamily(fontFamily) {
-      const fontMap = ${JSON.stringify(FONT_FAMILY_MAP)};
       return fontMap[fontFamily] || 'system-ui, -apple-system, sans-serif';
     }
     
     function getLetterSpacing(letterSpacing) {
-      const letterSpacingMap = ${JSON.stringify(LETTER_SPACING_MAP)};
       return letterSpacingMap[letterSpacing] || 'normal';
     }
     
     function getLineHeight(lineHeight) {
-      const lineHeightMap = ${JSON.stringify(LINE_HEIGHT_MAP)};
       return lineHeightMap[lineHeight] || '1.6';
     }
     
     function getWordSpacing(wordSpacing) {
-      const wordSpacingMap = ${JSON.stringify(WORD_SPACING_MAP)};
       return wordSpacingMap[wordSpacing] || 'normal';
     }
   `.trim();
