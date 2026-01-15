@@ -125,13 +125,8 @@ html.reduce-motion *::after {
   font-style: normal;
 }
 
-@font-face {
-  font-family: 'Atkinson Hyperlegible';
-  src: url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
-
+/* Load Atkinson Hyperlegible from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible&display=swap');
 /* Text Spacing Utilities */
 .letter-spacing-normal {
   letter-spacing: normal;
