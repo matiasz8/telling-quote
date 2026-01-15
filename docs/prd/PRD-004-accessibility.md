@@ -472,6 +472,7 @@ Content Width:
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
+
 | Incomplete screen reader support | High | Thorough testing with real users |
 | Performance impact from settings | Low | Efficient CSS, no JS-heavy features |
 | Complex settings UI | Medium | Good defaults, progressive disclosure |

@@ -309,6 +309,7 @@ function getTagColor(tagName: string, isDark: boolean): string {
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
+
 | Tag proliferation (too many unique tags) | Medium | Limit to 5 per reading, encourage reuse |
 | Performance with many tags | Low | Efficient rendering, virtual scrolling if needed |
 | Data migration issues | Medium | Graceful fallback for missing tags field |
@@ -337,6 +338,7 @@ function getTagColor(tagName: string, isDark: boolean): string {
 After implementing the tags system, the example reading from PRD-001 should be updated to include example tags demonstrating the tagging feature. This will help new users understand how tags work.
 
 **Proposed tags for example reading**:
+
 - `tutorial`
 - `markdown`
 - `example`

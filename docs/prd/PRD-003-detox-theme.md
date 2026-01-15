@@ -335,6 +335,7 @@ AFTER (Detox Theme):
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
+
 | Users find it too plain | Low | Position as "focus mode" option, not default |
 | Accessibility issues | Medium | Thorough contrast testing before launch |
 | Incomplete theme coverage | Medium | Comprehensive component audit |

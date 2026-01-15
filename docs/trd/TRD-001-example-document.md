@@ -47,7 +47,7 @@ flowchart TD
 
 ### Component Architecture
 
-```
+```bash
 app/page.tsx (Dashboard)
     ├── useEffect hook (auto-creation logic)
     ├── handleDeleteConfirm (dismissal tracking)
@@ -241,7 +241,7 @@ isExample?: boolean;
 
 ### Phase 2: Auto-Creation Logic ✅
 
-4. ✅ Modify `app/page.tsx`
+1. ✅ Modify `app/page.tsx`
    - Import example constants
    - Add `useRef` for initialization tracking
    - Implement `useEffect` for auto-creation
@@ -250,7 +250,7 @@ isExample?: boolean;
 
 ### Phase 3: Visual Badge ✅
 
-5. ✅ Modify `components/ReadingCard.tsx`
+1. ✅ Modify `components/ReadingCard.tsx`
    - Add `isExample` prop to interface
    - Create badge component with conditional rendering
    - Implement theme-aware styling
@@ -258,12 +258,12 @@ isExample?: boolean;
 
 ### Phase 4: Deletion Handling ✅
 
-6. ✅ Update `handleDeleteConfirm` in `app/page.tsx`
+1. ✅ Update `handleDeleteConfirm` in `app/page.tsx`
 
    - Check if deleted reading is example
    - Set `exampleDismissed` flag in localStorage
 
-7. ✅ Pass `isExample` prop in dashboard
+2. ✅ Pass `isExample` prop in dashboard
    - Map over readings and pass prop conditionally
 
 ---

@@ -46,7 +46,7 @@ flowchart TD
 
 ### Component Architecture
 
-```
+```markdown
 types/index.ts (UPDATED)
     ├── Settings type (add accessibility fields)
     └── AccessibilitySettings type
@@ -189,6 +189,7 @@ Add `AccessibilitySettings` type and update `Settings` type to include accessibi
 **File**: [config/theme.ts](../../../config/theme.ts)
 
 Add three new exports:
+
 - `FONT_FAMILY_OPTIONS`: Font family definitions with CDN URLs
 - `TEXT_SPACING_OPTIONS`: Letter spacing, line height, and word spacing options
 - `highContrastTheme`: High contrast color scheme
