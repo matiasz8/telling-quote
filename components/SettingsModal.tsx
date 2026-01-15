@@ -246,7 +246,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                 >
                   {Object.entries(themeConfig.fontFamilies).map(([key, font]) => (
                     <option key={key} value={key}>
-                      {font.name} - {font.description}
+                      {font.name}
                     </option>
                   ))}
                 </select>
