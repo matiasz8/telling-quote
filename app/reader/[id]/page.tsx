@@ -291,7 +291,9 @@ export default function ReaderPage() {
   const { settings } = useSettings();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [lastReadingId, setLastReadingId] = useState(id);
+  const [announcedIndex, setAnnouncedIndex] = useState(0);
   const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const announceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pageRef = useRef<HTMLDivElement | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const touchStartX = useRef<number>(0);
@@ -316,7 +318,28 @@ export default function ReaderPage() {
   if (id !== lastReadingId) {
     setLastReadingId(id);
     setCurrentIndex(0);
+    setAnnouncedIndex(0);
   }
+
+  // Debounce announcements to avoid overwhelming screen readers during rapid navigation
+  useEffect(() => {
+    // Clear any existing timeout
+    if (announceTimeoutRef.current) {
+      clearTimeout(announceTimeoutRef.current);
+    }
+
+    // Set a new timeout to update the announcement after 400ms of no navigation
+    announceTimeoutRef.current = setTimeout(() => {
+      setAnnouncedIndex(currentIndex);
+    }, 400);
+
+    // Cleanup on unmount or when currentIndex changes
+    return () => {
+      if (announceTimeoutRef.current) {
+        clearTimeout(announceTimeoutRef.current);
+      }
+    };
+  }, [currentIndex]);
 
   const handleNext = useCallback(() => {
     setCurrentIndex((prev) => {
@@ -517,6 +540,9 @@ export default function ReaderPage() {
   const progress = processedText.length > 0 ? ((safeIndex + 1) / processedText.length) * 100 : 0;
   const isFinished = safeIndex === processedText.length - 1;
 
+  // Use debounced index for announcements
+  const safeAnnouncedIndex = Math.max(0, Math.min(announcedIndex, processedText.length - 1));
+
   return (
     <div ref={pageRef} className={`min-h-screen ${themeClasses.bg} ${fontFamilyClass}`}>
       {/* Skip link for keyboard navigation */}
@@ -534,7 +560,7 @@ export default function ReaderPage() {
         className="sr-only"
         role="status"
       >
-        Slide {safeIndex + 1} of {processedText.length}. {currentSentence?.title || ''}
+        Slide {safeAnnouncedIndex + 1} of {processedText.length}
       </div>
       {/* Progress Bar */}
       <div className={`sticky top-0 z-10 ${themeClasses.cardBg} border-b ${themeClasses.border} shadow-sm`}>
