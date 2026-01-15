@@ -78,6 +78,7 @@ export const getWordSpacing = (wordSpacing: WordSpacing): string => {
  * Serialized version of the utility functions for use in inline scripts.
  * This generates a JavaScript code string that can be injected into HTML.
  * The mappings are dynamically generated from the constants above to ensure consistency.
+ * Note: The mapping values are all hardcoded constants, so JSON.stringify is safe here.
  */
 export const getAccessibilityUtilsScript = (): string => {
   // Pre-serialize the mappings once to reduce code size
@@ -93,18 +94,22 @@ export const getAccessibilityUtilsScript = (): string => {
     const wordSpacingMap = ${wordSpacingMapJson};
     
     function getFontFamily(fontFamily) {
+      if (!fontFamily) return 'system-ui, -apple-system, sans-serif';
       return fontMap[fontFamily] || 'system-ui, -apple-system, sans-serif';
     }
     
     function getLetterSpacing(letterSpacing) {
+      if (!letterSpacing) return 'normal';
       return letterSpacingMap[letterSpacing] || 'normal';
     }
     
     function getLineHeight(lineHeight) {
+      if (!lineHeight) return '1.6';
       return lineHeightMap[lineHeight] || '1.6';
     }
     
     function getWordSpacing(wordSpacing) {
+      if (!wordSpacing) return 'normal';
       return wordSpacingMap[wordSpacing] || 'normal';
     }
   `.trim();
