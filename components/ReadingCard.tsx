@@ -49,34 +49,6 @@ export default function ReadingCard({
           : "bg-white border-gray-200"
       } rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow border relative group`}
     >
-      {/* Pending indicator - shown when reading is NOT completed */}
-      {!isCompleted && (
-        <div
-          className={`absolute top-3 left-3 w-4 h-4 rounded-full flex items-center justify-center ${
-            isHighContrast
-              ? "bg-white border-2 border-white"
-              : isDetox
-              ? "bg-gray-700 border-2 border-gray-700"
-              : isDark
-              ? "bg-purple-500 border-2 border-current"
-              : "bg-lime-500 border-2 border-current"
-          } shadow-sm`}
-          aria-label="Pending reading"
-        >
-          <div
-            className={`w-2 h-2 rounded-full ${
-              isHighContrast
-                ? "bg-black"
-                : isDetox
-                ? "bg-white"
-                : isDark
-                ? "bg-purple-900"
-                : "bg-lime-900"
-            }`}
-          />
-        </div>
-      )}
-
       {/* Example badge */}
       {isExample && (
         <div
