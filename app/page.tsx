@@ -111,18 +111,32 @@ export default function Home() {
   };
 
   const isDark = settings.theme === "dark";
+  const isDetox = settings.theme === "detox";
+  const isHighContrast = settings.theme === "high-contrast";
 
   return (
     <div
       suppressHydrationWarning
       className={`min-h-screen ${
-        isDark
+        isHighContrast
+          ? "bg-black text-white"
+          : isDetox
+          ? "bg-white text-gray-900"
+          : isDark
           ? "bg-linear-to-br from-purple-900 via-gray-900 to-black"
           : "bg-linear-to-br from-yellow-50 via-lime-100 to-emerald-50"
       }`}
     >
+      {/* Skip link for keyboard navigation */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-50 focus:bg-black focus:text-white focus:p-4 focus:rounded-b"
+      >
+        Skip to main content
+      </a>
+
       <Header />
-      <main className="container mx-auto px-4 py-8">
+      <main id="main-content" className="container mx-auto px-4 py-8">
         <div className="flex justify-center mb-8">
           <button
             onClick={() => setIsModalOpen(true)}
