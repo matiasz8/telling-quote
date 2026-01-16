@@ -119,6 +119,24 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
           </button>
         </div>
 
+        {/* Preview Text */}
+        <div className={`mb-6 p-4 rounded-lg border-2 ${getAccentClass()}`}>
+          <div className={`text-xs font-medium mb-2 ${getTextClass()}`}>Preview</div>
+          <div
+            style={{
+              fontFamily: themeConfig.fontFamilies[accessibility.fontFamily].family,
+              fontSize: settings.fontSize === 'small' ? '14px' : settings.fontSize === 'medium' ? '16px' : settings.fontSize === 'large' ? '18px' : '20px',
+              letterSpacing: themeConfig.letterSpacing[accessibility.letterSpacing].value,
+              lineHeight: themeConfig.lineHeight[accessibility.lineHeight].value,
+              wordSpacing: themeConfig.wordSpacing[accessibility.wordSpacing].value,
+            }}
+          >
+            <p>
+              The quick brown fox jumps over the lazy dog. Reading should be comfortable and accessible for everyone.
+            </p>
+          </div>
+        </div>
+
         {/* General Settings Section */}
         <div className="mb-6">
           <button
