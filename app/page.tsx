@@ -143,15 +143,19 @@ export default function Home() {
             className={`
               group relative px-8 py-4 rounded-xl font-semibold text-lg
               transform transition-all duration-300 ease-out
-              hover:scale-105 active:scale-95
               ${
                 isHighContrast
                   ? "bg-white text-black border-2 border-white hover:bg-gray-200"
                   : isDetox
                   ? "bg-gray-900 text-white border-2 border-gray-900 hover:bg-gray-800"
-                  : isDark
+                  : "hover:scale-105 active:scale-95"
+              }
+              ${
+                isDark
                   ? "bg-gradient-to-r from-purple-600 via-violet-600 to-fuchsia-600 text-white shadow-lg shadow-purple-500/50 hover:shadow-xl hover:shadow-purple-500/70"
-                  : "bg-gradient-to-r from-lime-500 via-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/50 hover:shadow-xl hover:shadow-emerald-500/70"
+                  : !isDetox && !isHighContrast
+                  ? "bg-gradient-to-r from-lime-500 via-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/50 hover:shadow-xl hover:shadow-emerald-500/70"
+                  : ""
               }
             `}
           >
