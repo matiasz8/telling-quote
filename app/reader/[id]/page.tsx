@@ -306,6 +306,15 @@ export default function ReaderPage() {
   const themeClasses = getThemeClasses(settings.theme);
   const isDark = settings.theme === 'dark';
 
+  // Get content width directly for immediate render
+  const contentWidth = settings.accessibility?.contentWidth || 'medium';
+  const contentWidthStyle = {
+    narrow: '45ch',
+    medium: '65ch',
+    wide: '80ch',
+    full: 'none'
+  }[contentWidth];
+
   const reading = useMemo(() => {
     if (!id) return undefined;
     return readings.find((r) => r.id === id);
@@ -586,7 +595,7 @@ export default function ReaderPage() {
 
       {/* Content */}
       <div id="reader-main-content" className="container mx-auto px-4 py-12">
-        <div className="mx-auto">
+        <div className="mx-auto" style={{ maxWidth: contentWidthStyle }}>
           <div className="mb-8 text-center">
             <h2 className={`${fontSizeClasses.title} font-semibold ${themeClasses.text} mb-2`}>
               {formatText(currentSentence.title, isDark)}

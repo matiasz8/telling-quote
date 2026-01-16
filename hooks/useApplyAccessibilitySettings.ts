@@ -67,23 +67,6 @@ export function useApplyAccessibilitySettings(settings: Settings) {
       root.classList.remove('reduce-motion');
     }
 
-    // Apply content width
-    const contentWidthMap: Record<string, string> = {
-      'narrow': '45ch',
-      'medium': '65ch',
-      'wide': '80ch',
-      'full': 'none'
-    };
-    // Apply to reader content container (the div inside reader-main-content)
-    const readerContent = document.getElementById('reader-main-content');
-    if (readerContent) {
-      const contentDiv = readerContent.querySelector('div');
-      if (contentDiv instanceof HTMLElement) {
-        const width = a11y.contentWidth || 'medium';
-        contentDiv.style.maxWidth = contentWidthMap[width];
-      }
-    }
-
     // Cleanup function to reset styles when component unmounts
     return () => {
       if (typeof document === 'undefined') return;
@@ -93,11 +76,6 @@ export function useApplyAccessibilitySettings(settings: Settings) {
       root.style.letterSpacing = '';
       root.style.lineHeight = '';
       root.style.wordSpacing = '';
-
-      const mainContent = document.getElementById('reader-main-content');
-      if (mainContent) {
-        mainContent.style.maxWidth = '';
-      }
     };
   }, [settings]);
 }
