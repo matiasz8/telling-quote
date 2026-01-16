@@ -116,7 +116,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
         {/* General Settings Section */}
         <div className="mb-6">
           <button
-            onClick={() => setExpandedSection(expandedSection === 'general' ? 'accessibility' : 'general')}
+            onClick={() => setExpandedSection('general')}
             className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors ${
               expandedSection === 'general'
                 ? getHeaderBgClass()
