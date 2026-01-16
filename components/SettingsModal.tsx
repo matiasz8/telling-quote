@@ -135,16 +135,16 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
               The quick brown fox jumps over the lazy dog. Reading should be comfortable and accessible for everyone.
             </p>
           </div>
-          <div className={`text-xs mt-3 ${getTextClass()} opacity-60`}>
-            {accessibility.reduceMotion && '🔇 Reduce Motion: ON • '}
-            Content Width: {accessibility.contentWidth === 'narrow' ? '45ch' : accessibility.contentWidth === 'wide' ? '80ch' : '65ch (default)'}
+          <div className={`text-xs mt-3 ${getTextClass()} opacity-60 space-y-1`}>
+            <div>{accessibility.reduceMotion && '🔇 Reduce Motion: ON'}</div>
+            <div>Max line width: {accessibility.contentWidth === 'narrow' ? '45 chars (easier to read)' : accessibility.contentWidth === 'wide' ? '80 chars (more content)' : '65 chars (default)'}</div>
           </div>
         </div>
 
         {/* General Settings Section */}
         <div className="mb-6">
           <button
-            onClick={() => setExpandedSection('general')}
+            onClick={() => setExpandedSection(expandedSection === 'general' ? '' : 'general')}
             className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors ${
               expandedSection === 'general'
                 ? getHeaderBgClass()
@@ -323,16 +323,39 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
               </div>
 
               {/* Reduce Motion Toggle */}
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={accessibility.reduceMotion}
-                  onChange={(e) => handleAccessibilityChange('reduceMotion', e.target.checked)}
-                  aria-label="Reduce motion and animations"
-                  className="w-4 h-4 cursor-pointer"
-                />
-                <span className="text-sm">Reduce Motion & Animations</span>
-              </label>
+              <div>
+                <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
+                  Reduce Motion & Animations
+                </label>
+                <button
+                  onClick={() => handleAccessibilityChange('reduceMotion', !accessibility.reduceMotion)}
+                  className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                    accessibility.reduceMotion
+                      ? isHighContrast
+                        ? 'bg-white'
+                        : isDetox
+                        ? 'bg-gray-900'
+                        : isDark
+                        ? 'bg-purple-600'
+                        : 'bg-lime-500'
+                      : isHighContrast
+                      ? 'bg-gray-700'
+                      : 'bg-gray-300'
+                  }`}
+                  role="switch"
+                  aria-checked={accessibility.reduceMotion}
+                  aria-label="Toggle reduce motion and animations"
+                >
+                  <span
+                    className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                      accessibility.reduceMotion ? 'translate-x-7' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+                <p className={`text-xs mt-2 ${getTextClass()} opacity-75`}>
+                  {accessibility.reduceMotion ? 'Animations disabled' : 'Animations enabled'}
+                </p>
+              </div>
 
               {/* Content Width */}
               <div>
