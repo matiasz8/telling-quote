@@ -254,10 +254,10 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
 
               {/* Letter Spacing */}
               <div>
-                <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
+                <label id="letter-spacing-label" className={`block text-sm font-medium ${getTextClass()} mb-3`}>
                   Letter Spacing
                 </label>
-                <div className="space-y-2">
+                <div role="radiogroup" aria-labelledby="letter-spacing-label" className="space-y-2">
                   {Object.entries(themeConfig.letterSpacing).map(([key, option]) => (
                     <label key={key} className="flex items-center gap-3 cursor-pointer">
                       <input
@@ -266,7 +266,6 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                         value={key}
                         checked={accessibility.letterSpacing === key}
                         onChange={() => handleAccessibilityChange('letterSpacing', key as LetterSpacing)}
-                        aria-label={`Letter spacing: ${option.label}`}
                         className="w-4 h-4 cursor-pointer"
                       />
                       <span className="text-sm">{option.label}</span>
@@ -277,10 +276,10 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
 
               {/* Line Height */}
               <div>
-                <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
+                <label id="line-height-label" className={`block text-sm font-medium ${getTextClass()} mb-3`}>
                   Line Height
                 </label>
-                <div className="space-y-2">
+                <div role="radiogroup" aria-labelledby="line-height-label" className="space-y-2">
                   {Object.entries(themeConfig.lineHeight).map(([key, option]) => (
                     <label key={key} className="flex items-center gap-3 cursor-pointer">
                       <input
@@ -289,7 +288,6 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                         value={key}
                         checked={accessibility.lineHeight === key}
                         onChange={() => handleAccessibilityChange('lineHeight', key as LineHeightOption)}
-                        aria-label={`Line height: ${option.label}`}
                         className="w-4 h-4 cursor-pointer"
                       />
                       <span className="text-sm">{option.label}</span>
@@ -300,10 +298,10 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
 
               {/* Word Spacing */}
               <div>
-                <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
+                <label id="word-spacing-label" className={`block text-sm font-medium ${getTextClass()} mb-3`}>
                   Word Spacing
                 </label>
-                <div className="space-y-2">
+                <div role="radiogroup" aria-labelledby="word-spacing-label" className="space-y-2">
                   {Object.entries(themeConfig.wordSpacing).map(([key, option]) => (
                     <label key={key} className="flex items-center gap-3 cursor-pointer">
                       <input
@@ -312,7 +310,6 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                         value={key}
                         checked={accessibility.wordSpacing === key}
                         onChange={() => handleAccessibilityChange('wordSpacing', key as WordSpacing)}
-                        aria-label={`Word spacing: ${option.label}`}
                         className="w-4 h-4 cursor-pointer"
                       />
                       <span className="text-sm">{option.label}</span>
