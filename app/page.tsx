@@ -145,9 +145,9 @@ export default function Home() {
               transform transition-all duration-300 ease-out
               ${
                 isHighContrast
-                  ? "bg-white text-black border-2 border-white hover:bg-gray-200"
+                  ? "bg-white text-black border-2 border-white hover:bg-gray-200 shadow-lg shadow-gray-900/50 hover:shadow-xl hover:shadow-gray-900/70"
                   : isDetox
-                  ? "bg-gray-900 text-white border-2 border-gray-900 hover:bg-gray-800"
+                  ? "bg-gray-900 text-white border-2 border-gray-900 hover:bg-gray-800 shadow-lg shadow-gray-500/50 hover:shadow-xl hover:shadow-gray-500/70"
                   : "hover:scale-105 active:scale-95"
               }
               ${
