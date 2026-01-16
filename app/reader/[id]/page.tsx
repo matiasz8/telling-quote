@@ -595,7 +595,7 @@ export default function ReaderPage() {
 
       {/* Content */}
       <div id="reader-main-content" className="container mx-auto px-4 py-12">
-        <div className="mx-auto" style={{ maxWidth: contentWidthStyle }}>
+        <div className="mx-auto" style={{ maxWidth: contentWidthStyle, willChange: 'contents' }}>
           <div className="mb-8 text-center">
             <h2 className={`${fontSizeClasses.title} font-semibold ${themeClasses.text} mb-2`}>
               {formatText(currentSentence.title, isDark)}
