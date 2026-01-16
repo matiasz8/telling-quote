@@ -127,11 +127,17 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
               letterSpacing: themeConfig.letterSpacing[accessibility.letterSpacing].value,
               lineHeight: themeConfig.lineHeight[accessibility.lineHeight].value,
               wordSpacing: themeConfig.wordSpacing[accessibility.wordSpacing].value,
+              maxWidth: accessibility.contentWidth === 'narrow' ? '45ch' : accessibility.contentWidth === 'wide' ? '80ch' : '65ch',
+              transition: accessibility.reduceMotion ? 'none' : 'all 0.3s ease',
             }}
           >
             <p>
               The quick brown fox jumps over the lazy dog. Reading should be comfortable and accessible for everyone.
             </p>
+          </div>
+          <div className={`text-xs mt-3 ${getTextClass()} opacity-60`}>
+            {accessibility.reduceMotion && '🔇 Reduce Motion: ON • '}
+            Content Width: {accessibility.contentWidth === 'narrow' ? '45ch' : accessibility.contentWidth === 'wide' ? '80ch' : '65ch (default)'}
           </div>
         </div>
 
