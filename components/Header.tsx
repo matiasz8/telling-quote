@@ -1,15 +1,36 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SettingsModal from './SettingsModal';
+import KeyboardShortcutsModal from './KeyboardShortcutsModal';
 import { useSettings } from '@/hooks/useSettings';
 
 export default function Header() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
   const { settings, setSettings } = useSettings();
   const isDark = settings.theme === 'dark';
   const isDetox = settings.theme === 'detox';
   const isHighContrast = settings.theme === 'high-contrast';
+
+  // Global keyboard shortcut for "?" to open shortcuts help
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      // Check if "?" is pressed (Shift + /)
+      if (event.key === '?' && !event.ctrlKey && !event.metaKey && !event.altKey) {
+        // Don't trigger if user is typing in an input/textarea
+        const target = event.target as HTMLElement;
+        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+          return;
+        }
+        event.preventDefault();
+        setIsShortcutsOpen(true);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyPress);
+    return () => document.removeEventListener('keydown', handleKeyPress);
+  }, []);
 
   return (
     <>
@@ -53,6 +74,24 @@ export default function Header() {
               </svg>
             </a>
             <button
+              onClick={() => setIsShortcutsOpen(true)}
+              className={`p-2 rounded-lg transition-colors ${
+                isHighContrast
+                  ? 'text-white hover:bg-white hover:text-black'
+                  : isDetox
+                  ? 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  : isDark
+                  ? 'text-gray-300 hover:text-gray-100 hover:bg-purple-800'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+              }`}
+              title="Keyboard Shortcuts (Press ?)"
+              aria-label="Show keyboard shortcuts"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </button>
+            <button
               onClick={() => setIsSettingsOpen(true)}
               className={`p-2 rounded-lg transition-colors ${
                 isHighContrast
@@ -79,6 +118,11 @@ export default function Header() {
         onClose={() => setIsSettingsOpen(false)}
         settings={settings}
         onSave={setSettings}
+      />
+
+      <KeyboardShortcutsModal
+        isOpen={isShortcutsOpen}
+        onClose={() => setIsShortcutsOpen(false)}
       />
     </>
   );
