@@ -67,6 +67,13 @@ export function useApplyAccessibilitySettings(settings: Settings) {
       root.classList.remove('reduce-motion');
     }
 
+    // Apply focus mode
+    if (a11y.focusMode) {
+      root.classList.add('focus-mode');
+    } else {
+      root.classList.remove('focus-mode');
+    }
+
     // Cleanup function to reset styles when component unmounts
     return () => {
       if (typeof document === 'undefined') return;

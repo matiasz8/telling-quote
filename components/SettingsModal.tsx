@@ -376,6 +376,41 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                 </p>
               </div>
 
+              {/* Focus Mode Toggle */}
+              <div>
+                <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
+                  Focus Mode
+                </label>
+                <button
+                  onClick={() => handleAccessibilityChange('focusMode', !accessibility.focusMode)}
+                  className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                    accessibility.focusMode
+                      ? isHighContrast
+                        ? 'bg-white'
+                        : isDetox
+                        ? 'bg-gray-900'
+                        : isDark
+                        ? 'bg-purple-600'
+                        : 'bg-lime-500'
+                      : isHighContrast
+                      ? 'bg-gray-700'
+                      : 'bg-gray-300'
+                  }`}
+                  role="switch"
+                  aria-checked={accessibility.focusMode || false}
+                  aria-label="Toggle focus mode to dim UI distractions"
+                >
+                  <span
+                    className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                      accessibility.focusMode ? 'translate-x-7' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+                <p className={`text-xs mt-2 ${getTextClass()} opacity-75`}>
+                  {accessibility.focusMode ? 'UI dimmed during reading' : 'Normal UI visibility'}
+                </p>
+              </div>
+
               {/* Content Width */}
               <div>
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>

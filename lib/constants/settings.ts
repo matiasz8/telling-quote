@@ -34,6 +34,7 @@ export const DEFAULT_SETTINGS = {
     wordSpacing: 'normal' as const,
     highContrast: false,
     reduceMotion: false,
+    focusMode: false,
   },
 };
 
