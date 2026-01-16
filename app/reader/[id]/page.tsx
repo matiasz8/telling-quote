@@ -1,14 +1,15 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useMemo, useEffect, useRef, useCallback, Fragment } from 'react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useSettings } from '@/hooks/useSettings';
+import { useApplyAccessibilitySettings } from '@/hooks/useApplyAccessibilitySettings';
 import { Reading } from '@/types';
 import { processContent, getFontFamilyClass, getFontSizeClasses, getThemeClasses } from '@/lib/utils';
-import { STORAGE_KEYS, NAVIGATION_KEYS, TOUCH_SWIPE_THRESHOLD } from '@/lib/constants';
+import { STORAGE_KEYS, NAVIGATION_KEYS, TOUCH_SWIPE_THRESHOLD, ANNOUNCE_DEBOUNCE_TIME } from '@/lib/constants';
 import confetti from 'canvas-confetti';
 import { theme } from '@/config/theme';
 import CodeBlock from '@/components/CodeBlock';
@@ -285,22 +286,35 @@ function formatText(text: string, isDark: boolean): React.ReactNode {
 
 export default function ReaderPage() {
   const params = useParams();
+  const router = useRouter();
   const id = typeof params.id === 'string' ? params.id : Array.isArray(params.id) ? params.id[0] : '';
   const [readings] = useLocalStorage<Reading[]>(STORAGE_KEYS.READINGS, []);
   const [completedReadings, setCompletedReadings] = useLocalStorage<string[]>('completedReadings', []);
   const { settings } = useSettings();
+  useApplyAccessibilitySettings(settings);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [lastReadingId, setLastReadingId] = useState(id);
+  const [announcedIndex, setAnnouncedIndex] = useState(0);
   const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const announceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pageRef = useRef<HTMLDivElement | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const touchStartX = useRef<number>(0);
   const touchEndX = useRef<number>(0);
 
-  const fontFamilyClass = getFontFamilyClass(settings.fontFamily);
+  const fontFamilyClass = getFontFamilyClass(settings.accessibility?.fontFamily || 'serif');
   const fontSizeClasses = getFontSizeClasses(settings.fontSize);
   const themeClasses = getThemeClasses(settings.theme);
   const isDark = settings.theme === 'dark';
+
+  // Get content width directly for immediate render
+  const contentWidth = settings.accessibility?.contentWidth || 'medium';
+  const contentWidthStyle = {
+    narrow: '45ch',
+    medium: '65ch',
+    wide: '80ch',
+    full: 'none'
+  }[contentWidth];
 
   const reading = useMemo(() => {
     if (!id) return undefined;
@@ -316,7 +330,28 @@ export default function ReaderPage() {
   if (id !== lastReadingId) {
     setLastReadingId(id);
     setCurrentIndex(0);
+    setAnnouncedIndex(0);
   }
+
+  // Debounce announcements to avoid overwhelming screen readers during rapid navigation
+  useEffect(() => {
+    // Clear any existing timeout
+    if (announceTimeoutRef.current) {
+      clearTimeout(announceTimeoutRef.current);
+    }
+
+    // Set a new timeout to update the announcement after navigation stops
+    announceTimeoutRef.current = setTimeout(() => {
+      setAnnouncedIndex(currentIndex);
+    }, ANNOUNCE_DEBOUNCE_TIME);
+
+    // Cleanup on unmount or when currentIndex changes
+    return () => {
+      if (announceTimeoutRef.current) {
+        clearTimeout(announceTimeoutRef.current);
+      }
+    };
+  }, [currentIndex]);
 
   const handleNext = useCallback(() => {
     setCurrentIndex((prev) => {
@@ -336,9 +371,33 @@ export default function ReaderPage() {
     });
   }, []);
 
+  const toggleFullscreen = useCallback(() => {
+    if (!pageRef.current) return;
+    if (!document.fullscreenElement) {
+      pageRef.current.requestFullscreen?.().catch(() => {});
+    } else {
+      document.exitFullscreen?.().catch(() => {});
+    }
+  }, []);
+
+  const goToStart = useCallback(() => {
+    setCurrentIndex(0);
+  }, []);
+
+  const goToEnd = useCallback(() => {
+    setCurrentIndex(processedText.length - 1);
+  }, [processedText.length]);
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if user is typing in an input/textarea
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+        return;
+      }
+
+      // Arrow keys and basic navigation
       if (NAVIGATION_KEYS.NEXT.includes(e.key)) {
         e.preventDefault();
         handleNext();
@@ -346,11 +405,38 @@ export default function ReaderPage() {
         e.preventDefault();
         handlePrevious();
       }
+      // Space key navigation
+      else if (e.key === ' ') {
+        e.preventDefault();
+        if (e.shiftKey) {
+          handlePrevious();
+        } else {
+          handleNext();
+        }
+      }
+      // Home/End navigation
+      else if (e.key === 'Home') {
+        e.preventDefault();
+        goToStart();
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        goToEnd();
+      }
+      // Fullscreen toggle
+      else if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        toggleFullscreen();
+      }
+      // Exit reading (go back to dashboard)
+      else if (e.key === 'Backspace') {
+        e.preventDefault();
+        router.push('/');
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleNext, handlePrevious]);
+  }, [handleNext, handlePrevious, goToStart, goToEnd, toggleFullscreen, router]);
 
   // Touch gestures for mobile
   useEffect(() => {
@@ -401,19 +487,6 @@ export default function ReaderPage() {
     };
     document.addEventListener('fullscreenchange', onFsChange);
     return () => document.removeEventListener('fullscreenchange', onFsChange);
-  }, []);
-
-  const toggleFullscreen = useCallback(() => {
-    if (!pageRef.current) return;
-    if (!document.fullscreenElement) {
-      pageRef.current.requestFullscreen?.().catch(() => {});
-    } else {
-      document.exitFullscreen?.().catch(() => {});
-    }
-  }, []);
-
-  const goToStart = useCallback(() => {
-    setCurrentIndex(0);
   }, []);
 
   const handleFinishReading = useCallback(() => {
@@ -517,8 +590,28 @@ export default function ReaderPage() {
   const progress = processedText.length > 0 ? ((safeIndex + 1) / processedText.length) * 100 : 0;
   const isFinished = safeIndex === processedText.length - 1;
 
+  // Use debounced index for announcements
+  const safeAnnouncedIndex = Math.max(0, Math.min(announcedIndex, processedText.length - 1));
+
   return (
     <div ref={pageRef} className={`min-h-screen ${themeClasses.bg} ${fontFamilyClass}`}>
+      {/* Skip link for keyboard navigation */}
+      <a
+        href="#reader-main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-50 focus:bg-black focus:text-white focus:p-4 focus:rounded-b"
+      >
+        Skip to main reading content
+      </a>
+
+      {/* Live region for screen reader announcements */}
+      <div
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+        role="status"
+      >
+        Slide {safeAnnouncedIndex + 1} of {processedText.length}
+      </div>
       {/* Progress Bar */}
       <div className={`sticky top-0 z-10 ${themeClasses.cardBg} border-b ${themeClasses.border} shadow-sm`}>
         <div className="container mx-auto px-4 py-3">
@@ -540,8 +633,15 @@ export default function ReaderPage() {
       </div>
 
       {/* Content */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-4xl mx-auto">
+      <div id="reader-main-content" className="container mx-auto px-4 py-12">
+        <div 
+          key={currentIndex}
+          className="mx-auto animate-fadeIn" 
+          style={{ 
+            maxWidth: contentWidthStyle,
+            animation: settings.accessibility?.reduceMotion ? 'none' : 'fadeIn 0.15s ease-in'
+          }}
+        >
           <div className="mb-8 text-center">
             <h2 className={`${fontSizeClasses.title} font-semibold ${themeClasses.text} mb-2`}>
               {formatText(currentSentence.title, isDark)}

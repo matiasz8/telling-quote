@@ -31,7 +31,6 @@ export function useApplyAccessibilitySettings(settings: Settings) {
       letterSpacing: 'normal',
       lineHeight: 'normal',
       wordSpacing: 'normal',
-      highContrast: false,
       reduceMotion: false,
     };
 
@@ -55,13 +54,6 @@ export function useApplyAccessibilitySettings(settings: Settings) {
       root.style.wordSpacing = getWordSpacing(a11y.wordSpacing);
     }
 
-    // Apply high contrast mode
-    if (a11y.highContrast) {
-      root.classList.add('high-contrast');
-    } else {
-      root.classList.remove('high-contrast');
-    }
-
     // Apply reduce motion
     if (typeof a11y.reduceMotion === 'boolean') {
       if (a11y.reduceMotion) {
@@ -74,26 +66,6 @@ export function useApplyAccessibilitySettings(settings: Settings) {
     } else {
       root.classList.remove('reduce-motion');
     }
-    // Apply focus mode
-    if (a11y.focusMode) {
-      document.body.classList.add('focus-mode');
-    } else {
-      document.body.classList.remove('focus-mode');
-    }
-
-    // Apply content width
-    if (a11y.contentWidth) {
-      const contentWidthMap: Record<string, string> = {
-        'narrow': '45ch',
-        'medium': '65ch',
-        'wide': '80ch'
-      };
-      // Apply to reader content if it exists, otherwise to main element
-      const mainContent = document.getElementById('reader-main-content') || document.querySelector('main');
-      if (mainContent instanceof HTMLElement) {
-        mainContent.style.maxWidth = contentWidthMap[a11y.contentWidth] || '65ch';
-      }
-    }
 
     // Cleanup function to reset styles when component unmounts
     return () => {
@@ -104,11 +76,6 @@ export function useApplyAccessibilitySettings(settings: Settings) {
       root.style.letterSpacing = '';
       root.style.lineHeight = '';
       root.style.wordSpacing = '';
-
-      const mainContent = document.getElementById('reader-main-content');
-      if (mainContent) {
-        mainContent.style.maxWidth = '';
-      }
     };
   }, [settings]);
 }

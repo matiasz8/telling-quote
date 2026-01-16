@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { normalizeTags } from "@/lib/utils";
+import { useFocusTrap } from "@/hooks/useFocusTrap";
 
 interface EditTitleModalProps {
   isOpen: boolean;
@@ -20,6 +21,10 @@ export default function EditTitleModal({
 }: EditTitleModalProps) {
   const [title, setTitle] = useState(currentTitle);
   const [tagsInput, setTagsInput] = useState(currentTags?.join(", ") || "");
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  // Focus trap
+  useFocusTrap(modalRef, isOpen);
 
   // Update title and tags when current values change
   useEffect(() => {
@@ -66,8 +71,14 @@ export default function EditTitleModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-4 text-gray-600">Edit Title</h2>
+      <div 
+        ref={modalRef}
+        className="bg-white rounded-lg p-6 w-full max-w-md"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="edit-title-heading"
+      >
+        <h2 id="edit-title-heading" className="text-xl font-semibold mb-4 text-gray-600">Edit Title</h2>
         <input
           type="text"
           value={title}
