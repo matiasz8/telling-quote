@@ -26,6 +26,7 @@ export type AccessibilitySettings = {
   wordSpacing: WordSpacing;
   reduceMotion: boolean;
   contentWidth?: ContentWidth;
+  readingLineFocus?: boolean; // Issue #5: Focus/blur mode for reading lines
 };
 
 export type Settings = {

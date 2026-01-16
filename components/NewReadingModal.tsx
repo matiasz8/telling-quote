@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Reading } from "@/types";
 import { formatMarkdown, normalizeTags } from "@/lib/utils";
 import { useSettings } from "@/hooks/useSettings";
+import { useFocusTrap } from "@/hooks/useFocusTrap";
 
 interface NewReadingModalProps {
   isOpen: boolean;
@@ -26,6 +27,32 @@ export default function NewReadingModal({
   const [tagsInput, setTagsInput] = useState("");
   const [error, setError] = useState<string | null>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  // Focus trap
+  useFocusTrap(modalRef, isOpen);
+
+  const handleCancel = useCallback(() => {
+    setText("");
+    setTitleInput("");
+    setTagsInput("");
+    setError(null);
+    onClose();
+  }, [onClose]);
+
+  // Escape key handler
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        handleCancel();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen, handleCancel]);
 
   // Auto-focus title input when modal opens
   useEffect(() => {
@@ -85,17 +112,11 @@ export default function NewReadingModal({
     onClose();
   };
 
-  const handleCancel = () => {
-    setText("");
-    setTitleInput("");
-    setTagsInput("");
-    setError(null);
-    onClose();
-  };
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className={`rounded-lg p-6 w-full max-w-2xl max-h-[80vh] flex flex-col ${
+      <div 
+        ref={modalRef}
+        className={`rounded-lg p-6 w-full max-w-2xl max-h-[80vh] flex flex-col ${
         isHighContrast
           ? "bg-black border-2 border-white"
           : isDetox
@@ -103,8 +124,12 @@ export default function NewReadingModal({
           : isDark
           ? "bg-gray-800"
           : "bg-white"
-      }`}>
-        <h2 className={`text-xl font-semibold mb-4 ${
+      }`}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="new-reading-title"
+      >
+        <h2 id="new-reading-title" className={`text-xl font-semibold mb-4 ${
           isHighContrast
             ? "text-white"
             : isDetox
