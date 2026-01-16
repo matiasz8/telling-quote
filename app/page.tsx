@@ -191,9 +191,17 @@ export default function Home() {
                   relative px-6 py-3 font-semibold text-base transition-all duration-200
                   ${
                     activeTab === "active"
-                      ? isDark
+                      ? isHighContrast
+                        ? "text-white"
+                        : isDetox
+                        ? "text-gray-900"
+                        : isDark
                         ? "text-purple-400"
                         : "text-lime-600"
+                      : isHighContrast
+                      ? "text-gray-400 hover:text-white"
+                      : isDetox
+                      ? "text-gray-500 hover:text-gray-700"
                       : isDark
                       ? "text-gray-400 hover:text-gray-300"
                       : "text-gray-500 hover:text-gray-700"
@@ -220,9 +228,15 @@ export default function Home() {
                     ml-1 px-2 py-0.5 rounded-full text-xs font-bold
                     ${
                       activeTab === "active"
-                        ? isDark
+                        ? isHighContrast
+                          ? "bg-white text-black"
+                          : isDetox
+                          ? "bg-gray-200 text-gray-900"
+                          : isDark
                           ? "bg-purple-500/20 text-purple-300"
                           : "bg-lime-500/20 text-lime-700"
+                        : isHighContrast
+                        ? "bg-gray-700 text-gray-300"
                         : "bg-gray-500/20 text-gray-500"
                     }
                   `}
@@ -233,7 +247,13 @@ export default function Home() {
                 {activeTab === "active" && (
                   <div
                     className={`absolute bottom-0 left-0 right-0 h-0.5 ${
-                      isDark ? "bg-purple-500" : "bg-lime-500"
+                      isHighContrast
+                        ? "bg-white"
+                        : isDetox
+                        ? "bg-gray-900"
+                        : isDark
+                        ? "bg-purple-500"
+                        : "bg-lime-500"
                     }`}
                   />
                 )}
@@ -245,9 +265,17 @@ export default function Home() {
                   relative px-6 py-3 font-semibold text-base transition-all duration-200
                   ${
                     activeTab === "completed"
-                      ? isDark
+                      ? isHighContrast
+                        ? "text-white"
+                        : isDetox
+                        ? "text-gray-900"
+                        : isDark
                         ? "text-purple-400"
                         : "text-lime-600"
+                      : isHighContrast
+                      ? "text-gray-400 hover:text-white"
+                      : isDetox
+                      ? "text-gray-500 hover:text-gray-700"
                       : isDark
                       ? "text-gray-400 hover:text-gray-300"
                       : "text-gray-500 hover:text-gray-700"
@@ -274,9 +302,15 @@ export default function Home() {
                     ml-1 px-2 py-0.5 rounded-full text-xs font-bold
                     ${
                       activeTab === "completed"
-                        ? isDark
+                        ? isHighContrast
+                          ? "bg-white text-black"
+                          : isDetox
+                          ? "bg-gray-200 text-gray-900"
+                          : isDark
                           ? "bg-purple-500/20 text-purple-300"
                           : "bg-lime-500/20 text-lime-700"
+                        : isHighContrast
+                        ? "bg-gray-700 text-gray-300"
                         : "bg-gray-500/20 text-gray-500"
                     }
                   `}
@@ -287,7 +321,13 @@ export default function Home() {
                 {activeTab === "completed" && (
                   <div
                     className={`absolute bottom-0 left-0 right-0 h-0.5 ${
-                      isDark ? "bg-purple-500" : "bg-lime-500"
+                      isHighContrast
+                        ? "bg-white"
+                        : isDetox
+                        ? "bg-gray-900"
+                        : isDark
+                        ? "bg-purple-500"
+                        : "bg-lime-500"
                     }`}
                   />
                 )}
