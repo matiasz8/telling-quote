@@ -27,7 +27,12 @@ export default function AccessibilityStatement() {
       {/* Header */}
       <header className={`${themeClasses.cardBg} border-b ${themeClasses.border} shadow-sm`}>
         <div className="container mx-auto px-4 py-4">
-          <Link href="/" className={`text-lg font-bold ${themeClasses.text} hover:${isDark ? 'text-purple-300' : 'text-emerald-700'}`}>
+          <Link
+            href="/"
+            className={`text-lg font-bold ${themeClasses.text} ${
+              isDark ? 'hover:text-purple-300' : 'hover:text-emerald-700'
+            }`}
+          >
             ← Back to Dashboard
           </Link>
         </div>
@@ -217,7 +222,7 @@ export default function AccessibilityStatement() {
             </p>
             <div className={`p-4 rounded-lg ${isDark ? 'bg-gray-800' : 'bg-white'} ${isDark ? 'border border-purple-500/30' : 'border border-emerald-200'}`}>
               <p className={`${themeClasses.textSecondary} font-medium`}>
-                📧 Email: <a href="mailto:accessibility@telling.local" className={`${isDark ? 'text-purple-300 hover:text-purple-200' : 'text-emerald-600 hover:text-emerald-700'} underline`}>accessibility@telling.local</a>
+              📧 Email: <a href="mailto:accessibility@tellingquote.app" className={`${isDark ? 'text-purple-300 hover:text-purple-200' : 'text-emerald-600 hover:text-emerald-700'} underline`}>accessibility@tellingquote.app</a>
               </p>
               <p className={`${themeClasses.textSecondary} text-sm mt-2`}>
                 Please include details about the barrier you experienced and the browser you were using.

@@ -57,7 +57,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
     return isDark ? 'bg-purple-900/30 text-purple-300' : 'bg-emerald-50 text-emerald-700';
   };
   const accessibility = settings.accessibility || {
-    fontFamily: settings.fontFamily,
+    fontFamily: 'serif' as FontFamily,
     letterSpacing: 'normal',
     lineHeight: 'normal',
     wordSpacing: 'normal',
@@ -68,7 +68,13 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
   };
 
   const handleFontFamilyChange = (fontFamily: FontFamily) => {
-    onSave({ ...settings, fontFamily });
+    onSave({
+      ...settings,
+      accessibility: {
+        ...accessibility,
+        fontFamily,
+      },
+    });
   };
 
   const handleFontSizeChange = (fontSize: FontSize) => {
@@ -145,7 +151,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                       onClick={() => handleFontFamilyChange(option.value)}
                       aria-label={`Select ${option.label} font`}
                       className={`p-3 border-2 rounded-lg transition-all duration-200 ${option.className} ${
-                        settings.fontFamily === option.value
+                        accessibility.fontFamily === option.value
                           ? getActiveAccentClass()
                           : getAccentClass()
                       }`}
@@ -227,13 +233,16 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
             <div className="mt-4 space-y-6">
               {/* Dyslexia-friendly Font */}
               <div>
-                <label className={`block text-sm font-medium ${getTextClass()} mb-2`}>
+                <label
+                  htmlFor="dyslexia-font-select"
+                  className={`block text-sm font-medium ${getTextClass()} mb-2`}
+                >
                   Dyslexia-Friendly Font
                 </label>
                 <select
+                  id="dyslexia-font-select"
                   value={accessibility.fontFamily}
                   onChange={(e) => handleAccessibilityChange('fontFamily', e.target.value as FontFamily)}
-                  aria-label="Select dyslexia-friendly font"
                   className={`w-full p-2 rounded-lg border-2 transition-all ${
                     isHighContrast
                       ? 'bg-black border-white text-white'
@@ -254,10 +263,10 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
 
               {/* Letter Spacing */}
               <div>
-                <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
+                <label id="letter-spacing-label" className={`block text-sm font-medium ${getTextClass()} mb-3`}>
                   Letter Spacing
                 </label>
-                <div className="space-y-2">
+                <div className="space-y-2" role="radiogroup" aria-labelledby="letter-spacing-label">
                   {Object.entries(themeConfig.letterSpacing).map(([key, option]) => (
                     <label key={key} className="flex items-center gap-3 cursor-pointer">
                       <input
@@ -277,10 +286,10 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
 
               {/* Line Height */}
               <div>
-                <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
+                <label id="line-height-label" className={`block text-sm font-medium ${getTextClass()} mb-3`}>
                   Line Height
                 </label>
-                <div className="space-y-2">
+                <div className="space-y-2" role="radiogroup" aria-labelledby="line-height-label">
                   {Object.entries(themeConfig.lineHeight).map(([key, option]) => (
                     <label key={key} className="flex items-center gap-3 cursor-pointer">
                       <input
@@ -300,10 +309,10 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
 
               {/* Word Spacing */}
               <div>
-                <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
+                <label id="word-spacing-label" className={`block text-sm font-medium ${getTextClass()} mb-3`}>
                   Word Spacing
                 </label>
-                <div className="space-y-2">
+                <div className="space-y-2" role="radiogroup" aria-labelledby="word-spacing-label">
                   {Object.entries(themeConfig.wordSpacing).map(([key, option]) => (
                     <label key={key} className="flex items-center gap-3 cursor-pointer">
                       <input
@@ -347,10 +356,10 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
 
               {/* Content Width */}
               <div>
-                <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
+                <label id="content-width-label" className={`block text-sm font-medium ${getTextClass()} mb-3`}>
                   Content Width
                 </label>
-                <div className="space-y-2">
+                <div className="space-y-2" role="radiogroup" aria-labelledby="content-width-label">
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input
                       type="radio"

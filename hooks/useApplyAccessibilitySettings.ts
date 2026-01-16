@@ -88,10 +88,27 @@ export function useApplyAccessibilitySettings(settings: Settings) {
         'medium': '65ch',
         'wide': '80ch'
       };
-      const mainContent = document.getElementById('reader-main-content');
-      if (mainContent) {
+      // Apply to reader content if it exists, otherwise to main element
+      const mainContent = document.getElementById('reader-main-content') || document.querySelector('main');
+      if (mainContent instanceof HTMLElement) {
         mainContent.style.maxWidth = contentWidthMap[a11y.contentWidth] || '65ch';
       }
     }
+
+    // Cleanup function to reset styles when component unmounts
+    return () => {
+      if (typeof document === 'undefined') return;
+      
+      const root = document.documentElement;
+      root.style.fontFamily = '';
+      root.style.letterSpacing = '';
+      root.style.lineHeight = '';
+      root.style.wordSpacing = '';
+
+      const mainContent = document.getElementById('reader-main-content');
+      if (mainContent) {
+        mainContent.style.maxWidth = '';
+      }
+    };
   }, [settings]);
 }

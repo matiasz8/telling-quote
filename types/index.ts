@@ -31,7 +31,6 @@ export type AccessibilitySettings = {
 };
 
 export type Settings = {
-  fontFamily: FontFamily;
   fontSize: FontSize;
   theme: Theme;
   accessibility?: AccessibilitySettings;

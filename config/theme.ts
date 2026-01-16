@@ -108,7 +108,7 @@ export const theme = {
   },
 
   wordSpacing: {
-    normal: { value: '0', label: 'Normal' },
+    normal: { value: 'normal', label: 'Normal' },
     wide: { value: '0.1em', label: 'Wide' },
   },
 
