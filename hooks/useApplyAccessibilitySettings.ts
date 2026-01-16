@@ -12,6 +12,7 @@ export function useApplyAccessibilitySettings(settings: Settings) {
     if (typeof document === 'undefined') return;
 
     const root = document.documentElement;
+    const body = document.body;
 
     // Remove all theme classes first
     root.classList.remove('dark-theme', 'detox-theme', 'high-contrast-theme');
@@ -69,9 +70,9 @@ export function useApplyAccessibilitySettings(settings: Settings) {
 
     // Apply focus mode
     if (a11y.focusMode) {
-      root.classList.add('focus-mode');
+      body.classList.add('focus-mode');
     } else {
-      root.classList.remove('focus-mode');
+      body.classList.remove('focus-mode');
     }
 
     // Cleanup function to reset styles when component unmounts
@@ -79,10 +80,12 @@ export function useApplyAccessibilitySettings(settings: Settings) {
       if (typeof document === 'undefined') return;
       
       const root = document.documentElement;
+      const body = document.body;
       root.style.fontFamily = '';
       root.style.letterSpacing = '';
       root.style.lineHeight = '';
       root.style.wordSpacing = '';
+      body.classList.remove('focus-mode');
     };
   }, [settings]);
 }
