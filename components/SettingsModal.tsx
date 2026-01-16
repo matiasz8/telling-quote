@@ -208,7 +208,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
         {/* Accessibility Settings Section */}
         <div className="mb-6 border-t border-gray-300 dark:border-gray-700 pt-4">
           <button
-            onClick={() => setExpandedSection(expandedSection === 'accessibility' ? 'general' : 'accessibility')}
+            onClick={() => setExpandedSection(expandedSection === 'accessibility' ? '' : 'accessibility')}
             className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors ${
               expandedSection === 'accessibility'
                 ? getHeaderBgClass()
