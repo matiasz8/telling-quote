@@ -1,7 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible&display=swap');
 @import "tailwindcss";
 
-/* Load Atkinson Hyperlegible from Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible&display=swap');
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
 
 /* Load OpenDyslexic (Bold and Italic variants) */
 @font-face {
@@ -26,13 +31,6 @@
   font-weight: normal;
   font-style: italic;
   font-display: swap;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
 :root {
