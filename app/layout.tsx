@@ -77,12 +77,16 @@ export default function RootLayout({
                   }
                   
                   // Apply reduce motion
-                  if (a11y.reduceMotion) {
-                    root.classList.add('reduce-motion');
-                  }
+                  const hasUserReduceMotionPreference = typeof a11y.reduceMotion === 'boolean';
                   
-                  // Check for system preference for reduced motion
-                  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                  if (hasUserReduceMotionPreference) {
+                    if (a11y.reduceMotion) {
+                      root.classList.add('reduce-motion');
+                    } else {
+                      root.classList.remove('reduce-motion');
+                    }
+                  } else if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    // Fall back to system preference for reduced motion only if no explicit user preference
                     root.classList.add('reduce-motion');
                   }
                 } catch (e) {}
