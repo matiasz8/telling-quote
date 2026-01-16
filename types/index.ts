@@ -17,17 +17,16 @@ export type LineHeightOption = 'compact' | 'normal' | 'relaxed' | 'loose';
 
 export type WordSpacing = 'normal' | 'wide';
 
-export type ContentWidth = 'narrow' | 'medium' | 'wide';
+export type ContentWidth = 'narrow' | 'medium' | 'wide' | 'full';
 
 export type AccessibilitySettings = {
   fontFamily: FontFamily;
   letterSpacing: LetterSpacing;
   lineHeight: LineHeightOption;
   wordSpacing: WordSpacing;
-  highContrast: boolean;
   reduceMotion: boolean;
   contentWidth?: ContentWidth;
-  focusMode?: boolean;
+  readingLineFocus?: boolean; // Issue #5: Focus/blur mode for reading lines
 };
 
 export type Settings = {

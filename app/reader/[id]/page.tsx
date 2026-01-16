@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useState, useMemo, useEffect, useRef, useCallback, Fragment } from 'react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useSettings } from '@/hooks/useSettings';
+import { useApplyAccessibilitySettings } from '@/hooks/useApplyAccessibilitySettings';
 import { Reading } from '@/types';
 import { processContent, getFontFamilyClass, getFontSizeClasses, getThemeClasses } from '@/lib/utils';
 import { STORAGE_KEYS, NAVIGATION_KEYS, TOUCH_SWIPE_THRESHOLD, ANNOUNCE_DEBOUNCE_TIME } from '@/lib/constants';
@@ -289,6 +290,7 @@ export default function ReaderPage() {
   const [readings] = useLocalStorage<Reading[]>(STORAGE_KEYS.READINGS, []);
   const [completedReadings, setCompletedReadings] = useLocalStorage<string[]>('completedReadings', []);
   const { settings } = useSettings();
+  useApplyAccessibilitySettings(settings);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [lastReadingId, setLastReadingId] = useState(id);
   const [announcedIndex, setAnnouncedIndex] = useState(0);
@@ -303,6 +305,15 @@ export default function ReaderPage() {
   const fontSizeClasses = getFontSizeClasses(settings.fontSize);
   const themeClasses = getThemeClasses(settings.theme);
   const isDark = settings.theme === 'dark';
+
+  // Get content width directly for immediate render
+  const contentWidth = settings.accessibility?.contentWidth || 'medium';
+  const contentWidthStyle = {
+    narrow: '45ch',
+    medium: '65ch',
+    wide: '80ch',
+    full: 'none'
+  }[contentWidth];
 
   const reading = useMemo(() => {
     if (!id) return undefined;
@@ -584,7 +595,14 @@ export default function ReaderPage() {
 
       {/* Content */}
       <div id="reader-main-content" className="container mx-auto px-4 py-12">
-        <div className="max-w-4xl mx-auto">
+        <div 
+          key={currentIndex}
+          className="mx-auto animate-fadeIn" 
+          style={{ 
+            maxWidth: contentWidthStyle,
+            animation: settings.accessibility?.reduceMotion ? 'none' : 'fadeIn 0.15s ease-in'
+          }}
+        >
           <div className="mb-8 text-center">
             <h2 className={`${fontSizeClasses.title} font-semibold ${themeClasses.text} mb-2`}>
               {formatText(currentSentence.title, isDark)}

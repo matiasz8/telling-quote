@@ -1,15 +1,40 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+}
+
+/* Load OpenDyslexic (Bold and Italic variants) */
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('https://cdn.jsdelivr.net/gh/antijingoist/opendyslexic@master/compiled/OpenDyslexic-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('https://cdn.jsdelivr.net/gh/antijingoist/opendyslexic@master/compiled/OpenDyslexic-Bold.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('https://cdn.jsdelivr.net/gh/antijingoist/opendyslexic@master/compiled/OpenDyslexic-Italic.otf') format('opentype');
+  font-weight: normal;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -23,4 +48,278 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ===== Accessibility Styles ===== */
+
+/* Skip Link - for keyboard users */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.sr-only:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip: auto;
+  padding: 1rem;
+  margin: 0;
+  background-color: #000;
+  color: #fff;
+  z-index: 999;
+}
+
+/* Focus Indicators */
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* High Contrast Mode */
+html.high-contrast {
+  background: #000;
+  color: #fff;
+}
+
+html.high-contrast body {
+  background: #000;
+  color: #fff;
+}
+
+html.high-contrast button {
+  border: 2px solid #fff;
+}
+
+html.high-contrast button:focus-visible {
+  outline: 2px solid #fff;
+}
+
+/* Reduce Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+html.reduce-motion *,
+html.reduce-motion *::before,
+html.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* Fade-in animation for reader content */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Font Family Utilities */
+.font-opendyslexic {
+  font-family: 'OpenDyslexic', sans-serif;
+}
+
+.font-comic-sans {
+  font-family: 'Comic Sans MS', cursive;
+}
+
+.font-atkinson {
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+}
+
+/* Dyslexia-friendly font support with font-face */
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('https://cdn.jsdelivr.net/npm/opendyslexic@2.0.15/fonts/OpenDyslexic-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Text Spacing Utilities */
+.letter-spacing-normal {
+  letter-spacing: normal;
+}
+
+.letter-spacing-wide {
+  letter-spacing: 0.05em;
+}
+
+.letter-spacing-extra-wide {
+  letter-spacing: 0.1em;
+}
+
+.line-height-compact {
+  line-height: 1.4;
+}
+
+.line-height-normal {
+  line-height: 1.6;
+}
+
+.line-height-relaxed {
+  line-height: 1.8;
+}
+
+.line-height-loose {
+  line-height: 2.0;
+}
+
+.word-spacing-normal {
+  word-spacing: normal;
+}
+
+.word-spacing-wide {
+  word-spacing: 0.1em;
+}
+
+/* ===== Theme Styles ===== */
+
+/* Dark Theme */
+html.dark-theme {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+}
+
+html.dark-theme body {
+  background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+  color: #ededed;
+}
+
+html.dark-theme header {
+  background: linear-gradient(to right, #1a0f2e 0%, #0a0a0a 100%);
+  border-color: #3d2645;
+}
+
+html.dark-theme button {
+  color: #ededed;
+}
+
+/* Detox Theme */
+html.detox-theme {
+  --background: #ffffff;
+  --foreground: #111827;
+}
+
+html.detox-theme body {
+  background: #ffffff;
+  color: #111827;
+}
+
+html.detox-theme header {
+  background: #ffffff;
+  border-color: #e5e7eb;
+}
+
+html.detox-theme button {
+  color: #111827;
+  border-color: #e5e7eb;
+  background: #f9fafb;
+}
+
+html.detox-theme button:hover {
+  background: #f3f4f6;
+}
+
+html.detox-theme .card,
+html.detox-theme article {
+  background: #f9fafb;
+  border-color: #e5e7eb;
+}
+
+/* High Contrast Theme */
+html.high-contrast-theme {
+  --background: #000000;
+  --foreground: #ffffff;
+}
+
+html.high-contrast-theme body {
+  background: #000000;
+  color: #ffffff;
+}
+
+html.high-contrast-theme header {
+  background: #000000;
+  border: 2px solid #ffffff;
+}
+
+html.high-contrast-theme button {
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  background: #000000;
+}
+
+html.high-contrast-theme button:hover {
+  background: #ffffff;
+  color: #000000;
+}
+
+html.high-contrast-theme button:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+html.high-contrast-theme .card,
+html.high-contrast-theme article {
+  background: #000000;
+  border: 2px solid #ffffff;
+  color: #ffffff;
+}
+/* ===== Focus Mode Styles ===== */
+/* When focus mode is enabled, dim everything except main content */
+body.focus-mode {
+  --focus-mode-dim-opacity: 0.4;
+}
+
+body.focus-mode header {
+  opacity: var(--focus-mode-dim-opacity);
+  pointer-events: none;
+}
+
+body.focus-mode footer {
+  opacity: var(--focus-mode-dim-opacity);
+  pointer-events: none;
+}
+
+/* Highlight the main reader content container */
+body.focus-mode #reader-main-content {
+  opacity: 1;
+  pointer-events: auto;
+  position: relative;
+  z-index: 10;
+}
+
+body.focus-mode .sticky {
+  opacity: var(--focus-mode-dim-opacity);
+  pointer-events: none;
+}
+
+/* Allow navigation buttons in progress bar to still work */
+body.focus-mode .sticky.top-0 a {
+  opacity: 1;
+  pointer-events: auto;
 }
