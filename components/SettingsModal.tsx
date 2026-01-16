@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Settings, FontFamily, FontSize, Theme, AccessibilitySettings, LetterSpacing, LineHeightOption, WordSpacing } from '@/types';
 import { FONT_FAMILY_OPTIONS, FONT_SIZE_OPTIONS, THEME_OPTIONS } from '@/lib/constants';
 import { theme as themeConfig } from '@/config/theme';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -14,6 +15,24 @@ interface SettingsModalProps {
 
 export default function SettingsModal({ isOpen, onClose, settings, onSave }: SettingsModalProps) {
   const [expandedSection, setExpandedSection] = useState<'general' | 'accessibility' | ''>('general');
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  // Focus trap
+  useFocusTrap(modalRef, isOpen);
+
+  // Escape key handler
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
