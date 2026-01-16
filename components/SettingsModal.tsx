@@ -120,7 +120,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
         </div>
 
         {/* Preview Text */}
-        <div className={`mb-6 p-4 rounded-lg border-2 ${getAccentClass()}`}>
+        <div className={`sticky top-0 z-10 mb-6 p-4 rounded-lg border-2 ${getBgClass()} ${getAccentClass()}`}>
           <div className={`text-xs font-medium mb-2 ${getTextClass()}`}>Preview</div>
           <div
             style={{
