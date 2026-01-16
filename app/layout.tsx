@@ -33,8 +33,6 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible&display=swap"
           rel="stylesheet"
         />
-      </head>
-      <head>
         <script
           dangerouslySetInnerHTML={{
             __html: `

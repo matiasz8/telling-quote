@@ -129,6 +129,16 @@ html.reduce-motion *::after {
   transition-duration: 0.01ms !important;
 }
 
+/* Fade-in animation for reader content */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 /* Font Family Utilities */
 .font-opendyslexic {
   font-family: 'OpenDyslexic', sans-serif;
