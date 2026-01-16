@@ -95,7 +95,7 @@ export const theme = {
 
   // Text spacing options for accessibility
   letterSpacing: {
-    normal: { value: '0', label: 'Normal' },
+    normal: { value: 'normal', label: 'Normal' },
     wide: { value: '0.05em', label: 'Wide' },
     'extra-wide': { value: '0.1em', label: 'Extra Wide' },
   },
