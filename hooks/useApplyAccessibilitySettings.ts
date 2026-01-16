@@ -92,5 +92,6 @@ export function useApplyAccessibilitySettings(settings: Settings) {
       if (mainContent) {
         mainContent.style.maxWidth = contentWidthMap[a11y.contentWidth] || '65ch';
       }
-    }  }, [settings]);
+    }
+  }, [settings]);
 }
