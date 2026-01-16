@@ -132,9 +132,12 @@ export default function AccessibilityStatement() {
                 </h3>
                 <ul className={`${themeClasses.textSecondary} space-y-2 ml-6`}>
                   <li><strong>Full Keyboard Support:</strong> All functionality accessible via keyboard</li>
+                  <li><strong>Focus Trap in Modals:</strong> Tab cycling prevents focus from escaping modals</li>
                   <li><strong>Focus Indicators:</strong> Clear visual indicators for focused elements</li>
                   <li><strong>Tab Navigation:</strong> Logical tab order through interactive elements</li>
+                  <li><strong>Escape Key:</strong> Close any modal or dialog with Escape key</li>
                   <li><strong>Keyboard Shortcuts:</strong> Press ? to view all available shortcuts</li>
+                  <li><strong>Auto-focus:</strong> Important actions automatically receive focus when modals open</li>
                 </ul>
               </div>
 
@@ -169,44 +172,96 @@ export default function AccessibilityStatement() {
             <h2 className={`${fontSizeClasses.subtitle} font-semibold ${themeClasses.text} mb-6`}>
               Keyboard Shortcuts
             </h2>
-            <p className={`${themeClasses.textSecondary} mb-6 leading-relaxed`}>
-              Available shortcuts throughout the application:
+            <p className={`${themeClasses.textSecondary} mb-4 leading-relaxed`}>
+              Press <kbd className={`px-2 py-1 rounded text-sm font-medium ${isDark ? 'bg-gray-800 text-gray-100' : 'bg-gray-200 text-gray-900'}`}>?</kbd> anywhere in the app to view the complete list. Here are the most commonly used shortcuts:
             </p>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className={`p-4 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
-                <div className="flex gap-3 mb-3">
-                  <kbd className={`px-2 py-1 rounded text-sm font-medium shrink-0 ${isDark ? 'bg-gray-800 text-gray-100' : 'bg-gray-200 text-gray-900'}`}>Tab</kbd>
-                  <span className={`text-sm ${themeClasses.textSecondary}`}>Move to next element</span>
+            
+            {/* General Navigation */}
+            <div className="mb-6">
+              <h3 className={`text-lg font-semibold ${themeClasses.text} mb-3`}>
+                General Navigation
+              </h3>
+              <div className="grid md:grid-cols-2 gap-3">
+                <div className={`p-3 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                  <div className="flex gap-3 items-center">
+                    <kbd className={`px-2 py-1 rounded text-sm font-medium shrink-0 ${isDark ? 'bg-gray-800 text-gray-100' : 'bg-gray-200 text-gray-900'}`}>Tab</kbd>
+                    <span className={`text-sm ${themeClasses.textSecondary}`}>Next element</span>
+                  </div>
+                </div>
+                <div className={`p-3 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                  <div className="flex gap-3 items-center">
+                    <kbd className={`px-2 py-1 rounded text-sm font-medium shrink-0 ${isDark ? 'bg-gray-800 text-gray-100' : 'bg-gray-200 text-gray-900'}`}>Shift + Tab</kbd>
+                    <span className={`text-sm ${themeClasses.textSecondary}`}>Previous element</span>
+                  </div>
+                </div>
+                <div className={`p-3 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                  <div className="flex gap-3 items-center">
+                    <kbd className={`px-2 py-1 rounded text-sm font-medium shrink-0 ${isDark ? 'bg-gray-800 text-gray-100' : 'bg-gray-200 text-gray-900'}`}>Esc</kbd>
+                    <span className={`text-sm ${themeClasses.textSecondary}`}>Close modals</span>
+                  </div>
+                </div>
+                <div className={`p-3 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                  <div className="flex gap-3 items-center">
+                    <kbd className={`px-2 py-1 rounded text-sm font-medium shrink-0 ${isDark ? 'bg-gray-800 text-gray-100' : 'bg-gray-200 text-gray-900'}`}>?</kbd>
+                    <span className={`text-sm ${themeClasses.textSecondary}`}>Show all shortcuts</span>
+                  </div>
                 </div>
               </div>
-              <div className={`p-4 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
-                <div className="flex gap-3 mb-3">
-                  <kbd className={`px-2 py-1 rounded text-sm font-medium shrink-0 ${isDark ? 'bg-gray-800 text-gray-100' : 'bg-gray-200 text-gray-900'}`}>Shift + Tab</kbd>
-                  <span className={`text-sm ${themeClasses.textSecondary}`}>Move to previous element</span>
+            </div>
+
+            {/* Reading Mode */}
+            <div>
+              <h3 className={`text-lg font-semibold ${themeClasses.text} mb-3`}>
+                Reading Mode
+              </h3>
+              <div className="grid md:grid-cols-2 gap-3">
+                <div className={`p-3 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                  <div className="flex gap-3 items-center">
+                    <kbd className={`px-2 py-1 rounded text-sm font-medium shrink-0 ${isDark ? 'bg-gray-800 text-gray-100' : 'bg-gray-200 text-gray-900'}`}>Space</kbd>
+                    <span className={`text-sm ${themeClasses.textSecondary}`}>Next slide</span>
+                  </div>
                 </div>
-              </div>
-              <div className={`p-4 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
-                <div className="flex gap-3 mb-3">
-                  <kbd className={`px-2 py-1 rounded text-sm font-medium shrink-0 ${isDark ? 'bg-gray-800 text-gray-100' : 'bg-gray-200 text-gray-900'}`}>Enter</kbd>
-                  <span className={`text-sm ${themeClasses.textSecondary}`}>Activate button / Next slide</span>
+                <div className={`p-3 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                  <div className="flex gap-3 items-center">
+                    <kbd className={`px-2 py-1 rounded text-sm font-medium shrink-0 ${isDark ? 'bg-gray-800 text-gray-100' : 'bg-gray-200 text-gray-900'}`}>Shift + Space</kbd>
+                    <span className={`text-sm ${themeClasses.textSecondary}`}>Previous slide</span>
+                  </div>
                 </div>
-              </div>
-              <div className={`p-4 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
-                <div className="flex gap-3 mb-3">
-                  <kbd className={`px-2 py-1 rounded text-sm font-medium shrink-0 ${isDark ? 'bg-gray-800 text-gray-100' : 'bg-gray-200 text-gray-900'}`}>Esc</kbd>
-                  <span className={`text-sm ${themeClasses.textSecondary}`}>Close modal / Settings</span>
+                <div className={`p-3 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                  <div className="flex gap-3 items-center">
+                    <kbd className={`px-2 py-1 rounded text-sm font-medium shrink-0 ${isDark ? 'bg-gray-800 text-gray-100' : 'bg-gray-200 text-gray-900'}`}>← →</kbd>
+                    <span className={`text-sm ${themeClasses.textSecondary}`}>Navigate slides</span>
+                  </div>
                 </div>
-              </div>
-              <div className={`p-4 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
-                <div className="flex gap-3 mb-3">
-                  <kbd className={`px-2 py-1 rounded text-sm font-medium shrink-0 ${isDark ? 'bg-gray-800 text-gray-100' : 'bg-gray-200 text-gray-900'}`}>?</kbd>
-                  <span className={`text-sm ${themeClasses.textSecondary}`}>Show keyboard shortcuts</span>
+                <div className={`p-3 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                  <div className="flex gap-3 items-center">
+                    <kbd className={`px-2 py-1 rounded text-sm font-medium shrink-0 ${isDark ? 'bg-gray-800 text-gray-100' : 'bg-gray-200 text-gray-900'}`}>↑ ↓</kbd>
+                    <span className={`text-sm ${themeClasses.textSecondary}`}>Navigate slides</span>
+                  </div>
                 </div>
-              </div>
-              <div className={`p-4 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
-                <div className="flex gap-3 mb-3">
-                  <kbd className={`px-2 py-1 rounded text-sm font-medium shrink-0 ${isDark ? 'bg-gray-800 text-gray-100' : 'bg-gray-200 text-gray-900'}`}>← →</kbd>
-                  <span className={`text-sm ${themeClasses.textSecondary}`}>Previous / Next slide</span>
+                <div className={`p-3 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                  <div className="flex gap-3 items-center">
+                    <kbd className={`px-2 py-1 rounded text-sm font-medium shrink-0 ${isDark ? 'bg-gray-800 text-gray-100' : 'bg-gray-200 text-gray-900'}`}>Home</kbd>
+                    <span className={`text-sm ${themeClasses.textSecondary}`}>First slide</span>
+                  </div>
+                </div>
+                <div className={`p-3 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                  <div className="flex gap-3 items-center">
+                    <kbd className={`px-2 py-1 rounded text-sm font-medium shrink-0 ${isDark ? 'bg-gray-800 text-gray-100' : 'bg-gray-200 text-gray-900'}`}>End</kbd>
+                    <span className={`text-sm ${themeClasses.textSecondary}`}>Last slide</span>
+                  </div>
+                </div>
+                <div className={`p-3 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                  <div className="flex gap-3 items-center">
+                    <kbd className={`px-2 py-1 rounded text-sm font-medium shrink-0 ${isDark ? 'bg-gray-800 text-gray-100' : 'bg-gray-200 text-gray-900'}`}>F</kbd>
+                    <span className={`text-sm ${themeClasses.textSecondary}`}>Toggle fullscreen</span>
+                  </div>
+                </div>
+                <div className={`p-3 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                  <div className="flex gap-3 items-center">
+                    <kbd className={`px-2 py-1 rounded text-sm font-medium shrink-0 ${isDark ? 'bg-gray-800 text-gray-100' : 'bg-gray-200 text-gray-900'}`}>Backspace</kbd>
+                    <span className={`text-sm ${themeClasses.textSecondary}`}>Exit reading</span>
+                  </div>
                 </div>
               </div>
             </div>
