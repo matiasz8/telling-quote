@@ -370,9 +370,33 @@ export default function ReaderPage() {
     });
   }, []);
 
+  const toggleFullscreen = useCallback(() => {
+    if (!pageRef.current) return;
+    if (!document.fullscreenElement) {
+      pageRef.current.requestFullscreen?.().catch(() => {});
+    } else {
+      document.exitFullscreen?.().catch(() => {});
+    }
+  }, []);
+
+  const goToStart = useCallback(() => {
+    setCurrentIndex(0);
+  }, []);
+
+  const goToEnd = useCallback(() => {
+    setCurrentIndex(processedText.length - 1);
+  }, [processedText.length]);
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if user is typing in an input/textarea
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+        return;
+      }
+
+      // Arrow keys and basic navigation
       if (NAVIGATION_KEYS.NEXT.includes(e.key)) {
         e.preventDefault();
         handleNext();
@@ -380,11 +404,33 @@ export default function ReaderPage() {
         e.preventDefault();
         handlePrevious();
       }
+      // Space key navigation
+      else if (e.key === ' ') {
+        e.preventDefault();
+        if (e.shiftKey) {
+          handlePrevious();
+        } else {
+          handleNext();
+        }
+      }
+      // Home/End navigation
+      else if (e.key === 'Home') {
+        e.preventDefault();
+        goToStart();
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        goToEnd();
+      }
+      // Fullscreen toggle
+      else if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        toggleFullscreen();
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleNext, handlePrevious]);
+  }, [handleNext, handlePrevious, goToStart, goToEnd, toggleFullscreen]);
 
   // Touch gestures for mobile
   useEffect(() => {
@@ -435,19 +481,6 @@ export default function ReaderPage() {
     };
     document.addEventListener('fullscreenchange', onFsChange);
     return () => document.removeEventListener('fullscreenchange', onFsChange);
-  }, []);
-
-  const toggleFullscreen = useCallback(() => {
-    if (!pageRef.current) return;
-    if (!document.fullscreenElement) {
-      pageRef.current.requestFullscreen?.().catch(() => {});
-    } else {
-      document.exitFullscreen?.().catch(() => {});
-    }
-  }, []);
-
-  const goToStart = useCallback(() => {
-    setCurrentIndex(0);
   }, []);
 
   const handleFinishReading = useCallback(() => {
