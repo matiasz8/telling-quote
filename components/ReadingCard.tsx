@@ -9,6 +9,8 @@ interface ReadingCardProps {
   onEdit: (reading: Reading) => void;
   onDelete: (reading: Reading) => void;
   isDark?: boolean;
+  isDetox?: boolean;
+  isHighContrast?: boolean;
   isCompleted?: boolean;
   isExample?: boolean;
 }
@@ -18,6 +20,8 @@ export default function ReadingCard({
   onEdit,
   onDelete,
   isDark = false,
+  isDetox = false,
+  isHighContrast = false,
   isCompleted = false,
   isExample = false,
 }: ReadingCardProps) {
@@ -36,26 +40,26 @@ export default function ReadingCard({
   return (
     <div
       className={`w-full ${
-        isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
+        isHighContrast
+          ? "bg-black border-2 border-white text-white"
+          : isDetox
+          ? "bg-white border-2 border-gray-300 text-gray-900"
+          : isDark
+          ? "bg-gray-800 border-gray-700"
+          : "bg-white border-gray-200"
       } rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow border relative group`}
     >
-      {/* Pending indicator - shown when reading is NOT completed */}
-      {!isCompleted && (
-        <div
-          className={`absolute top-3 left-3 w-3 h-3 rounded-full ${
-            isDark ? "bg-purple-500" : "bg-lime-500"
-          } shadow-sm`}
-          title="Pending reading"
-        />
-      )}
-
       {/* Example badge */}
       {isExample && (
         <div
           className={`absolute top-3 ${
             !isCompleted ? "left-8" : "left-3"
           } px-2 py-0.5 rounded text-xs font-bold ${
-            isDark
+            isHighContrast
+              ? "bg-white text-black border-2 border-white"
+              : isDetox
+              ? "bg-gray-200 text-gray-900 border-2 border-gray-400"
+              : isDark
               ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
               : "bg-yellow-100 text-yellow-700 border border-yellow-300"
           } shadow-sm`}
@@ -68,7 +72,13 @@ export default function ReadingCard({
       <Link href={`/reader/${reading.id}`} className="block">
         <h3
           className={`text-lg font-semibold ${
-            isDark ? "text-gray-100" : "text-gray-900"
+            isHighContrast
+              ? "text-white"
+              : isDetox
+              ? "text-gray-900"
+              : isDark
+              ? "text-gray-100"
+              : "text-gray-900"
           } line-clamp-2 ${
             !isCompleted && isExample
               ? "pl-24" // Pending indicator + badge
@@ -88,7 +98,11 @@ export default function ReadingCard({
               <span
                 key={index}
                 className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  isDark
+                  isHighContrast
+                    ? "bg-white text-black border border-white"
+                    : isDetox
+                    ? "bg-gray-200 text-gray-900 border border-gray-300"
+                    : isDark
                     ? `${getTagColor(tag, true)} text-white`
                     : `${getTagColor(tag, false)} text-white`
                 }`}
@@ -99,7 +113,11 @@ export default function ReadingCard({
             {reading.tags.length > 3 && (
               <span
                 className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  isDark
+                  isHighContrast
+                    ? "bg-white text-black border border-white"
+                    : isDetox
+                    ? "bg-gray-200 text-gray-700"
+                    : isDark
                     ? "bg-gray-700 text-gray-300"
                     : "bg-gray-200 text-gray-700"
                 }`}
@@ -113,7 +131,14 @@ export default function ReadingCard({
       <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
         <button
           onClick={handleEditClick}
-          className="p-1.5 bg-linear-to-r from-emerald-500 to-teal-500 text-white rounded hover:from-emerald-600 hover:to-teal-600 transition-all duration-200 shadow-sm"
+          className={`p-1.5 rounded transition-all duration-200 shadow-sm ${
+            isHighContrast
+              ? "bg-white text-black border-2 border-white hover:bg-gray-200"
+              : isDetox
+              ? "bg-gray-900 text-white border-2 border-gray-900 hover:bg-gray-800"
+              : "bg-linear-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600"
+          }`}
+          aria-label={`Edit reading title: ${reading.title}`}
           title="Edit title"
         >
           <svg
@@ -132,7 +157,14 @@ export default function ReadingCard({
         </button>
         <button
           onClick={handleDeleteClick}
-          className="p-1.5 bg-linear-to-r from-red-500 to-rose-500 text-white rounded hover:from-red-600 hover:to-rose-600 transition-all duration-200 shadow-sm"
+          className={`p-1.5 rounded transition-all duration-200 shadow-sm ${
+            isHighContrast
+              ? "bg-white text-black border-2 border-white hover:bg-gray-200"
+              : isDetox
+              ? "bg-gray-900 text-white border-2 border-gray-900 hover:bg-gray-800"
+              : "bg-linear-to-r from-red-500 to-rose-500 text-white hover:from-red-600 hover:to-rose-600"
+          }`}
+          aria-label={`Delete reading: ${reading.title}`}
           title="Delete reading"
         >
           <svg
