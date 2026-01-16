@@ -8,18 +8,44 @@ export default function Header() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { settings, setSettings } = useSettings();
   const isDark = settings.theme === 'dark';
+  const isDetox = settings.theme === 'detox';
+  const isHighContrast = settings.theme === 'high-contrast';
 
   return (
     <>
-      <header className={`w-full border-b ${isDark ? 'border-purple-900 bg-linear-to-r from-purple-900 to-black' : 'border-lime-200 bg-linear-to-r from-yellow-100 to-lime-100'}`}>
+      <header className={`w-full border-b ${
+        isHighContrast
+          ? 'border-white bg-black text-white border-2'
+          : isDetox
+          ? 'border-gray-200 bg-white'
+          : isDark
+          ? 'border-purple-900 bg-linear-to-r from-purple-900 to-black'
+          : 'border-lime-200 bg-linear-to-r from-yellow-100 to-lime-100'
+      }`}>
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className={`text-2xl font-bold ${isDark ? 'text-gray-100' : 'text-gray-900'}`}>tellingQuote</h1>
+          <h1 className={`text-2xl font-bold ${
+            isHighContrast
+              ? 'text-white'
+              : isDetox
+              ? 'text-gray-900'
+              : isDark
+              ? 'text-gray-100'
+              : 'text-gray-900'
+          }`}>tellingQuote</h1>
           <div className="flex items-center gap-3">
             <a
               href="https://github.com/matiasz8/telling-quote"
               target="_blank"
               rel="noopener noreferrer"
-              className={`p-2 ${isDark ? 'text-gray-300 hover:text-gray-100 hover:bg-purple-800' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'} rounded-lg transition-colors`}
+              className={`p-2 rounded-lg transition-colors ${
+                isHighContrast
+                  ? 'text-white hover:bg-white hover:text-black'
+                  : isDetox
+                  ? 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  : isDark
+                  ? 'text-gray-300 hover:text-gray-100 hover:bg-purple-800'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+              }`}
               title="View on GitHub"
             >
               <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -28,7 +54,15 @@ export default function Header() {
             </a>
             <button
               onClick={() => setIsSettingsOpen(true)}
-              className={`p-2 ${isDark ? 'text-gray-300 hover:text-gray-100 hover:bg-purple-800' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'} rounded-lg transition-colors`}
+              className={`p-2 rounded-lg transition-colors ${
+                isHighContrast
+                  ? 'text-white hover:bg-white hover:text-black'
+                  : isDetox
+                  ? 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  : isDark
+                  ? 'text-gray-300 hover:text-gray-100 hover:bg-purple-800'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+              }`}
               title="Settings"
             >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
