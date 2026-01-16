@@ -17,7 +17,7 @@ export type LineHeightOption = 'compact' | 'normal' | 'relaxed' | 'loose';
 
 export type WordSpacing = 'normal' | 'wide';
 
-export type ContentWidth = 'narrow' | 'medium' | 'wide';
+export type ContentWidth = 'narrow' | 'medium' | 'wide' | 'full';
 
 export type AccessibilitySettings = {
   fontFamily: FontFamily;

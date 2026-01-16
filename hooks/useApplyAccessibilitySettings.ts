@@ -71,7 +71,8 @@ export function useApplyAccessibilitySettings(settings: Settings) {
     const contentWidthMap: Record<string, string> = {
       'narrow': '45ch',
       'medium': '65ch',
-      'wide': '80ch'
+      'wide': '80ch',
+      'full': 'none'
     };
     // Apply to reader content container (the div inside reader-main-content)
     const readerContent = document.getElementById('reader-main-content');

@@ -127,7 +127,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
               letterSpacing: themeConfig.letterSpacing[accessibility.letterSpacing].value,
               lineHeight: themeConfig.lineHeight[accessibility.lineHeight].value,
               wordSpacing: themeConfig.wordSpacing[accessibility.wordSpacing].value,
-              maxWidth: accessibility.contentWidth === 'narrow' ? '45ch' : accessibility.contentWidth === 'wide' ? '80ch' : '65ch',
+              maxWidth: accessibility.contentWidth === 'narrow' ? '45ch' : accessibility.contentWidth === 'wide' ? '80ch' : accessibility.contentWidth === 'full' ? 'none' : '65ch',
               transition: accessibility.reduceMotion ? 'none' : 'all 0.3s ease',
             }}
           >
@@ -137,7 +137,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
           </div>
           <div className={`text-xs mt-3 ${getTextClass()} opacity-60 space-y-1`}>
             <div>{accessibility.reduceMotion && '🔇 Reduce Motion: ON'}</div>
-            <div>Max line width: {accessibility.contentWidth === 'narrow' ? '45 chars (easier to read)' : accessibility.contentWidth === 'wide' ? '80 chars (more content)' : '65 chars (default)'}</div>
+            <div>Max line width: {accessibility.contentWidth === 'narrow' ? '45 chars (easier to read)' : accessibility.contentWidth === 'wide' ? '80 chars (more content)' : accessibility.contentWidth === 'full' ? 'unlimited (full width)' : '65 chars (default)'}</div>
           </div>
         </div>
 
@@ -398,6 +398,18 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                   >
                     <div className="font-medium">Wide</div>
                     <div className="text-xs opacity-75">80 chars - More content visible</div>
+                  </button>
+                  <button
+                    onClick={() => handleAccessibilityChange('contentWidth', 'full')}
+                    aria-label="Select full content width (unlimited)"
+                    className={`p-3 border-2 rounded-lg transition-all duration-200 text-left ${
+                      accessibility.contentWidth === 'full'
+                        ? getActiveAccentClass()
+                        : getAccentClass()
+                    }`}
+                  >
+                    <div className="font-medium">Full Width</div>
+                    <div className="text-xs opacity-75">Unlimited - Uses entire screen</div>
                   </button>
                 </div>
               </div>
