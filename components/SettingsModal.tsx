@@ -233,69 +233,69 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
             <div className="mt-4 space-y-6">
               {/* Letter Spacing */}
               <div>
-                <label id="letter-spacing-label" className={`block text-sm font-medium ${getTextClass()} mb-3`}>
+                <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
                   Letter Spacing
                 </label>
-                <div className="space-y-2" role="radiogroup" aria-labelledby="letter-spacing-label">
+                <div className="grid grid-cols-2 gap-2">
                   {Object.entries(themeConfig.letterSpacing).map(([key, option]) => (
-                    <label key={key} className="flex items-center gap-3 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="letterSpacing"
-                        value={key}
-                        checked={accessibility.letterSpacing === key}
-                        onChange={() => handleAccessibilityChange('letterSpacing', key as LetterSpacing)}
-                        aria-label={`Letter spacing: ${option.label}`}
-                        className="w-4 h-4 cursor-pointer"
-                      />
-                      <span className="text-sm">{option.label}</span>
-                    </label>
+                    <button
+                      key={key}
+                      onClick={() => handleAccessibilityChange('letterSpacing', key as LetterSpacing)}
+                      aria-label={`Select ${option.label} letter spacing`}
+                      className={`p-3 border-2 rounded-lg transition-all duration-200 ${
+                        accessibility.letterSpacing === key
+                          ? getActiveAccentClass()
+                          : getAccentClass()
+                      }`}
+                    >
+                      {option.label}
+                    </button>
                   ))}
                 </div>
               </div>
 
               {/* Line Height */}
               <div>
-                <label id="line-height-label" className={`block text-sm font-medium ${getTextClass()} mb-3`}>
+                <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
                   Line Height
                 </label>
-                <div className="space-y-2" role="radiogroup" aria-labelledby="line-height-label">
+                <div className="grid grid-cols-2 gap-2">
                   {Object.entries(themeConfig.lineHeight).map(([key, option]) => (
-                    <label key={key} className="flex items-center gap-3 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="lineHeight"
-                        value={key}
-                        checked={accessibility.lineHeight === key}
-                        onChange={() => handleAccessibilityChange('lineHeight', key as LineHeightOption)}
-                        aria-label={`Line height: ${option.label}`}
-                        className="w-4 h-4 cursor-pointer"
-                      />
-                      <span className="text-sm">{option.label}</span>
-                    </label>
+                    <button
+                      key={key}
+                      onClick={() => handleAccessibilityChange('lineHeight', key as LineHeightOption)}
+                      aria-label={`Select ${option.label} line height`}
+                      className={`p-3 border-2 rounded-lg transition-all duration-200 ${
+                        accessibility.lineHeight === key
+                          ? getActiveAccentClass()
+                          : getAccentClass()
+                      }`}
+                    >
+                      {option.label}
+                    </button>
                   ))}
                 </div>
               </div>
 
               {/* Word Spacing */}
               <div>
-                <label id="word-spacing-label" className={`block text-sm font-medium ${getTextClass()} mb-3`}>
+                <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
                   Word Spacing
                 </label>
-                <div className="space-y-2" role="radiogroup" aria-labelledby="word-spacing-label">
+                <div className="grid grid-cols-2 gap-2">
                   {Object.entries(themeConfig.wordSpacing).map(([key, option]) => (
-                    <label key={key} className="flex items-center gap-3 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="wordSpacing"
-                        value={key}
-                        checked={accessibility.wordSpacing === key}
-                        onChange={() => handleAccessibilityChange('wordSpacing', key as WordSpacing)}
-                        aria-label={`Word spacing: ${option.label}`}
-                        className="w-4 h-4 cursor-pointer"
-                      />
-                      <span className="text-sm">{option.label}</span>
-                    </label>
+                    <button
+                      key={key}
+                      onClick={() => handleAccessibilityChange('wordSpacing', key as WordSpacing)}
+                      aria-label={`Select ${option.label} word spacing`}
+                      className={`p-3 border-2 rounded-lg transition-all duration-200 ${
+                        accessibility.wordSpacing === key
+                          ? getActiveAccentClass()
+                          : getAccentClass()
+                      }`}
+                    >
+                      {option.label}
+                    </button>
                   ))}
                 </div>
               </div>
@@ -326,46 +326,46 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
 
               {/* Content Width */}
               <div>
-                <label id="content-width-label" className={`block text-sm font-medium ${getTextClass()} mb-3`}>
+                <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
                   Content Width
                 </label>
-                <div className="space-y-2" role="radiogroup" aria-labelledby="content-width-label">
-                  <label className="flex items-center gap-3 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="contentWidth"
-                      value="narrow"
-                      checked={accessibility.contentWidth === 'narrow'}
-                      onChange={() => handleAccessibilityChange('contentWidth', 'narrow')}
-                      aria-label="Content width: Narrow (45 characters)"
-                      className="w-4 h-4 cursor-pointer"
-                    />
-                    <span className="text-sm">Narrow (45 chars) - Better for reading</span>
-                  </label>
-                  <label className="flex items-center gap-3 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="contentWidth"
-                      value="medium"
-                      checked={accessibility.contentWidth === 'medium' || !accessibility.contentWidth}
-                      onChange={() => handleAccessibilityChange('contentWidth', 'medium')}
-                      aria-label="Content width: Medium (65 characters)"
-                      className="w-4 h-4 cursor-pointer"
-                    />
-                    <span className="text-sm">Medium (65 chars) - Default</span>
-                  </label>
-                  <label className="flex items-center gap-3 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="contentWidth"
-                      value="wide"
-                      checked={accessibility.contentWidth === 'wide'}
-                      onChange={() => handleAccessibilityChange('contentWidth', 'wide')}
-                      aria-label="Content width: Wide (80 characters)"
-                      className="w-4 h-4 cursor-pointer"
-                    />
-                    <span className="text-sm">Wide (80 chars) - More content visible</span>
-                  </label>
+                <div className="grid grid-cols-1 gap-2">
+                  <button
+                    onClick={() => handleAccessibilityChange('contentWidth', 'narrow')}
+                    aria-label="Select narrow content width (45 characters)"
+                    className={`p-3 border-2 rounded-lg transition-all duration-200 text-left ${
+                      accessibility.contentWidth === 'narrow'
+                        ? getActiveAccentClass()
+                        : getAccentClass()
+                    }`}
+                  >
+                    <div className="font-medium">Narrow</div>
+                    <div className="text-xs opacity-75">45 chars - Better for reading</div>
+                  </button>
+                  <button
+                    onClick={() => handleAccessibilityChange('contentWidth', 'medium')}
+                    aria-label="Select medium content width (65 characters)"
+                    className={`p-3 border-2 rounded-lg transition-all duration-200 text-left ${
+                      accessibility.contentWidth === 'medium' || !accessibility.contentWidth
+                        ? getActiveAccentClass()
+                        : getAccentClass()
+                    }`}
+                  >
+                    <div className="font-medium">Medium</div>
+                    <div className="text-xs opacity-75">65 chars - Default</div>
+                  </button>
+                  <button
+                    onClick={() => handleAccessibilityChange('contentWidth', 'wide')}
+                    aria-label="Select wide content width (80 characters)"
+                    className={`p-3 border-2 rounded-lg transition-all duration-200 text-left ${
+                      accessibility.contentWidth === 'wide'
+                        ? getActiveAccentClass()
+                        : getAccentClass()
+                    }`}
+                  >
+                    <div className="font-medium">Wide</div>
+                    <div className="text-xs opacity-75">80 chars - More content visible</div>
+                  </button>
                 </div>
               </div>
 
