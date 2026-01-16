@@ -8,3 +8,5 @@ export const NAVIGATION_KEYS = {
 export const TOUCH_SWIPE_THRESHOLD = 50; // pixels
 
 export const SCROLL_DEBOUNCE_TIME = 100; // milliseconds
+
+export const ANNOUNCE_DEBOUNCE_TIME = 400; // milliseconds - delay for screen reader announcements

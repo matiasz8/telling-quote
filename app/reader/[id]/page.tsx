@@ -8,7 +8,7 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useSettings } from '@/hooks/useSettings';
 import { Reading } from '@/types';
 import { processContent, getFontFamilyClass, getFontSizeClasses, getThemeClasses } from '@/lib/utils';
-import { STORAGE_KEYS, NAVIGATION_KEYS, TOUCH_SWIPE_THRESHOLD } from '@/lib/constants';
+import { STORAGE_KEYS, NAVIGATION_KEYS, TOUCH_SWIPE_THRESHOLD, ANNOUNCE_DEBOUNCE_TIME } from '@/lib/constants';
 import confetti from 'canvas-confetti';
 import { theme } from '@/config/theme';
 import CodeBlock from '@/components/CodeBlock';
@@ -291,13 +291,15 @@ export default function ReaderPage() {
   const { settings } = useSettings();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [lastReadingId, setLastReadingId] = useState(id);
+  const [announcedIndex, setAnnouncedIndex] = useState(0);
   const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const announceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pageRef = useRef<HTMLDivElement | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const touchStartX = useRef<number>(0);
   const touchEndX = useRef<number>(0);
 
-  const fontFamilyClass = getFontFamilyClass(settings.fontFamily);
+  const fontFamilyClass = getFontFamilyClass(settings.accessibility?.fontFamily || 'serif');
   const fontSizeClasses = getFontSizeClasses(settings.fontSize);
   const themeClasses = getThemeClasses(settings.theme);
   const isDark = settings.theme === 'dark';
@@ -316,7 +318,28 @@ export default function ReaderPage() {
   if (id !== lastReadingId) {
     setLastReadingId(id);
     setCurrentIndex(0);
+    setAnnouncedIndex(0);
   }
+
+  // Debounce announcements to avoid overwhelming screen readers during rapid navigation
+  useEffect(() => {
+    // Clear any existing timeout
+    if (announceTimeoutRef.current) {
+      clearTimeout(announceTimeoutRef.current);
+    }
+
+    // Set a new timeout to update the announcement after navigation stops
+    announceTimeoutRef.current = setTimeout(() => {
+      setAnnouncedIndex(currentIndex);
+    }, ANNOUNCE_DEBOUNCE_TIME);
+
+    // Cleanup on unmount or when currentIndex changes
+    return () => {
+      if (announceTimeoutRef.current) {
+        clearTimeout(announceTimeoutRef.current);
+      }
+    };
+  }, [currentIndex]);
 
   const handleNext = useCallback(() => {
     setCurrentIndex((prev) => {
@@ -517,8 +540,28 @@ export default function ReaderPage() {
   const progress = processedText.length > 0 ? ((safeIndex + 1) / processedText.length) * 100 : 0;
   const isFinished = safeIndex === processedText.length - 1;
 
+  // Use debounced index for announcements
+  const safeAnnouncedIndex = Math.max(0, Math.min(announcedIndex, processedText.length - 1));
+
   return (
     <div ref={pageRef} className={`min-h-screen ${themeClasses.bg} ${fontFamilyClass}`}>
+      {/* Skip link for keyboard navigation */}
+      <a
+        href="#reader-main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-50 focus:bg-black focus:text-white focus:p-4 focus:rounded-b"
+      >
+        Skip to main reading content
+      </a>
+
+      {/* Live region for screen reader announcements */}
+      <div
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+        role="status"
+      >
+        Slide {safeAnnouncedIndex + 1} of {processedText.length}
+      </div>
       {/* Progress Bar */}
       <div className={`sticky top-0 z-10 ${themeClasses.cardBg} border-b ${themeClasses.border} shadow-sm`}>
         <div className="container mx-auto px-4 py-3">
@@ -540,7 +583,7 @@ export default function ReaderPage() {
       </div>
 
       {/* Content */}
-      <div className="container mx-auto px-4 py-12">
+      <div id="reader-main-content" className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8 text-center">
             <h2 className={`${fontSizeClasses.title} font-semibold ${themeClasses.text} mb-2`}>
