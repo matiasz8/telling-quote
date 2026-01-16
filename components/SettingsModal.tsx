@@ -13,7 +13,7 @@ interface SettingsModalProps {
 }
 
 export default function SettingsModal({ isOpen, onClose, settings, onSave }: SettingsModalProps) {
-  const [expandedSection, setExpandedSection] = useState<'general' | 'accessibility'>('general');
+  const [expandedSection, setExpandedSection] = useState<'general' | 'accessibility' | ''>('general');
 
   if (!isOpen) return null;
 

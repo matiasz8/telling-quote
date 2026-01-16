@@ -49,7 +49,7 @@ export default function AccessibilityStatement() {
               Commitment to Accessibility
             </h2>
             <p className={`${themeClasses.textSecondary} mb-4 leading-relaxed`}>
-              tellingQuote is committed to being accessible and usable to everyone, including people with disabilities. We actively work to increase the accessibility and usability of our application.
+              Telling is committed to being accessible and usable to everyone, including people with disabilities. We actively work to increase the accessibility and usability of our application.
             </p>
             <p className={`${themeClasses.textSecondary} leading-relaxed`}>
               This application aims to meet or exceed WCAG 2.1 Level AA accessibility standards.
@@ -66,19 +66,19 @@ export default function AccessibilityStatement() {
             </p>
             <ul className={`${themeClasses.textSecondary} space-y-3 ml-6 mb-6`}>
               <li className="flex gap-3">
-                <span className="flex-shrink-0 mt-1">✓</span>
+                <span className="shrink-0 mt-1">✓</span>
                 <span><strong>Perceivable:</strong> Content is presented in ways that can be perceived by all users</span>
               </li>
               <li className="flex gap-3">
-                <span className="flex-shrink-0 mt-1">✓</span>
+                <span className="shrink-0 mt-1">✓</span>
                 <span><strong>Operable:</strong> The application can be navigated using keyboard and various input methods</span>
               </li>
               <li className="flex gap-3">
-                <span className="flex-shrink-0 mt-1">✓</span>
+                <span className="shrink-0 mt-1">✓</span>
                 <span><strong>Understandable:</strong> Content is written clearly and the interface is predictable</span>
               </li>
               <li className="flex gap-3">
-                <span className="flex-shrink-0 mt-1">✓</span>
+                <span className="shrink-0 mt-1">✓</span>
                 <span><strong>Robust:</strong> The application works with a wide variety of assistive technologies</span>
               </li>
             </ul>

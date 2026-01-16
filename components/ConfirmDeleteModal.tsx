@@ -42,7 +42,7 @@ export default function ConfirmDeleteModal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center mb-4">
-          <div className="flex-shrink-0 w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
+          <div className="shrink-0 w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
             <svg
               className="w-6 h-6 text-red-600"
               fill="none"
