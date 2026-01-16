@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { getAccessibilityUtilsScript } from "@/lib/utils/accessibility";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -32,6 +33,8 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `
+              ${getAccessibilityUtilsScript()}
+              
               (function() {
                 try {
                   const settings = JSON.parse(localStorage.getItem('settings') || '{}');
@@ -57,30 +60,15 @@ export default function RootLayout({
                   
                   // Apply text spacing
                   if (a11y.letterSpacing) {
-                    const letterSpacingMap = {
-                      'normal': 'normal',
-                      'wide': '0.05em',
-                      'extra-wide': '0.1em'
-                    };
-                    root.style.letterSpacing = letterSpacingMap[a11y.letterSpacing] || 'normal';
+                    root.style.letterSpacing = getLetterSpacing(a11y.letterSpacing);
                   }
                   
                   if (a11y.lineHeight) {
-                    const lineHeightMap = {
-                      'compact': '1.4',
-                      'normal': '1.6',
-                      'relaxed': '1.8',
-                      'loose': '2.0'
-                    };
-                    root.style.lineHeight = lineHeightMap[a11y.lineHeight] || '1.6';
+                    root.style.lineHeight = getLineHeight(a11y.lineHeight);
                   }
                   
                   if (a11y.wordSpacing) {
-                    const wordSpacingMap = {
-                      'normal': 'normal',
-                      'wide': '0.1em'
-                    };
-                    root.style.wordSpacing = wordSpacingMap[a11y.wordSpacing] || 'normal';
+                    root.style.wordSpacing = getWordSpacing(a11y.wordSpacing);
                   }
                   
                   // Apply high contrast mode
@@ -96,20 +84,6 @@ export default function RootLayout({
                   // Check for system preference for reduced motion
                   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
                     root.classList.add('reduce-motion');
-                  }
-                  
-                  // Helper function to get font family
-                  function getFontFamily(fontFamily) {
-                    const fontMap = {
-                      'system': 'system-ui, -apple-system, sans-serif',
-                      'serif': 'Georgia, serif',
-                      'sans': '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-                      'mono': '"Courier New", monospace',
-                      'opendyslexic': 'OpenDyslexic, sans-serif',
-                      'comic-sans': '"Comic Sans MS", cursive',
-                      'atkinson': 'Atkinson Hyperlegible, sans-serif'
-                    };
-                    return fontMap[fontFamily] || 'system-ui, -apple-system, sans-serif';
                   }
                 } catch (e) {}
               })();

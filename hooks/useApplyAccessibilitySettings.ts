@@ -1,18 +1,11 @@
 import { useEffect } from 'react';
 import { Settings, AccessibilitySettings } from '@/types';
-
-const getFontFamily = (fontFamily: string): string => {
-  const fontMap: Record<string, string> = {
-    'system': 'system-ui, -apple-system, sans-serif',
-    'serif': 'Georgia, serif',
-    'sans': '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-    'mono': '"Courier New", monospace',
-    'opendyslexic': 'OpenDyslexic, sans-serif',
-    'comic-sans': '"Comic Sans MS", cursive',
-    'atkinson': 'Atkinson Hyperlegible, sans-serif'
-  };
-  return fontMap[fontFamily] || 'system-ui, -apple-system, sans-serif';
-};
+import { 
+  getFontFamily, 
+  getLetterSpacing, 
+  getLineHeight, 
+  getWordSpacing 
+} from '@/lib/utils/accessibility';
 
 export function useApplyAccessibilitySettings(settings: Settings) {
   useEffect(() => {
@@ -49,32 +42,17 @@ export function useApplyAccessibilitySettings(settings: Settings) {
 
     // Apply letter spacing
     if (a11y.letterSpacing) {
-      const letterSpacingMap: Record<string, string> = {
-        'normal': 'normal',
-        'wide': '0.05em',
-        'extra-wide': '0.1em'
-      };
-      root.style.letterSpacing = letterSpacingMap[a11y.letterSpacing] || 'normal';
+      root.style.letterSpacing = getLetterSpacing(a11y.letterSpacing);
     }
 
     // Apply line height
     if (a11y.lineHeight) {
-      const lineHeightMap: Record<string, string> = {
-        'compact': '1.4',
-        'normal': '1.6',
-        'relaxed': '1.8',
-        'loose': '2.0'
-      };
-      root.style.lineHeight = lineHeightMap[a11y.lineHeight] || '1.6';
+      root.style.lineHeight = getLineHeight(a11y.lineHeight);
     }
 
     // Apply word spacing
     if (a11y.wordSpacing) {
-      const wordSpacingMap: Record<string, string> = {
-        'normal': 'normal',
-        'wide': '0.1em'
-      };
-      root.style.wordSpacing = wordSpacingMap[a11y.wordSpacing] || 'normal';
+      root.style.wordSpacing = getWordSpacing(a11y.wordSpacing);
     }
 
     // Apply high contrast mode
