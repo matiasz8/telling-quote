@@ -49,7 +49,7 @@ export default function AccessibilityStatement() {
               Commitment to Accessibility
             </h2>
             <p className={`${themeClasses.textSecondary} mb-4 leading-relaxed`}>
-              Telling is committed to being accessible and usable to everyone, including people with disabilities. We actively work to increase the accessibility and usability of our application.
+              tellingQuote is committed to being accessible and usable to everyone, including people with disabilities. We actively work to increase the accessibility and usability of our application.
             </p>
             <p className={`${themeClasses.textSecondary} leading-relaxed`}>
               This application aims to meet or exceed WCAG 2.1 Level AA accessibility standards.
