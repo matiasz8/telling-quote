@@ -56,6 +56,7 @@ export default function KeyboardShortcutsModal({
         { keys: ['Shift', 'Space'], description: 'Previous slide', context: 'In reader' },
         { keys: ['Home'], description: 'Go to first slide', context: 'In reader' },
         { keys: ['End'], description: 'Go to last slide', context: 'In reader' },
+        { keys: ['Backspace'], description: 'Exit reading (back to dashboard)', context: 'In reader' },
         { keys: ['Scroll'], description: 'Navigate between slides (wheel up/down)', context: 'In reader' },
         { keys: ['F'], description: 'Toggle fullscreen', context: 'In reader' },
       ],

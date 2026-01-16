@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useMemo, useEffect, useRef, useCallback, Fragment } from 'react';
@@ -286,6 +286,7 @@ function formatText(text: string, isDark: boolean): React.ReactNode {
 
 export default function ReaderPage() {
   const params = useParams();
+  const router = useRouter();
   const id = typeof params.id === 'string' ? params.id : Array.isArray(params.id) ? params.id[0] : '';
   const [readings] = useLocalStorage<Reading[]>(STORAGE_KEYS.READINGS, []);
   const [completedReadings, setCompletedReadings] = useLocalStorage<string[]>('completedReadings', []);
@@ -426,11 +427,16 @@ export default function ReaderPage() {
         e.preventDefault();
         toggleFullscreen();
       }
+      // Exit reading (go back to dashboard)
+      else if (e.key === 'Backspace') {
+        e.preventDefault();
+        router.push('/');
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleNext, handlePrevious, goToStart, goToEnd, toggleFullscreen]);
+  }, [handleNext, handlePrevious, goToStart, goToEnd, toggleFullscreen, router]);
 
   // Touch gestures for mobile
   useEffect(() => {
