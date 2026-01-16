@@ -74,10 +74,13 @@ export function useApplyAccessibilitySettings(settings: Settings) {
         'medium': '65ch',
         'wide': '80ch'
       };
-      // Apply to reader content if it exists, otherwise to main element
-      const mainContent = document.getElementById('reader-main-content') || document.querySelector('main');
-      if (mainContent instanceof HTMLElement) {
-        mainContent.style.maxWidth = contentWidthMap[a11y.contentWidth] || '65ch';
+      // Apply to reader content container (the div inside reader-main-content)
+      const readerContent = document.getElementById('reader-main-content');
+      if (readerContent) {
+        const contentDiv = readerContent.querySelector('div');
+        if (contentDiv instanceof HTMLElement) {
+          contentDiv.style.maxWidth = contentWidthMap[a11y.contentWidth] || '65ch';
+        }
       }
     }
 
