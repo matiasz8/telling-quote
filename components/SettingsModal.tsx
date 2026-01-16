@@ -61,10 +61,8 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
     letterSpacing: 'normal',
     lineHeight: 'normal',
     wordSpacing: 'normal',
-    highContrast: false,
     reduceMotion: false,
     contentWidth: 'medium',
-    focusMode: false,
   };
 
   const handleFontFamilyChange = (fontFamily: FontFamily) => {
@@ -318,18 +316,6 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                 </div>
               </div>
 
-              {/* High Contrast Toggle */}
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={accessibility.highContrast}
-                  onChange={(e) => handleAccessibilityChange('highContrast', e.target.checked)}
-                  aria-label="Enable high contrast mode (21:1 ratio)"
-                  className="w-4 h-4 cursor-pointer"
-                />
-                <span className="text-sm">High Contrast Mode (21:1 ratio)</span>
-              </label>
-
               {/* Reduce Motion Toggle */}
               <label className="flex items-center gap-3 cursor-pointer">
                 <input
@@ -345,7 +331,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
               {/* Content Width */}
               <div>
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
-                  Content Width
+                  Content Width (in Reader)
                 </label>
                 <div className="grid grid-cols-1 gap-2">
                   <button
@@ -386,18 +372,6 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                   </button>
                 </div>
               </div>
-
-              {/* Focus Mode Toggle */}
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={accessibility.focusMode}
-                  onChange={(e) => handleAccessibilityChange('focusMode', e.target.checked)}
-                  aria-label="Enable focus mode to dim UI except current content"
-                  className="w-4 h-4 cursor-pointer"
-                />
-                <span className="text-sm">Focus Mode - Dim UI, focus on content</span>
-              </label>
             </div>
           )}
         </div>

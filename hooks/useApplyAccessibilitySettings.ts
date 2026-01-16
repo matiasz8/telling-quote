@@ -31,7 +31,6 @@ export function useApplyAccessibilitySettings(settings: Settings) {
       letterSpacing: 'normal',
       lineHeight: 'normal',
       wordSpacing: 'normal',
-      highContrast: false,
       reduceMotion: false,
     };
 
@@ -55,13 +54,6 @@ export function useApplyAccessibilitySettings(settings: Settings) {
       root.style.wordSpacing = getWordSpacing(a11y.wordSpacing);
     }
 
-    // Apply high contrast mode
-    if (a11y.highContrast) {
-      root.classList.add('high-contrast');
-    } else {
-      root.classList.remove('high-contrast');
-    }
-
     // Apply reduce motion
     if (typeof a11y.reduceMotion === 'boolean') {
       if (a11y.reduceMotion) {
@@ -73,12 +65,6 @@ export function useApplyAccessibilitySettings(settings: Settings) {
       root.classList.add('reduce-motion');
     } else {
       root.classList.remove('reduce-motion');
-    }
-    // Apply focus mode
-    if (a11y.focusMode) {
-      document.body.classList.add('focus-mode');
-    } else {
-      document.body.classList.remove('focus-mode');
     }
 
     // Apply content width

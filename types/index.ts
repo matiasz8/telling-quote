@@ -24,10 +24,8 @@ export type AccessibilitySettings = {
   letterSpacing: LetterSpacing;
   lineHeight: LineHeightOption;
   wordSpacing: WordSpacing;
-  highContrast: boolean;
   reduceMotion: boolean;
   contentWidth?: ContentWidth;
-  focusMode?: boolean;
 };
 
 export type Settings = {
