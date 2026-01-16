@@ -89,8 +89,13 @@ export default function NewReadingModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[80vh] flex flex-col">
-        <h2 className="text-xl font-semibold mb-4 text-gray-600">
+      <div
+        className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[80vh] flex flex-col"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="new-reading-title"
+      >
+        <h2 id="new-reading-title" className="text-xl font-semibold mb-4 text-gray-600">
           New Reading
         </h2>
         <input
@@ -141,12 +146,14 @@ export default function NewReadingModal({
         <div className="flex gap-4 mt-4">
           <button
             onClick={handleSave}
+            aria-label="Save new reading"
             className="px-6 py-2.5 bg-linear-to-r from-purple-600 to-violet-600 text-white rounded-lg hover:from-purple-700 hover:to-violet-700 transition-all duration-200 font-medium shadow-md hover:shadow-lg transform hover:scale-105"
           >
             Save Reading
           </button>
           <button
             onClick={handleCancel}
+            aria-label="Cancel creating new reading"
             className="px-6 py-2.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all duration-200 font-medium"
           >
             Cancel

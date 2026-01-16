@@ -36,15 +36,19 @@ export default function ConfirmDeleteModal({
     >
       <div
         className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md mx-4 transform transition-all"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="confirm-delete-title"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center mb-4">
-          <div className="flex-shrink-0 w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
+          <div className="shrink-0 w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
             <svg
               className="w-6 h-6 text-red-600"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -54,7 +58,7 @@ export default function ConfirmDeleteModal({
               />
             </svg>
           </div>
-          <h3 className="text-xl font-semibold text-gray-900">Delete Reading</h3>
+          <h3 id="confirm-delete-title" className="text-xl font-semibold text-gray-900">Delete Reading</h3>
         </div>
 
         <p className="text-gray-700 mb-6 ml-16">
@@ -64,12 +68,14 @@ export default function ConfirmDeleteModal({
         <div className="flex gap-3 justify-end ml-16">
           <button
             onClick={onClose}
+            aria-label="Cancel delete operation"
             className="px-5 py-2.5 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-all duration-200 font-medium"
           >
             Cancel
           </button>
           <button
             onClick={handleConfirm}
+            aria-label={`Confirm deletion of: ${title}`}
             className="px-5 py-2.5 bg-linear-to-r from-red-600 to-rose-600 text-white rounded-lg hover:from-red-700 hover:to-rose-700 transition-all duration-200 font-medium shadow-md hover:shadow-lg"
           >
             Delete
