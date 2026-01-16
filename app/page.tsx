@@ -145,7 +145,11 @@ export default function Home() {
               transform transition-all duration-300 ease-out
               hover:scale-105 active:scale-95
               ${
-                isDark
+                isHighContrast
+                  ? "bg-white text-black border-2 border-white hover:bg-gray-200"
+                  : isDetox
+                  ? "bg-gray-900 text-white border-2 border-gray-900 hover:bg-gray-800"
+                  : isDark
                   ? "bg-linear-to-r from-purple-600 via-violet-600 to-fuchsia-600 text-white shadow-lg shadow-purple-500/50 hover:shadow-xl hover:shadow-purple-500/70"
                   : "bg-linear-to-r from-lime-500 via-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/50 hover:shadow-xl hover:shadow-emerald-500/70"
               }
@@ -302,6 +306,8 @@ export default function Home() {
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 isDark={settings.theme === "dark"}
+                isDetox={settings.theme === "detox"}
+                isHighContrast={settings.theme === "high-contrast"}
                 isCompleted={completedReadings.includes(reading.id)}
                 isExample={reading.id === EXAMPLE_READING_ID}
               />
