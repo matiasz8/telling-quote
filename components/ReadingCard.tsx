@@ -61,8 +61,7 @@ export default function ReadingCard({
               ? "bg-purple-500 border-2 border-current"
               : "bg-lime-500 border-2 border-current"
           } shadow-sm`}
-          title="Pending reading"
-          aria-label="This reading is pending"
+          aria-label="Pending reading"
         >
           <div
             className={`w-2 h-2 rounded-full ${
