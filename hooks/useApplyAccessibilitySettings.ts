@@ -68,19 +68,18 @@ export function useApplyAccessibilitySettings(settings: Settings) {
     }
 
     // Apply content width
-    if (a11y.contentWidth) {
-      const contentWidthMap: Record<string, string> = {
-        'narrow': '45ch',
-        'medium': '65ch',
-        'wide': '80ch'
-      };
-      // Apply to reader content container (the div inside reader-main-content)
-      const readerContent = document.getElementById('reader-main-content');
-      if (readerContent) {
-        const contentDiv = readerContent.querySelector('div');
-        if (contentDiv instanceof HTMLElement) {
-          contentDiv.style.maxWidth = contentWidthMap[a11y.contentWidth] || '65ch';
-        }
+    const contentWidthMap: Record<string, string> = {
+      'narrow': '45ch',
+      'medium': '65ch',
+      'wide': '80ch'
+    };
+    // Apply to reader content container (the div inside reader-main-content)
+    const readerContent = document.getElementById('reader-main-content');
+    if (readerContent) {
+      const contentDiv = readerContent.querySelector('div');
+      if (contentDiv instanceof HTMLElement) {
+        const width = a11y.contentWidth || 'medium';
+        contentDiv.style.maxWidth = contentWidthMap[width];
       }
     }
 

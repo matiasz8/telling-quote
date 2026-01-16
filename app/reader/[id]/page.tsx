@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useState, useMemo, useEffect, useRef, useCallback, Fragment } from 'react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useSettings } from '@/hooks/useSettings';
+import { useApplyAccessibilitySettings } from '@/hooks/useApplyAccessibilitySettings';
 import { Reading } from '@/types';
 import { processContent, getFontFamilyClass, getFontSizeClasses, getThemeClasses } from '@/lib/utils';
 import { STORAGE_KEYS, NAVIGATION_KEYS, TOUCH_SWIPE_THRESHOLD, ANNOUNCE_DEBOUNCE_TIME } from '@/lib/constants';
@@ -289,6 +290,7 @@ export default function ReaderPage() {
   const [readings] = useLocalStorage<Reading[]>(STORAGE_KEYS.READINGS, []);
   const [completedReadings, setCompletedReadings] = useLocalStorage<string[]>('completedReadings', []);
   const { settings } = useSettings();
+  useApplyAccessibilitySettings(settings);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [lastReadingId, setLastReadingId] = useState(id);
   const [announcedIndex, setAnnouncedIndex] = useState(0);
