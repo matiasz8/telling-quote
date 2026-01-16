@@ -299,7 +299,7 @@ export default function ReaderPage() {
   const touchStartX = useRef<number>(0);
   const touchEndX = useRef<number>(0);
 
-  const fontFamilyClass = getFontFamilyClass(settings.fontFamily);
+  const fontFamilyClass = getFontFamilyClass(settings.accessibility.fontFamily);
   const fontSizeClasses = getFontSizeClasses(settings.fontSize);
   const themeClasses = getThemeClasses(settings.theme);
   const isDark = settings.theme === 'dark';

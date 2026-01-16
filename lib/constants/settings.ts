@@ -25,7 +25,6 @@ export const THEME_OPTIONS: { value: Theme; label: string }[] = [
 ];
 
 export const DEFAULT_SETTINGS = {
-  fontFamily: 'serif' as FontFamily,
   fontSize: 'medium' as FontSize,
   theme: 'light' as Theme,
   accessibility: {

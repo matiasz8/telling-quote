@@ -26,14 +26,7 @@ export function useApplyAccessibilitySettings(settings: Settings) {
     }
 
     // Apply accessibility settings
-    const a11y: AccessibilitySettings = settings.accessibility || {
-      fontFamily: 'serif',
-      letterSpacing: 'normal',
-      lineHeight: 'normal',
-      wordSpacing: 'normal',
-      highContrast: false,
-      reduceMotion: false,
-    };
+    const a11y: AccessibilitySettings = settings.accessibility;
 
     // Apply font family
     if (a11y.fontFamily) {

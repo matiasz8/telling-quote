@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Settings, FontFamily, FontSize, Theme, AccessibilitySettings, LetterSpacing, LineHeightOption, WordSpacing } from '@/types';
-import { FONT_FAMILY_OPTIONS, FONT_SIZE_OPTIONS, THEME_OPTIONS } from '@/lib/constants';
+import { FONT_SIZE_OPTIONS, THEME_OPTIONS } from '@/lib/constants';
 import { theme as themeConfig } from '@/config/theme';
 
 interface SettingsModalProps {
@@ -13,7 +13,7 @@ interface SettingsModalProps {
 }
 
 export default function SettingsModal({ isOpen, onClose, settings, onSave }: SettingsModalProps) {
-  const [expandedSection, setExpandedSection] = useState<'general' | 'accessibility'>('general');
+  const [expandedSection, setExpandedSection] = useState<'general' | 'accessibility' | ''>('general');
 
   if (!isOpen) return null;
 
@@ -56,20 +56,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
     if (isDetox) return 'bg-gray-50 text-gray-900';
     return isDark ? 'bg-purple-900/30 text-purple-300' : 'bg-emerald-50 text-emerald-700';
   };
-  const accessibility = settings.accessibility || {
-    fontFamily: settings.fontFamily,
-    letterSpacing: 'normal',
-    lineHeight: 'normal',
-    wordSpacing: 'normal',
-    highContrast: false,
-    reduceMotion: false,
-    contentWidth: 'medium',
-    focusMode: false,
-  };
-
-  const handleFontFamilyChange = (fontFamily: FontFamily) => {
-    onSave({ ...settings, fontFamily });
-  };
+  const accessibility = settings.accessibility;
 
   const handleFontSizeChange = (fontSize: FontSize) => {
     onSave({ ...settings, fontSize });
@@ -133,29 +120,6 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
 
           {expandedSection === 'general' && (
             <div className="mt-4 space-y-6">
-              {/* Font Family */}
-              <div>
-                <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
-                  Font Family
-                </label>
-                <div className="grid grid-cols-2 gap-2">
-                  {FONT_FAMILY_OPTIONS.map((option) => (
-                    <button
-                      key={option.value}
-                      onClick={() => handleFontFamilyChange(option.value)}
-                      aria-label={`Select ${option.label} font`}
-                      className={`p-3 border-2 rounded-lg transition-all duration-200 ${option.className} ${
-                        settings.fontFamily === option.value
-                          ? getActiveAccentClass()
-                          : getAccentClass()
-                      }`}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               {/* Font Size */}
               <div>
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
