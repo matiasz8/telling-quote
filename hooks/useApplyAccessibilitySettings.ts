@@ -63,17 +63,17 @@ export function useApplyAccessibilitySettings(settings: Settings) {
     }
 
     // Apply reduce motion
-    if (a11y.reduceMotion) {
+    if (typeof a11y.reduceMotion === 'boolean') {
+      if (a11y.reduceMotion) {
+        root.classList.add('reduce-motion');
+      } else {
+        root.classList.remove('reduce-motion');
+      }
+    } else if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       root.classList.add('reduce-motion');
     } else {
       root.classList.remove('reduce-motion');
     }
-
-    // Check for system preference for reduced motion
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      root.classList.add('reduce-motion');
-    }
-
     // Apply focus mode
     if (a11y.focusMode) {
       document.body.classList.add('focus-mode');
