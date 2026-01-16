@@ -1,15 +1,5 @@
 import { FontFamily, FontSize, Theme } from '@/types';
 
-export const FONT_FAMILY_OPTIONS: { value: FontFamily; label: string; className: string }[] = [
-  { value: 'serif', label: 'Serif', className: 'font-serif' },
-  { value: 'sans', label: 'Sans Serif', className: 'font-sans' },
-  { value: 'mono', label: 'Monospace', className: 'font-mono' },
-  { value: 'system', label: 'System', className: '' },
-  { value: 'opendyslexic', label: 'OpenDyslexic', className: 'font-opendyslexic' },
-  { value: 'comic-sans', label: 'Comic Sans', className: 'font-comic-sans' },
-  { value: 'atkinson', label: 'Atkinson', className: 'font-atkinson' },
-];
-
 export const FONT_SIZE_OPTIONS: { value: FontSize; label: string }[] = [
   { value: 'small', label: 'Small' },
   { value: 'medium', label: 'Medium' },
