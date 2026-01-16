@@ -231,36 +231,6 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
 
           {expandedSection === 'accessibility' && (
             <div className="mt-4 space-y-6">
-              {/* Dyslexia-friendly Font */}
-              <div>
-                <label
-                  htmlFor="dyslexia-font-select"
-                  className={`block text-sm font-medium ${getTextClass()} mb-2`}
-                >
-                  Dyslexia-Friendly Font
-                </label>
-                <select
-                  id="dyslexia-font-select"
-                  value={accessibility.fontFamily}
-                  onChange={(e) => handleAccessibilityChange('fontFamily', e.target.value as FontFamily)}
-                  className={`w-full p-2 rounded-lg border-2 transition-all ${
-                    isHighContrast
-                      ? 'bg-black border-white text-white'
-                      : isDetox
-                      ? 'bg-white border-gray-300 text-gray-900'
-                      : isDark
-                      ? 'bg-gray-700 border-gray-600 text-gray-100'
-                      : 'bg-white border-gray-300 text-gray-900'
-                  } focus:outline-none focus:ring-2 focus:ring-purple-500`}
-                >
-                  {Object.entries(themeConfig.fontFamilies).map(([key, font]) => (
-                    <option key={key} value={key}>
-                      {font.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
               {/* Letter Spacing */}
               <div>
                 <label id="letter-spacing-label" className={`block text-sm font-medium ${getTextClass()} mb-3`}>
