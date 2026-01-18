@@ -26,6 +26,7 @@ export type AccessibilitySettings = {
   wordSpacing: WordSpacing;
   reduceMotion: boolean;
   contentWidth?: ContentWidth;
+  focusMode?: boolean; // PRD-004 FR-9: Dim UI distractions during reading
   readingLineFocus?: boolean; // Issue #5: Focus/blur mode for reading lines
 };
 

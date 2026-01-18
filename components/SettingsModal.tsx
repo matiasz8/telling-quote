@@ -376,6 +376,59 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                 </p>
               </div>
 
+              {/* Focus Mode Toggle */}
+              <div>
+                <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
+                  Focus Mode
+                </label>
+                <button
+                  onClick={() => handleAccessibilityChange('focusMode', !accessibility.focusMode)}
+                  className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                    accessibility.focusMode
+                      ? isHighContrast
+                        ? 'bg-white'
+                        : isDetox
+                        ? 'bg-gray-900'
+                        : isDark
+                        ? 'bg-purple-600'
+                        : 'bg-lime-500'
+                      : isHighContrast
+                      ? 'bg-gray-700'
+                      : 'bg-gray-300'
+                  }`}
+                  role="switch"
+                  aria-checked={accessibility.focusMode || false}
+                  aria-label="Toggle focus mode to dim UI distractions"
+                >
+                  <span
+                    className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                      accessibility.focusMode ? 'translate-x-7' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+                <p className={`text-xs mt-2 ${getTextClass()} opacity-75`}>
+                  {accessibility.focusMode ? 'UI dimmed during reading' : 'Normal UI visibility'}
+                </p>
+                
+                {/* Visual Preview */}
+                <div className={`mt-3 p-3 rounded-lg border-2 ${getAccentClass()}`}>
+                  <p className={`text-xs font-medium mb-2 ${getTextClass()}`}>Preview:</p>
+                  <div className="flex items-center gap-3">
+                    {/* Simulated UI elements */}
+                    <div className={`flex-1 space-y-2 transition-opacity duration-300 ${accessibility.focusMode ? 'opacity-40' : 'opacity-100'}`}>
+                      <div className={`h-2 rounded ${isHighContrast ? 'bg-white' : isDetox ? 'bg-gray-300' : isDark ? 'bg-gray-600' : 'bg-gray-300'}`} style={{ width: '60%' }} aria-hidden="true"></div>
+                      <div className={`h-2 rounded ${isHighContrast ? 'bg-white' : isDetox ? 'bg-gray-300' : isDark ? 'bg-gray-600' : 'bg-gray-300'}`} style={{ width: '40%' }} aria-hidden="true"></div>
+                      <p className="text-xs opacity-75">Header/UI</p>
+                    </div>
+                    <div className={`flex-1 space-y-2 transition-opacity duration-300 ${accessibility.focusMode ? 'opacity-100' : 'opacity-100'}`}>
+                      <div className={`h-2 rounded ${isHighContrast ? 'bg-white' : isDetox ? 'bg-gray-700' : isDark ? 'bg-purple-500' : 'bg-emerald-500'}`} style={{ width: '80%' }} aria-hidden="true"></div>
+                      <div className={`h-2 rounded ${isHighContrast ? 'bg-white' : isDetox ? 'bg-gray-700' : isDark ? 'bg-purple-500' : 'bg-emerald-500'}`} style={{ width: '90%' }} aria-hidden="true"></div>
+                      <p className="text-xs opacity-75">Content</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Content Width */}
               <div>
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>

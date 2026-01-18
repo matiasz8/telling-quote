@@ -292,9 +292,10 @@ html.high-contrast-theme article {
 /* ===== Focus Mode Styles ===== */
 /* When focus mode is enabled, dim everything except main content */
 body.focus-mode {
-  --focus-mode-dim-opacity: 0.4;
+  --focus-mode-dim-opacity: 0.3;
 }
 
+/* Dim the global header */
 body.focus-mode header {
   opacity: var(--focus-mode-dim-opacity);
   pointer-events: none;
@@ -305,17 +306,33 @@ body.focus-mode footer {
   pointer-events: none;
 }
 
+/* Dim the progress bar and navigation at the top of reader */
+body.focus-mode .sticky {
+  opacity: var(--focus-mode-dim-opacity);
+  pointer-events: auto; /* Keep clickable */
+}
+
+/* Dim "Back to Dashboard" link specifically */
+body.focus-mode a[href="/"] {
+  opacity: var(--focus-mode-dim-opacity);
+}
+
+/* Dim all buttons in focus mode */
+body.focus-mode button {
+  opacity: var(--focus-mode-dim-opacity);
+}
+
 /* Highlight the main reader content container */
 body.focus-mode #reader-main-content {
-  opacity: 1;
+  opacity: 1 !important;
   pointer-events: auto;
   position: relative;
   z-index: 10;
 }
 
-body.focus-mode .sticky {
-  opacity: var(--focus-mode-dim-opacity);
-  pointer-events: none;
+/* Keep all content inside reader at full opacity */
+body.focus-mode #reader-main-content * {
+  opacity: 1 !important;
 }
 
 /* Allow navigation buttons in progress bar to still work */
