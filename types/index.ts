@@ -19,6 +19,8 @@ export type WordSpacing = 'normal' | 'wide';
 
 export type ContentWidth = 'narrow' | 'medium' | 'wide' | 'full';
 
+export type ReadingTransition = 'none' | 'fade-theme' | 'swipe' | 'line-focus' | 'spotlight';
+
 export type AccessibilitySettings = {
   fontFamily: FontFamily;
   letterSpacing: LetterSpacing;
@@ -27,7 +29,7 @@ export type AccessibilitySettings = {
   reduceMotion: boolean;
   contentWidth?: ContentWidth;
   focusMode?: boolean; // PRD-004 FR-9: Dim UI distractions during reading
-  readingLineFocus?: boolean; // Issue #5: Focus/blur mode for reading lines
+  readingTransition?: ReadingTransition; // Issue #5: Reading transition effects
 };
 
 export type Settings = {

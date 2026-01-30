@@ -295,6 +295,7 @@ export default function ReaderPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [lastReadingId, setLastReadingId] = useState(id);
   const [announcedIndex, setAnnouncedIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const announceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pageRef = useRef<HTMLDivElement | null>(null);
@@ -306,6 +307,9 @@ export default function ReaderPage() {
   const fontSizeClasses = getFontSizeClasses(settings.fontSize);
   const themeClasses = getThemeClasses(settings.theme);
   const isDark = settings.theme === 'dark';
+  
+  // Get reading transition setting
+  const readingTransition = settings.accessibility?.readingTransition || 'fade-theme';
 
   // Get content width directly for immediate render
   const contentWidth = settings.accessibility?.contentWidth || 'medium';
@@ -354,22 +358,67 @@ export default function ReaderPage() {
   }, [currentIndex]);
 
   const handleNext = useCallback(() => {
-    setCurrentIndex((prev) => {
-      if (prev < processedText.length - 1) {
-        return prev + 1;
-      }
-      return prev;
-    });
-  }, [processedText.length]);
+    if (isTransitioning) return; // Prevent multiple transitions
+    
+    // Skip transition if reduce motion is enabled, transition is 'none', 'spotlight', or 'line-focus'
+    // (spotlight and line-focus don't use enter/exit animations)
+    const shouldAnimate = !settings.accessibility?.reduceMotion && 
+                          readingTransition !== 'none' && 
+                          readingTransition !== 'spotlight' &&
+                          readingTransition !== 'line-focus';
+    
+    if (shouldAnimate) {
+      setIsTransitioning(true);
+      // Wait for exit animation to complete before changing content
+      setTimeout(() => {
+        setCurrentIndex((prev) => {
+          if (prev < processedText.length - 1) {
+            return prev + 1;
+          }
+          return prev;
+        });
+        setIsTransitioning(false);
+      }, readingTransition === 'swipe' ? 400 : 300); // Match CSS animation duration
+    } else {
+      setCurrentIndex((prev) => {
+        if (prev < processedText.length - 1) {
+          return prev + 1;
+        }
+        return prev;
+      });
+    }
+  }, [processedText.length, isTransitioning, settings.accessibility?.reduceMotion, readingTransition]);
 
   const handlePrevious = useCallback(() => {
-    setCurrentIndex((prev) => {
-      if (prev > 0) {
-        return prev - 1;
-      }
-      return prev;
-    });
-  }, []);
+    if (isTransitioning) return; // Prevent multiple transitions
+    
+    // Skip transition if reduce motion is enabled, transition is 'none', 'spotlight', or 'line-focus'
+    const shouldAnimate = !settings.accessibility?.reduceMotion && 
+                          readingTransition !== 'none' && 
+                          readingTransition !== 'spotlight' &&
+                          readingTransition !== 'line-focus';
+    
+    if (shouldAnimate) {
+      setIsTransitioning(true);
+      // Wait for exit animation to complete before changing content
+      setTimeout(() => {
+        setCurrentIndex((prev) => {
+          if (prev > 0) {
+            return prev - 1;
+          }
+          return prev;
+        });
+        setIsTransitioning(false);
+      }, readingTransition === 'swipe' ? 400 : 300); // Match CSS animation duration
+    } else {
+      setCurrentIndex((prev) => {
+        if (prev > 0) {
+          return prev - 1;
+        }
+        return prev;
+      });
+    }
+  }, [isTransitioning, settings.accessibility?.reduceMotion, readingTransition]);
 
   const toggleFullscreen = useCallback(() => {
     if (!pageRef.current) return;
@@ -633,16 +682,40 @@ export default function ReaderPage() {
       </div>
 
       {/* Content */}
-      <div id="reader-main-content" className="container mx-auto px-4 py-12">
+      <div 
+        id="reader-main-content" 
+        className={`container mx-auto px-4 py-12 ${
+          readingTransition === 'line-focus' && !settings.accessibility?.reduceMotion
+            ? 'line-focus-mode'
+            : readingTransition === 'spotlight' && !settings.accessibility?.reduceMotion
+            ? 'spotlight-mode'
+            : ''
+        }`}
+      >
         <div 
           key={currentIndex}
-          className="mx-auto animate-fadeIn" 
+          className={`mx-auto ${
+            settings.accessibility?.reduceMotion || readingTransition === 'none'
+              ? ''
+              : readingTransition === 'spotlight' && !settings.accessibility?.reduceMotion
+              ? 'spotlight-content'
+              : isTransitioning
+              ? readingTransition === 'fade-theme'
+                ? 'reading-transition-fade-exit'
+                : readingTransition === 'swipe'
+                ? 'reading-transition-swipe-exit'
+                : ''
+              : readingTransition === 'fade-theme'
+              ? 'reading-transition-fade-enter'
+              : readingTransition === 'swipe'
+              ? 'reading-transition-swipe-enter'
+              : ''
+          }`}
           style={{ 
             maxWidth: contentWidthStyle,
-            animation: settings.accessibility?.reduceMotion ? 'none' : 'fadeIn 0.15s ease-in'
           }}
         >
-          <div className="mb-8 text-center">
+          <div className="mb-8 text-center spotlight-header">
             <h2 className={`${fontSizeClasses.title} font-semibold ${themeClasses.text} mb-2`}>
               {formatText(currentSentence.title, isDark)}
             </h2>
@@ -680,7 +753,7 @@ export default function ReaderPage() {
               )}
             </div>
           ) : currentSentence.isBlockquote ? (
-            <blockquote className={`my-12 px-6 py-4 border-l-4 ${
+            <blockquote className={`my-12 px-6 py-4 border-l-4 spotlight-current ${
               isDark 
                 ? 'border-purple-500 bg-purple-900/20' 
                 : 'border-emerald-500 bg-emerald-50'
@@ -790,7 +863,7 @@ export default function ReaderPage() {
               
               {/* Previous bullets (dimmed) */}
               {currentSentence.bulletHistory && currentSentence.bulletHistory.length > 0 && (
-                <ul className="space-y-3 mb-4">
+                <ul className="space-y-3 mb-4 spotlight-history">
                   {currentSentence.bulletHistory.map((bullet, idx) => (
                     <li key={idx} className={`flex items-start ${themeClasses.textSecondary} ${fontSizeClasses.bullet}`}>
                       <span className={`mr-3 mt-1 shrink-0 ${(currentSentence.indentLevel ?? 0) > 0 ? 'ml-8' : ''}`}>
@@ -807,7 +880,7 @@ export default function ReaderPage() {
               )}
               {/* Current bullet (highlighted) */}
               <ul className="space-y-3">
-                <li className={`flex items-start ${
+                <li className={`flex items-start spotlight-current ${
                   (currentSentence.indentLevel ?? 0) === 0 
                     ? `${themeClasses.textSecondary} ${fontSizeClasses.bullet} ${theme.bullets.level0.weight}` 
                     : `${themeClasses.text} ${fontSizeClasses.bullet} ${theme.bullets.level1.weight}`
@@ -824,17 +897,23 @@ export default function ReaderPage() {
               </ul>
             </div>
           ) : (
-            <p className={`my-12 ${themeClasses.text} leading-relaxed text-center min-h-[200px] flex items-center justify-center ${
-              currentSentence.isSubtitleIntro 
-                ? `${fontSizeClasses.subtitle} ${theme.subtitleIntro.weight} ${theme.subtitleIntro.style}` 
-                : fontSizeClasses.text
-            }`}>
+            <p 
+              className={`my-12 ${themeClasses.text} leading-relaxed text-center min-h-[200px] flex items-center justify-center spotlight-current ${
+                currentSentence.isSubtitleIntro 
+                  ? `${fontSizeClasses.subtitle} ${theme.subtitleIntro.weight} ${theme.subtitleIntro.style}` 
+                  : fontSizeClasses.text
+              } ${
+                readingTransition === 'line-focus' && !settings.accessibility?.reduceMotion
+                  ? 'reading-line-focused'
+                  : ''
+              }`}
+            >
               {formatText(currentSentence.sentence, isDark)}
             </p>
           )}
 
           {/* Actions */}
-          <div data-tour="reader-navigation" className="flex items-center justify-center gap-4 mt-6">
+          <div data-tour="reader-navigation" className={`flex items-center justify-center gap-4 mt-6 spotlight-actions ${isFinished ? 'spotlight-finished' : ''}`}>
             {/* Go to start */}
             <button
               onClick={goToStart}
