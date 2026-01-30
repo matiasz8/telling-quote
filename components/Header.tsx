@@ -39,7 +39,7 @@ export default function Header() {
         isHighContrast
           ? 'border-white bg-black text-white border-2'
           : isDetox
-          ? 'border-gray-200 bg-white'
+          ? 'border-gray-200 bg-white text-gray-900'
           : isDark
           ? 'border-purple-900 bg-linear-to-r from-purple-900 to-black'
           : 'border-lime-200 bg-linear-to-r from-yellow-100 to-lime-100'
