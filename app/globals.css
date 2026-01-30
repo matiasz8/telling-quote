@@ -199,10 +199,30 @@ html.reduce-motion *::after {
 
 /* ===== Theme Styles ===== */
 
+/* Light Theme (default) */
+:root {
+  /* Spotlight variables for light theme */
+  --spotlight-overlay-center: rgba(255, 255, 255, 0);
+  --spotlight-overlay-mid: rgba(255, 255, 255, 0.3);
+  --spotlight-overlay-edge: rgba(255, 255, 255, 0.95);
+  --spotlight-text-color: #1f2937;
+  --spotlight-glow-color: 250, 204, 21; /* Yellow - rgb values for rgba */
+  --spotlight-list-color: #1f2937;
+  --spotlight-inline-code-opacity: 0.8;
+}
+
 /* Dark Theme */
 html.dark-theme {
   --background: #0a0a0a;
   --foreground: #ededed;
+  /* Spotlight variables for dark theme */
+  --spotlight-overlay-center: rgba(0, 0, 0, 0.8);
+  --spotlight-overlay-mid: rgba(0, 0, 0, 0.94);
+  --spotlight-overlay-edge: rgba(0, 0, 0, 0.99);
+  --spotlight-text-color: #e9d5ff;
+  --spotlight-glow-color: 196, 150, 255; /* Purple - rgb values for rgba */
+  --spotlight-list-color: #e9d5ff;
+  --spotlight-inline-code-opacity: 0.7;
 }
 
 html.dark-theme body {
@@ -223,6 +243,14 @@ html.dark-theme button {
 html.detox-theme {
   --background: #ffffff;
   --foreground: #111827;
+  /* Spotlight variables for detox theme */
+  --spotlight-overlay-center: rgba(255, 255, 255, 0);
+  --spotlight-overlay-mid: rgba(255, 255, 255, 0.3);
+  --spotlight-overlay-edge: rgba(255, 255, 255, 0.95);
+  --spotlight-text-color: #111827;
+  --spotlight-glow-color: 250, 204, 21; /* Yellow - rgb values for rgba */
+  --spotlight-list-color: #111827;
+  --spotlight-inline-code-opacity: 0.8;
 }
 
 html.detox-theme body {
@@ -255,6 +283,14 @@ html.detox-theme article {
 html.high-contrast-theme {
   --background: #000000;
   --foreground: #ffffff;
+  /* Spotlight variables for high-contrast theme */
+  --spotlight-overlay-center: rgba(0, 0, 0, 0.85);
+  --spotlight-overlay-mid: rgba(0, 0, 0, 0.95);
+  --spotlight-overlay-edge: rgba(0, 0, 0, 1);
+  --spotlight-text-color: #ffffff;
+  --spotlight-glow-color: 255, 255, 255; /* White - rgb values for rgba */
+  --spotlight-list-color: #ffffff;
+  --spotlight-inline-code-opacity: 1;
 }
 
 html.high-contrast-theme body {
@@ -467,7 +503,7 @@ html.reduce-motion .reading-line-blur {
 
 /* ===== Spotlight Theater Effect (Issue #5) ===== */
 
-/* Very dark overlay - almost complete darkness except for the text */
+/* Centralized overlay using CSS variables */
 .spotlight-mode::before {
   content: '';
   position: fixed;
@@ -477,48 +513,15 @@ html.reduce-motion .reading-line-blur {
   bottom: 0;
   background: radial-gradient(
     ellipse 600px 400px at center,
-    rgba(0, 0, 0, 0.75) 0%,
-    rgba(0, 0, 0, 0.92) 30%,
-    rgba(0, 0, 0, 0.97) 60%,
-    rgba(0, 0, 0, 0.99) 100%
+    var(--spotlight-overlay-center) 0%,
+    var(--spotlight-overlay-mid) 30%,
+    var(--spotlight-overlay-mid) 60%,
+    var(--spotlight-overlay-edge) 100%
   );
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(2px);
   pointer-events: none;
   z-index: 5;
   transition: opacity 0.3s ease;
-}
-
-/* Dark theme - even darker overlay */
-html.dark-theme .spotlight-mode::before {
-  background: radial-gradient(
-    ellipse 600px 400px at center,
-    rgba(0, 0, 0, 0.8) 0%,
-    rgba(0, 0, 0, 0.94) 30%,
-    rgba(0, 0, 0, 0.98) 60%,
-    rgba(0, 0, 0, 0.99) 100%
-  );
-}
-
-/* Detox theme - dark overlay */
-html.detox-theme .spotlight-mode::before {
-  background: radial-gradient(
-    ellipse 600px 400px at center,
-    rgba(0, 0, 0, 0.78) 0%,
-    rgba(0, 0, 0, 0.93) 30%,
-    rgba(0, 0, 0, 0.97) 60%,
-    rgba(0, 0, 0, 0.99) 100%
-  );
-}
-
-/* High contrast theme - maximum darkness */
-html.high-contrast-theme .spotlight-mode::before {
-  background: radial-gradient(
-    ellipse 600px 400px at center,
-    rgba(0, 0, 0, 0.85) 0%,
-    rgba(0, 0, 0, 0.95) 30%,
-    rgba(0, 0, 0, 0.98) 60%,
-    rgba(0, 0, 0, 1) 100%
-  );
 }
 
 /* Container - just for positioning */
@@ -527,32 +530,39 @@ html.high-contrast-theme .spotlight-mode::before {
   z-index: 10;
 }
 
-/* ===== LIGHT THEME - Bright white text with warm glow (ONLY current content) ===== */
+/* ===== CENTRALIZED SPOTLIGHT STYLES - Use CSS variables for theming ===== */
+
+/* Paragraphs and titles - glow effect using theme variables */
 .spotlight-content p,
 .spotlight-content h1,
 .spotlight-content h2,
 .spotlight-content h3,
 .spotlight-content h4,
 .spotlight-content blockquote {
-  color: #ffffff !important;
-  filter: drop-shadow(0 0 60px rgba(255, 255, 255, 0.9))
-          drop-shadow(0 0 30px rgba(255, 250, 230, 0.8))
-          drop-shadow(0 0 15px rgba(255, 245, 220, 0.6));
-  text-shadow: 0 0 25px rgba(255, 255, 255, 0.7),
-               0 0 15px rgba(255, 250, 230, 0.5),
-               0 0 8px rgba(255, 245, 220, 0.4);
+  color: var(--spotlight-text-color) !important;
+  filter: drop-shadow(0 0 40px rgba(var(--spotlight-glow-color), 0.6))
+          drop-shadow(0 0 20px rgba(var(--spotlight-glow-color), 0.5))
+          drop-shadow(0 0 10px rgba(var(--spotlight-glow-color), 0.4));
+  text-shadow: 0 0 20px rgba(var(--spotlight-glow-color), 0.5),
+               0 0 12px rgba(var(--spotlight-glow-color), 0.4),
+               0 0 6px rgba(var(--spotlight-glow-color), 0.3);
   transition: filter 0.3s ease, text-shadow 0.3s ease, color 0.3s ease;
 }
 
-/* Bullets and lists - moderate glow, less than paragraphs to avoid checkbox over-brightness */
+/* Bullets and lists - moderate glow */
 .spotlight-content li {
-  color: #ffffff !important;
-  filter: drop-shadow(0 0 40px rgba(255, 255, 255, 0.7))
-          drop-shadow(0 0 20px rgba(255, 250, 230, 0.6))
-          drop-shadow(0 0 10px rgba(255, 245, 220, 0.5));
-  text-shadow: 0 0 25px rgba(255, 255, 255, 0.7),
-               0 0 15px rgba(255, 250, 230, 0.5),
-               0 0 8px rgba(255, 245, 220, 0.4);
+  color: var(--spotlight-list-color) !important;
+  filter: drop-shadow(0 0 30px rgba(var(--spotlight-glow-color), 0.5))
+          drop-shadow(0 0 15px rgba(var(--spotlight-glow-color), 0.4))
+          drop-shadow(0 0 8px rgba(var(--spotlight-glow-color), 0.3));
+}
+
+.spotlight-content li span {
+  color: var(--spotlight-list-color) !important;
+  filter: none !important;
+  text-shadow: 0 0 20px rgba(var(--spotlight-glow-color), 0.5),
+               0 0 12px rgba(var(--spotlight-glow-color), 0.4),
+               0 0 6px rgba(var(--spotlight-glow-color), 0.3) !important;
 }
 
 /* Exclude fixed header from spotlight glow */
@@ -562,6 +572,33 @@ html.high-contrast-theme .spotlight-mode::before {
   text-shadow: none !important;
   color: inherit !important;
   opacity: 0.25 !important;
+}
+
+/* Inline code - reduce effects */
+.spotlight-content code,
+.spotlight-content span[class*="bg-"] {
+  filter: none !important;
+  text-shadow: none !important;
+  font-size: inherit !important;
+  opacity: var(--spotlight-inline-code-opacity) !important;
+}
+
+/* Remove any effects from checkbox containers */
+.spotlight-content div.my-12,
+.spotlight-content div.my-12 *,
+.spotlight-content div:has(input[type="checkbox"]),
+.spotlight-content div:has(input[type="checkbox"]) * {
+  text-shadow: none !important;
+  filter: none !important;
+}
+
+/* Force theme color on bullets with gray classes */
+.spotlight-content li[class*="text-gray"],
+.spotlight-content li[class*="textSecondary"],
+.spotlight-content ul li[class*="text-gray"],
+.spotlight-content ul li[class*="textSecondary"] {
+  color: var(--spotlight-list-color) !important;
+  opacity: 1 !important;
 }
 
 /* Hide action buttons completely in spotlight mode for immersive experience */
@@ -582,173 +619,281 @@ html.high-contrast-theme .spotlight-mode::before {
   text-shadow: none !important;
 }
 
-/* Fix button visibility in dark theme - override dark-theme button color */
+/* Dim historical/previous content - no glow */
+.spotlight-content .text-gray-400,
+.spotlight-content .text-gray-500,
+.spotlight-content [class*="textSecondary"]:not(li):not(li *) {
+  filter: none !important;
+  text-shadow: none !important;
+  opacity: 0.3 !important;
+}
+
+/* Completely hide previous bullets history */
+.spotlight-content .spotlight-history,
+.spotlight-content .spotlight-history * {
+  filter: none !important;
+  text-shadow: none !important;
+  opacity: 0.15 !important;
+}
+
+/* ===== THEME-SPECIFIC BUTTON OVERRIDES (non-centralizable) ===== */
+
+/* Dark theme buttons - gray background */
 html.dark-theme .spotlight-content .spotlight-actions.spotlight-finished button {
   background-color: rgba(75, 85, 99, 0.8) !important;
-  color: #374151 !important; /* Dark gray for SVG currentColor */
+  color: #374151 !important;
 }
 
 html.dark-theme .spotlight-content .spotlight-actions.spotlight-finished button svg {
-  stroke: #374151 !important; /* Force dark gray stroke */
+  stroke: #374151 !important;
 }
 
 html.dark-theme .spotlight-content .spotlight-actions.spotlight-finished button:hover {
   background-color: rgba(55, 65, 81, 0.9) !important;
 }
 
-/* Dim historical/previous content - no glow */
-.spotlight-content .text-gray-400,
-.spotlight-content .text-gray-500,
-.spotlight-content [class*="textSecondary"] {
+/* Detox theme buttons - light gray */
+html.detox-theme .spotlight-content .spotlight-actions.spotlight-finished button {
+  background-color: #e5e7eb !important;
+  color: #111827 !important;
+}
+
+html.detox-theme .spotlight-content .spotlight-actions.spotlight-finished button svg {
+  stroke: #111827 !important;
+}
+
+html.detox-theme .spotlight-content .spotlight-actions.spotlight-finished button:hover {
+  background-color: #d1d5db !important;
+}
+
+/* ===== HIGH CONTRAST THEME - Override colored tags ===== */
+
+/* Force all inline code and tags to be black on white */
+html.high-contrast-theme .spotlight-content code,
+html.high-contrast-theme .spotlight-content span[class*="bg-"] {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 1px solid #ffffff !important;
   filter: none !important;
   text-shadow: none !important;
-  opacity: 0.3 !important;
-}
-
-/* ===== DARK THEME - Purple-white glow (ONLY current content) ===== */
-html.dark-theme .spotlight-content p,
-html.dark-theme .spotlight-content h1,
-html.dark-theme .spotlight-content h2,
-html.dark-theme .spotlight-content h3,
-html.dark-theme .spotlight-content h4,
-html.dark-theme .spotlight-content blockquote,
-html.dark-theme .spotlight-content div:not(.flex):not([class*="items-"]) {
-  color: #e9d5ff !important;
-  text-shadow: 0 0 30px rgba(196, 150, 255, 0.8),
-               0 0 18px rgba(216, 180, 255, 0.6),
-               0 0 10px rgba(233, 213, 255, 0.5);
-}
-
-/* Bullets - no extra glow, just color */
-html.dark-theme .spotlight-content li {
-  color: #e9d5ff !important;
-}
-
-html.dark-theme .spotlight-content li span {
-  color: #e9d5ff !important;
-  filter: none !important;
-  text-shadow: 0 0 30px rgba(196, 150, 255, 0.8),
-               0 0 18px rgba(216, 180, 255, 0.6),
-               0 0 10px rgba(233, 213, 255, 0.5) !important;
-}
-
-/* Inline code - no effects, reduce brightness */
-html.dark-theme .spotlight-content code,
-html.dark-theme .spotlight-content span[class*="bg-"] {
-  filter: none !important;
-  text-shadow: none !important;
-  font-size: inherit !important;
-  opacity: 0.7 !important;
-}
-
-/* Completely hide previous bullets history */
-html.dark-theme .spotlight-content .spotlight-history,
-html.dark-theme .spotlight-content .spotlight-history * {
-  filter: none !important;
-  text-shadow: none !important;
-  opacity: 0.15 !important;
-}
-
-/* Remove glow from checkbox containers and all their children */
-html.dark-theme .spotlight-content div.my-12,
-html.dark-theme .spotlight-content div.my-12 *,
-html.dark-theme .spotlight-content div:has(input[type="checkbox"]),
-html.dark-theme .spotlight-content div:has(input[type="checkbox"]) * {
-  text-shadow: none !important;
-}
-
-/* Force white color on bullets that have gray classes */
-html.dark-theme .spotlight-content li[class*="text-gray"],
-html.dark-theme .spotlight-content li[class*="textSecondary"],
-html.dark-theme .spotlight-content ul li[class*="text-gray"],
-html.dark-theme .spotlight-content ul li[class*="textSecondary"] {
-  color: #e9d5ff !important;
   opacity: 1 !important;
 }
 
-html.dark-theme .spotlight-content .spotlight-header,
-html.dark-theme .spotlight-content .spotlight-header * {
-  filter: none !important;
-  text-shadow: none !important;
-  color: inherit !important;
-  opacity: 0.2 !important;
+/* Remove all colored backgrounds from tags */
+html.high-contrast-theme .spotlight-content span.bg-red-100,
+html.high-contrast-theme .spotlight-content span.bg-blue-100,
+html.high-contrast-theme .spotlight-content span.bg-green-100,
+html.high-contrast-theme .spotlight-content span.bg-yellow-100,
+html.high-contrast-theme .spotlight-content span.bg-purple-100,
+html.high-contrast-theme .spotlight-content span.bg-pink-100,
+html.high-contrast-theme .spotlight-content span[class*="bg-red"],
+html.high-contrast-theme .spotlight-content span[class*="bg-blue"],
+html.high-contrast-theme .spotlight-content span[class*="bg-green"],
+html.high-contrast-theme .spotlight-content span[class*="bg-yellow"],
+html.high-contrast-theme .spotlight-content span[class*="bg-purple"],
+html.high-contrast-theme .spotlight-content span[class*="bg-pink"] {
+  background-color: #ffffff !important;
+  color: #000000 !important;
 }
 
-/* Previous bullets should stay dimmed */
-html.dark-theme .spotlight-content .text-gray-400,
-html.dark-theme .spotlight-content .text-gray-500,
-html.dark-theme .spotlight-content [class*="textSecondary"]:not(li):not(li *) {
-  filter: none !important;
-  text-shadow: none !important;
-  opacity: 0.2 !important;
-}
-
-/* ===== DETOX THEME - Neutral white/gray glow (ONLY current content) ===== */
-html.detox-theme .spotlight-content p,
-html.detox-theme .spotlight-content h1,
-html.detox-theme .spotlight-content h2,
-html.detox-theme .spotlight-content h3,
-html.detox-theme .spotlight-content h4,
-html.detox-theme .spotlight-content blockquote,
-html.detox-theme .spotlight-content li,
-html.detox-theme .spotlight-content div {
-  color: #f9fafb !important;
-  filter: drop-shadow(0 0 55px rgba(243, 244, 246, 0.9))
-          drop-shadow(0 0 30px rgba(249, 250, 251, 0.75))
-          drop-shadow(0 0 15px rgba(255, 255, 255, 0.55));
-  text-shadow: 0 0 22px rgba(243, 244, 246, 0.65),
-               0 0 12px rgba(249, 250, 251, 0.5),
-               0 0 6px rgba(255, 255, 255, 0.4);
-}
-
-html.detox-theme .spotlight-content .spotlight-header,
-html.detox-theme .spotlight-content .spotlight-header * {
-  filter: none !important;
-  text-shadow: none !important;
-  color: inherit !important;
-  opacity: 0.22 !important;
-}
-
-html.detox-theme .spotlight-content .text-gray-400,
-html.detox-theme .spotlight-content .text-gray-500,
-html.detox-theme .spotlight-content [class*="textSecondary"] {
-  filter: none !important;
-  text-shadow: none !important;
-  opacity: 0.25 !important;
-}
-
-/* ===== HIGH CONTRAST THEME - Maximum white intensity (ONLY current content) ===== */
-html.high-contrast-theme .spotlight-content p,
-html.high-contrast-theme .spotlight-content h1,
-html.high-contrast-theme .spotlight-content h2,
-html.high-contrast-theme .spotlight-content h3,
-html.high-contrast-theme .spotlight-content h4,
-html.high-contrast-theme .spotlight-content blockquote,
-html.high-contrast-theme .spotlight-content li,
-html.high-contrast-theme .spotlight-content div {
+/* Blockquotes - black background, white text, white border */
+html.high-contrast-theme .spotlight-content blockquote {
+  border-left-color: #ffffff !important;
+  border-left-width: 4px !important;
+  background-color: #000000 !important;
   color: #ffffff !important;
-  filter: drop-shadow(0 0 90px rgba(255, 255, 255, 1))
-          drop-shadow(0 0 50px rgba(255, 255, 255, 0.9))
-          drop-shadow(0 0 25px rgba(255, 255, 255, 0.7));
-  text-shadow: 0 0 35px rgba(255, 255, 255, 0.9),
-               0 0 20px rgba(255, 255, 255, 0.7),
-               0 0 10px rgba(255, 255, 255, 0.6);
+  padding: 1rem !important;
 }
 
-html.high-contrast-theme .spotlight-content .spotlight-header,
-html.high-contrast-theme .spotlight-content .spotlight-header * {
+/* Highlighted/marked text - white text on black background */
+html.high-contrast-theme .spotlight-content mark,
+html.high-contrast-theme .spotlight-content span[class*="highlight"] {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border: 2px solid #ffffff !important;
+}
+
+/* Tables - remove all colors, strong contrast */
+html.high-contrast-theme .spotlight-content table,
+html.high-contrast-theme .spotlight-content table *,
+html.high-contrast-theme.spotlight-mode .spotlight-content table,
+html.high-contrast-theme.spotlight-mode .spotlight-content table * {
+  border-color: #ffffff !important;
+}
+
+/* Headers - white background, black text - MAXIMUM PRIORITY */
+html.high-contrast-theme .spotlight-content thead,
+html.high-contrast-theme .spotlight-content thead tr,
+html.high-contrast-theme .spotlight-content th,
+html.high-contrast-theme.spotlight-mode .spotlight-content thead,
+html.high-contrast-theme.spotlight-mode .spotlight-content thead tr,
+html.high-contrast-theme.spotlight-mode .spotlight-content th {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  background-image: none !important;
+  color: #000000 !important;
+  border-color: #000000 !important;
+  font-weight: bold !important;
   filter: none !important;
   text-shadow: none !important;
+}
+
+/* Ultra-specific: force black text in th elements */
+html.high-contrast-theme .spotlight-content table thead th,
+html.high-contrast-theme .spotlight-content table th,
+html.high-contrast-theme.spotlight-mode .spotlight-content table thead th,
+html.high-contrast-theme.spotlight-mode .spotlight-content table th {
+  color: #000000 !important;
+}
+
+/* Override Tailwind gradient classes on thead */
+html.high-contrast-theme .spotlight-content thead.bg-linear-to-r,
+html.high-contrast-theme .spotlight-content thead[class*="from-"],
+html.high-contrast-theme .spotlight-content thead[class*="to-"],
+html.high-contrast-theme.spotlight-mode .spotlight-content thead.bg-linear-to-r,
+html.high-contrast-theme.spotlight-mode .spotlight-content thead[class*="from-"],
+html.high-contrast-theme.spotlight-mode .spotlight-content thead[class*="to-"] {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+}
+
+/* Force all children in headers to be black - NO EXCEPTIONS */
+html.high-contrast-theme .spotlight-content thead *:not(tr):not(thead),
+html.high-contrast-theme .spotlight-content th *,
+html.high-contrast-theme.spotlight-mode .spotlight-content thead *:not(tr):not(thead),
+html.high-contrast-theme.spotlight-mode .spotlight-content th * {
+  color: #000000 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  filter: none !important;
+  text-shadow: none !important;
+}
+
+/* Override text-gray-* classes in table headers */
+html.high-contrast-theme .spotlight-content th.text-gray-800,
+html.high-contrast-theme .spotlight-content th[class*="text-gray"],
+html.high-contrast-theme.spotlight-mode .spotlight-content th.text-gray-800,
+html.high-contrast-theme.spotlight-mode .spotlight-content th[class*="text-gray"] {
+  color: #000000 !important;
+}
+
+/* Body cells - black background, white text */
+html.high-contrast-theme .spotlight-content tbody,
+html.high-contrast-theme .spotlight-content tbody tr,
+html.high-contrast-theme .spotlight-content td,
+html.high-contrast-theme .spotlight-content tr:not(:has(th)),
+html.high-contrast-theme.spotlight-mode .spotlight-content tbody,
+html.high-contrast-theme.spotlight-mode .spotlight-content tbody tr,
+html.high-contrast-theme.spotlight-mode .spotlight-content td,
+html.high-contrast-theme.spotlight-mode .spotlight-content tr:not(:has(th)) {
+  background-color: #000000 !important;
+  background: #000000 !important;
+  color: #ffffff !important;
+  border-color: #ffffff !important;
+}
+
+/* Override text-gray-* classes in table cells */
+html.high-contrast-theme .spotlight-content td.text-gray-900,
+html.high-contrast-theme .spotlight-content td[class*="text-gray"],
+html.high-contrast-theme.spotlight-mode .spotlight-content td.text-gray-900,
+html.high-contrast-theme.spotlight-mode .spotlight-content td[class*="text-gray"] {
+  color: #ffffff !important;
+}
+
+/* 
+ * NOTE: Color emojis (like ⭐) cannot be styled with CSS color property.
+ * They will retain their native colors (yellow stars remain yellow).
+ * This is a browser limitation - emojis are rendered as images.
+ * For true high-contrast, consider using text symbols instead: ★ • ○ ●
+ * or replacing colored emojis in markdown content for high-contrast theme.
+ */
+
+/* Force all children in body cells to be white */
+html.high-contrast-theme .spotlight-content tbody *,
+html.high-contrast-theme .spotlight-content td *,
+html.high-contrast-theme.spotlight-mode .spotlight-content tbody *,
+html.high-contrast-theme.spotlight-mode .spotlight-content td * {
+  color: #ffffff !important;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Force white color on td content */
+html.high-contrast-theme .spotlight-content td,
+html.high-contrast-theme .spotlight-content tbody td,
+html.high-contrast-theme.spotlight-mode .spotlight-content td,
+html.high-contrast-theme.spotlight-mode .spotlight-content tbody td {
+  color: #ffffff !important;
+}
+
+/* Force remove ALL Tailwind color classes */
+html.high-contrast-theme .spotlight-content table [class*="bg-red"],
+html.high-contrast-theme .spotlight-content table [class*="bg-orange"],
+html.high-contrast-theme .spotlight-content table [class*="bg-amber"],
+html.high-contrast-theme .spotlight-content table [class*="bg-yellow"],
+html.high-contrast-theme .spotlight-content table [class*="bg-lime"],
+html.high-contrast-theme .spotlight-content table [class*="bg-green"],
+html.high-contrast-theme .spotlight-content table [class*="bg-emerald"],
+html.high-contrast-theme .spotlight-content table [class*="bg-teal"],
+html.high-contrast-theme .spotlight-content table [class*="bg-cyan"],
+html.high-contrast-theme .spotlight-content table [class*="bg-sky"],
+html.high-contrast-theme .spotlight-content table [class*="bg-blue"],
+html.high-contrast-theme .spotlight-content table [class*="bg-indigo"],
+html.high-contrast-theme .spotlight-content table [class*="bg-violet"],
+html.high-contrast-theme .spotlight-content table [class*="bg-purple"],
+html.high-contrast-theme .spotlight-content table [class*="bg-fuchsia"],
+html.high-contrast-theme .spotlight-content table [class*="bg-pink"],
+html.high-contrast-theme .spotlight-content table [class*="bg-rose"],
+html.high-contrast-theme .spotlight-content table [class*="text-red"],
+html.high-contrast-theme .spotlight-content table [class*="text-orange"],
+html.high-contrast-theme .spotlight-content table [class*="text-green"],
+html.high-contrast-theme .spotlight-content table [class*="text-blue"] {
+  background-color: inherit !important;
+  background: inherit !important;
   color: inherit !important;
-  opacity: 0.18 !important;
 }
 
-html.high-contrast-theme .spotlight-content .text-gray-400,
-html.high-contrast-theme .spotlight-content .text-gray-500,
-html.high-contrast-theme .spotlight-content [class*="textSecondary"] {
-  filter: none !important;
-  text-shadow: none !important;
-  opacity: 0.15 !important;
+/* Checkboxes - remove colors, force white */
+html.high-contrast-theme .spotlight-content input[type="checkbox"] {
+  border-color: #ffffff !important;
+  background-color: #000000 !important;
+}
+
+html.high-contrast-theme .spotlight-content input[type="checkbox"]:checked {
+  background-color: #ffffff !important;
+  border-color: #ffffff !important;
+}
+
+/* Checkbox labels and text - force white */
+html.high-contrast-theme .spotlight-content input[type="checkbox"] + span,
+html.high-contrast-theme .spotlight-content div:has(input[type="checkbox"]) span,
+html.high-contrast-theme .spotlight-content div:has(input[type="checkbox"]) label,
+html.high-contrast-theme .spotlight-content li:has(input[type="checkbox"]) {
+  color: #ffffff !important;
+}
+
+/* Remove ALL gray colors - everything should be white or black */
+html.high-contrast-theme .spotlight-content [class*="text-gray"],
+html.high-contrast-theme .spotlight-content [class*="bg-gray"] {
+  color: #ffffff !important;
+  background-color: transparent !important;
+}
+
+/* Links - white with underline */
+html.high-contrast-theme .spotlight-content a {
+  color: #ffffff !important;
+  text-decoration: underline !important;
+}
+
+/* Remove any remaining colored elements */
+html.high-contrast-theme .spotlight-content [class*="border-green"],
+html.high-contrast-theme .spotlight-content [class*="border-blue"],
+html.high-contrast-theme .spotlight-content [class*="border-red"],
+html.high-contrast-theme .spotlight-content [class*="border-yellow"],
+html.high-contrast-theme .spotlight-content [class*="border-purple"],
+html.high-contrast-theme .spotlight-content [class*="border-pink"] {
+  border-color: #ffffff !important;
 }
 
 /* Disable spotlight effect when reduce motion is enabled */
