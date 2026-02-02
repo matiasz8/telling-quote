@@ -75,6 +75,7 @@ export default function Header() {
             </a>
             <button
               onClick={() => setIsShortcutsOpen(true)}
+              data-tour="keyboard-shortcuts"
               className={`p-2 rounded-lg transition-colors ${
                 isHighContrast
                   ? 'text-white hover:bg-white hover:text-black'
@@ -93,6 +94,7 @@ export default function Header() {
             </button>
             <button
               onClick={() => setIsSettingsOpen(true)}
+              data-tour="settings-button"
               className={`p-2 rounded-lg transition-colors ${
                 isHighContrast
                   ? 'text-white hover:bg-white hover:text-black'
