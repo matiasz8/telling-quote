@@ -205,7 +205,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
               </div>
 
               {/* Font Size */}
-              <div>
+              <div data-tour="settings-font-size">
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
                   Tamaño de Letra
                 </label>
@@ -240,29 +240,6 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                       aria-label={`Select ${option.label} theme`}
                       className={`p-3 border-2 rounded-lg transition-all duration-200 ${
                         settings.theme === option.value
-                          ? getActiveAccentClass()
-                          : getAccentClass()
-                      }`}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Font Size */}
-              <div data-tour="settings-font-size">
-                <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
-                  Tamaño de Letra
-                </label>
-                <div className="grid grid-cols-2 gap-2">
-                  {FONT_SIZE_OPTIONS.map((option) => (
-                    <button
-                      key={option.value}
-                      onClick={() => handleFontSizeChange(option.value)}
-                      aria-label={`Select ${option.label} font size`}
-                      className={`p-3 border-2 rounded-lg transition-all duration-200 ${
-                        settings.fontSize === option.value
                           ? getActiveAccentClass()
                           : getAccentClass()
                       }`}
