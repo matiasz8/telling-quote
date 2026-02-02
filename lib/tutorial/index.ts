@@ -154,27 +154,35 @@ export function startSettingsTutorial() {
       accessibilityButton.click();
     }
     
-    // Iniciar el tutorial después de expandir las secciones
+    // Hacer scroll al primer elemento del tutorial después de expandir
     setTimeout(() => {
-      // Get current theme from body class
-      const bodyClasses = document.body.classList;
-      let theme: 'light' | 'dark' | 'detox' | 'high-contrast' = 'light';
+      const firstElement = document.querySelector('[data-tour="settings-font-family"]');
+      if (firstElement) {
+        firstElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
       
-      if (bodyClasses.contains('theme-dark')) theme = 'dark';
-      else if (bodyClasses.contains('theme-detox')) theme = 'detox';
-      else if (bodyClasses.contains('theme-high-contrast')) theme = 'high-contrast';
-      
-      // Check for reduced motion preference
-      const reduceMotion =
-        window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
-        localStorage.getItem('reduceMotion') === 'true';
-      
-      // Initialize driver
-      const config = getTutorialConfig({ theme, reduceMotion });
-      driverInstance = driver(config);
-      
-      driverInstance.setSteps(settingsTutorialSteps);
-      driverInstance.drive();
+      // Iniciar el tutorial después del scroll
+      setTimeout(() => {
+        // Get current theme from body class
+        const bodyClasses = document.body.classList;
+        let theme: 'light' | 'dark' | 'detox' | 'high-contrast' = 'light';
+        
+        if (bodyClasses.contains('theme-dark')) theme = 'dark';
+        else if (bodyClasses.contains('theme-detox')) theme = 'detox';
+        else if (bodyClasses.contains('theme-high-contrast')) theme = 'high-contrast';
+        
+        // Check for reduced motion preference
+        const reduceMotion =
+          window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+          localStorage.getItem('reduceMotion') === 'true';
+        
+        // Initialize driver
+        const config = getTutorialConfig({ theme, reduceMotion });
+        driverInstance = driver(config);
+        
+        driverInstance.setSteps(settingsTutorialSteps);
+        driverInstance.drive();
+      }, 500);
     }, 300);
   }, 300);
 }
