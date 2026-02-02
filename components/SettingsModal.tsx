@@ -5,7 +5,7 @@ import { Settings, FontFamily, FontSize, Theme, AccessibilitySettings, LetterSpa
 import { FONT_FAMILY_OPTIONS, FONT_SIZE_OPTIONS, THEME_OPTIONS } from '@/lib/constants';
 import { theme as themeConfig } from '@/config/theme';
 import { useFocusTrap } from '@/hooks/useFocusTrap';
-import { resetTutorial } from '@/lib/tutorial';
+import { resetTutorial, startSettingsTutorial } from '@/lib/tutorial';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -138,8 +138,8 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
         </div>
 
         {/* Preview Text */}
-        <div className={`sticky top-0 z-10 mb-6 p-4 rounded-lg border-2 ${getBgClass()} ${getAccentClass()}`}>
-          <div className={`text-xs font-medium mb-2 ${getTextClass()}`}>Preview</div>
+        <div data-preview className={`sticky top-0 z-10 mb-6 p-4 rounded-lg border-2 ${getBgClass()} ${getAccentClass()}`}>
+          <div className={`text-xs font-medium mb-2 ${getTextClass()}`}>Vista Previa</div>
           <div
             style={{
               fontFamily: themeConfig.fontFamilies[accessibility.fontFamily].family,
@@ -173,7 +173,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
             aria-expanded={expandedSection === 'general'}
             aria-label="General settings section"
           >
-            <span className="font-semibold">General Settings</span>
+            <span className="font-semibold">Ajustes Generales</span>
             <svg className={`w-5 h-5 transition-transform ${expandedSection === 'general' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
             </svg>
@@ -184,7 +184,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
               {/* Font Family */}
               <div>
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
-                  Font Family
+                  Familia de Fuente
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {FONT_FAMILY_OPTIONS.map((option) => (
@@ -228,9 +228,9 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
               </div>
 
               {/* Theme */}
-              <div>
+              <div data-tour="settings-theme-section">
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
-                  Theme
+                  Tema
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {THEME_OPTIONS.map((option) => (
@@ -240,6 +240,29 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                       aria-label={`Select ${option.label} theme`}
                       className={`p-3 border-2 rounded-lg transition-all duration-200 ${
                         settings.theme === option.value
+                          ? getActiveAccentClass()
+                          : getAccentClass()
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Font Size */}
+              <div data-tour="settings-font-section">
+                <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
+                  Tamaño de Letra
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {FONT_SIZE_OPTIONS.map((option) => (
+                    <button
+                      key={option.value}
+                      onClick={() => handleFontSizeChange(option.value)}
+                      aria-label={`Select ${option.label} font size`}
+                      className={`p-3 border-2 rounded-lg transition-all duration-200 ${
+                        settings.fontSize === option.value
                           ? getActiveAccentClass()
                           : getAccentClass()
                       }`}
@@ -265,18 +288,18 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
             aria-expanded={expandedSection === 'accessibility'}
             aria-label="Accessibility settings section"
           >
-            <span className="font-semibold">Accessibility</span>
+            <span className="font-semibold">Accesibilidad</span>
             <svg className={`w-5 h-5 transition-transform ${expandedSection === 'accessibility' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
             </svg>
           </button>
 
           {expandedSection === 'accessibility' && (
-            <div className="mt-4 space-y-6">
+            <div className="mt-4 space-y-6" data-tour="settings-accessibility-section">
               {/* Letter Spacing */}
               <div>
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
-                  Letter Spacing
+                  Espaciado entre Letras
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {Object.entries(themeConfig.letterSpacing).map(([key, option]) => (
@@ -299,7 +322,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
               {/* Line Height */}
               <div>
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
-                  Line Height
+                  Altura de Línea
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {Object.entries(themeConfig.lineHeight).map(([key, option]) => (
@@ -322,7 +345,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
               {/* Word Spacing */}
               <div>
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
-                  Word Spacing
+                  Espaciado entre Palabras
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {Object.entries(themeConfig.wordSpacing).map(([key, option]) => (
@@ -345,7 +368,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
               {/* Reduce Motion Toggle */}
               <div>
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
-                  Reduce Motion & Animations
+                  Reducir Movimiento y Animaciones
                 </label>
                 <button
                   onClick={() => handleAccessibilityChange('reduceMotion', !accessibility.reduceMotion)}
@@ -412,8 +435,8 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                 </p>
                 
                 {/* Visual Preview */}
-                <div className={`mt-3 p-3 rounded-lg border-2 ${getAccentClass()}`}>
-                  <p className={`text-xs font-medium mb-2 ${getTextClass()}`}>Preview:</p>
+                <div data-preview className={`p-4 rounded-lg border ${getAccentClass()}`}>
+                  <p className={`text-xs font-medium mb-2 ${getTextClass()}`}>Vista Previa:</p>
                   <div className="flex items-center gap-3">
                     {/* Simulated UI elements */}
                     <div className={`flex-1 space-y-2 transition-opacity duration-300 ${accessibility.focusMode ? 'opacity-40' : 'opacity-100'}`}>
@@ -433,7 +456,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
               {/* Content Width */}
               <div>
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
-                  Content Width (in Reader)
+                  Ancho del Contenido (en Lector)
                 </label>
                 <div className="grid grid-cols-1 gap-2">
                   <button
@@ -495,10 +518,9 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
         }`}>
           <button
             onClick={() => {
-              resetTutorial();
-              onClose();
+              startSettingsTutorial();
             }}
-            aria-label="Show tutorial again"
+            data-tour="settings-tutorial-button"
             className={`px-4 py-2.5 rounded-lg transition-all duration-200 font-medium shadow-sm hover:shadow-md flex items-center gap-2 ${
               isHighContrast
                 ? 'bg-black text-white border-2 border-white hover:bg-gray-900'
@@ -512,7 +534,27 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            Show Tutorial Again
+            Tutorial de Ajustes
+          </button>
+          <button
+            onClick={() => {
+              resetTutorial();
+              onClose();
+            }}
+            className={`px-4 py-2.5 rounded-lg transition-all duration-200 font-medium shadow-sm hover:shadow-md flex items-center gap-2 ${
+              isHighContrast
+                ? 'bg-black text-white border-2 border-white hover:bg-gray-900'
+                : isDetox
+                ? 'bg-white text-gray-900 border-2 border-gray-300 hover:bg-gray-50'
+                : isDark
+                ? 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Tutorial Principal
           </button>
           <button
             onClick={onClose}
@@ -523,11 +565,11 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                 : isDetox
                 ? 'bg-gray-200 text-gray-900 hover:bg-gray-300'
                 : isDark
-                ? 'bg-linear-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white'
-                : 'bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white'
+                ? 'bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white'
+                : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white'
             }`}
           >
-            Close
+            Cerrar
           </button>
         </div>
       </div>

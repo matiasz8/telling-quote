@@ -1,6 +1,6 @@
 import { driver, DriveStep } from 'driver.js';
 import 'driver.js/dist/driver.css';
-import { tutorialSteps } from './steps';
+import { tutorialSteps, newReadingTutorialSteps, settingsTutorialSteps } from './steps';
 import { getTutorialConfig } from './config';
 
 let driverInstance: ReturnType<typeof driver> | null = null;
@@ -11,8 +11,9 @@ export function initTutorial() {
   
   const hasCompleted = localStorage.getItem('tutorial-completed') === 'true';
   const hasSkipped = localStorage.getItem('tutorial-skipped') === 'true';
+  const neverShow = localStorage.getItem('tutorial-never-show') === 'true';
   
-  if (hasCompleted || hasSkipped) return;
+  if (hasCompleted || hasSkipped || neverShow) return;
   
   // Wait for page to load
   if (document.readyState === 'loading') {
@@ -58,18 +59,35 @@ export function startTutorial(customSteps?: DriveStep[]) {
   // Add welcome step at the beginning
   const welcomeStep: DriveStep = {
     popover: {
-      title: '👋 Welcome to Telling!',
+      title: '👋 ¡Bienvenido a Telling!',
       description:
-        'Telling is a focused reading tool that helps you read line-by-line with minimal distractions. Let us show you around! 🚀',
+        'Telling es una herramienta de lectura enfocada que te ayuda a leer línea por línea con mínimas distracciones. ¡Déjanos mostrarte cómo funciona! 🚀',
     },
   };
   
-  // Add completion step at the end
+  // Add completion step at the end with option to not show again
   const completionStep: DriveStep = {
     popover: {
-      title: "🎉 You're All Set!",
-      description:
-        'You can replay this tutorial anytime from Settings → "Show Tutorial Again". Now create your first reading and start focusing! 📖✨',
+      title: '🎉 ¡Todo Listo!',
+      description: `
+        <p style="margin-bottom: 16px;">Puedes ver este tutorial nuevamente desde Ajustes → "Tutorial Principal". ¡Ahora crea tu primera lectura y comienza a enfocarte! 📖✨</p>
+        <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(128, 128, 128, 0.3);">
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.95rem;">
+            <input 
+              type="checkbox" 
+              id="tutorial-no-show-again"
+              style="width: 18px; height: 18px; cursor: pointer;"
+            />
+            <span>No volver a mostrar automáticamente</span>
+          </label>
+        </div>
+      `,
+      onNextClick: () => {
+        const checkbox = document.getElementById('tutorial-no-show-again') as HTMLInputElement;
+        if (checkbox && checkbox.checked) {
+          localStorage.setItem('tutorial-never-show', 'true');
+        }
+      },
     },
   };
   
@@ -88,4 +106,75 @@ export function stopTutorial() {
     driverInstance.destroy();
     driverInstance = null;
   }
+}
+
+export function startNewReadingTutorial() {
+  // Get current theme from body class
+  const bodyClasses = document.body.classList;
+  let theme: 'light' | 'dark' | 'detox' | 'high-contrast' = 'light';
+  
+  if (bodyClasses.contains('theme-dark')) theme = 'dark';
+  else if (bodyClasses.contains('theme-detox')) theme = 'detox';
+  else if (bodyClasses.contains('theme-high-contrast')) theme = 'high-contrast';
+  
+  // Check for reduced motion preference
+  const reduceMotion =
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+    localStorage.getItem('reduceMotion') === 'true';
+  
+  // Initialize driver
+  const config = getTutorialConfig({ theme, reduceMotion });
+  driverInstance = driver(config);
+  
+  // Add welcome step
+  const welcomeStep: DriveStep = {
+    popover: {
+      title: '📝 Tutorial: Nueva Lectura',
+      description:
+        '¡Vamos a crear tu primera lectura juntos! Te mostraremos cada campo y qué poner en él.',
+    },
+  };
+  
+  driverInstance.setSteps([welcomeStep, ...newReadingTutorialSteps]);
+  driverInstance.drive();
+}
+
+export function startSettingsTutorial() {
+  // Expandir las secciones de Settings antes de iniciar el tutorial
+  const generalButton = document.querySelector('[aria-label="General settings section"]') as HTMLElement;
+  const accessibilityButton = document.querySelector('[aria-label="Accessibility settings section"]') as HTMLElement;
+  
+  if (generalButton && generalButton.getAttribute('aria-expanded') === 'false') {
+    generalButton.click();
+  }
+  
+  // Pequeño delay para que la sección General se expanda antes de expandir Accessibility
+  setTimeout(() => {
+    if (accessibilityButton && accessibilityButton.getAttribute('aria-expanded') === 'false') {
+      accessibilityButton.click();
+    }
+    
+    // Iniciar el tutorial después de expandir las secciones
+    setTimeout(() => {
+      // Get current theme from body class
+      const bodyClasses = document.body.classList;
+      let theme: 'light' | 'dark' | 'detox' | 'high-contrast' = 'light';
+      
+      if (bodyClasses.contains('theme-dark')) theme = 'dark';
+      else if (bodyClasses.contains('theme-detox')) theme = 'detox';
+      else if (bodyClasses.contains('theme-high-contrast')) theme = 'high-contrast';
+      
+      // Check for reduced motion preference
+      const reduceMotion =
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+        localStorage.getItem('reduceMotion') === 'true';
+      
+      // Initialize driver
+      const config = getTutorialConfig({ theme, reduceMotion });
+      driverInstance = driver(config);
+      
+      driverInstance.setSteps(settingsTutorialSteps);
+      driverInstance.drive();
+    }, 300);
+  }, 300);
 }
