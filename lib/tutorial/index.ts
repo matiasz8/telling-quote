@@ -58,18 +58,18 @@ export function startTutorial(customSteps?: DriveStep[]) {
   // Add welcome step at the beginning
   const welcomeStep: DriveStep = {
     popover: {
-      title: 'Welcome to Telling! 📖',
+      title: '👋 Welcome to Telling!',
       description:
-        'Telling is a focused reading tool that helps you read line-by-line with minimal distractions. Let us show you around!',
+        'Telling is a focused reading tool that helps you read line-by-line with minimal distractions. Let us show you around! 🚀',
     },
   };
   
   // Add completion step at the end
   const completionStep: DriveStep = {
     popover: {
-      title: "You're All Set! 🎉",
+      title: "🎉 You're All Set!",
       description:
-        'You can replay this tutorial anytime from Settings → "Show Tutorial Again". Now create your first reading and start focusing!',
+        'You can replay this tutorial anytime from Settings → "Show Tutorial Again". Now create your first reading and start focusing! 📖✨',
     },
   };
   

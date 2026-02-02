@@ -4,9 +4,9 @@ export const tutorialSteps: DriveStep[] = [
   {
     element: '[data-tour="settings-button"]',
     popover: {
-      title: 'Customize Your Experience',
+      title: '⚙️ Customize Your Experience',
       description:
-        'Change themes, adjust font size, and choose your reading style here.',
+        'Change themes, adjust font size, and choose your reading style here. Make it yours!',
       side: 'bottom',
       align: 'start',
     },
@@ -14,9 +14,9 @@ export const tutorialSteps: DriveStep[] = [
   {
     element: '[data-tour="new-reading-button"]',
     popover: {
-      title: 'Add Your Content',
+      title: '✨ Add Your Content',
       description:
-        "Click here to create a new reading. Paste any text or markdown - we'll format it beautifully.",
+        "Click here to create a new reading. Paste any text or markdown - we'll format it beautifully for you!",
       side: 'bottom',
       align: 'center',
     },
@@ -24,9 +24,9 @@ export const tutorialSteps: DriveStep[] = [
   {
     element: '[data-tour="reading-card"]',
     popover: {
-      title: 'Your Reading Library',
+      title: '📚 Your Reading Library',
       description:
-        'Your readings appear as cards. Click any card to start reading. You can tag, edit, or delete them.',
+        'Your readings appear as cards. Click any card to start reading. You can tag, edit, or delete them anytime.',
       side: 'right',
       align: 'start',
     },
@@ -34,7 +34,7 @@ export const tutorialSteps: DriveStep[] = [
   {
     element: '[data-tour="reader-navigation"]',
     popover: {
-      title: 'Navigate Your Reading',
+      title: '🎯 Navigate Your Reading',
       description:
         'Use arrow keys (← →) or these buttons to move line-by-line. Try "Spotlight Mode" in settings for maximum focus!',
       side: 'top',
@@ -44,7 +44,7 @@ export const tutorialSteps: DriveStep[] = [
   {
     element: '[data-tour="keyboard-shortcuts"]',
     popover: {
-      title: 'Power User Tips ⚡',
+      title: '⚡ Power User Tips',
       description:
         'Press "?" to see all keyboard shortcuts. Try: ← → to navigate, Esc to exit reading, ? for shortcuts menu.',
       side: 'bottom',
