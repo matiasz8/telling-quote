@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import NewReadingModal from "@/components/NewReadingModal";
 import EditTitleModal from "@/components/EditTitleModal";
 import ConfirmDeleteModal from "@/components/ConfirmDeleteModal";
+import ConfirmReactivateModal from "@/components/ConfirmReactivateModal";
 import ReadingCard from "@/components/ReadingCard";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useSettings } from "@/hooks/useSettings";
@@ -19,13 +20,15 @@ export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isReactivateModalOpen, setIsReactivateModalOpen] = useState(false);
   const [editingReading, setEditingReading] = useState<Reading | null>(null);
   const [deletingReading, setDeletingReading] = useState<Reading | null>(null);
+  const [reactivatingReading, setReactivatingReading] = useState<Reading | null>(null);
   const [readings, setReadings] = useLocalStorage<Reading[]>(
     STORAGE_KEYS.READINGS,
     []
   );
-  const [completedReadings] = useLocalStorage<string[]>(
+  const [completedReadings, setCompletedReadings] = useLocalStorage<string[]>(
     "completedReadings",
     []
   );
@@ -108,6 +111,23 @@ export default function Home() {
     setReadings((prev) => prev.filter((r) => r.id !== deletingReading.id));
     setIsDeleteModalOpen(false);
     setDeletingReading(null);
+  };
+
+  const handleReactivate = (reading: Reading) => {
+    setReactivatingReading(reading);
+    setIsReactivateModalOpen(true);
+  };
+
+  const handleReactivateConfirm = () => {
+    if (!reactivatingReading) return;
+
+    // Remove from completedReadings array
+    setCompletedReadings((prev) => 
+      prev.filter((id) => id !== reactivatingReading.id)
+    );
+    
+    setIsReactivateModalOpen(false);
+    setReactivatingReading(null);
   };
 
   const isDark = settings.theme === "dark";
@@ -350,6 +370,7 @@ export default function Home() {
                 reading={reading}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
+                onReactivate={handleReactivate}
                 isDark={settings.theme === "dark"}
                 isDetox={settings.theme === "detox"}
                 isHighContrast={settings.theme === "high-contrast"}
@@ -431,6 +452,17 @@ export default function Home() {
             setDeletingReading(null);
           }}
           onConfirm={handleDeleteConfirm}
+        />
+      )}
+      {reactivatingReading && (
+        <ConfirmReactivateModal
+          isOpen={isReactivateModalOpen}
+          title={reactivatingReading.title}
+          onClose={() => {
+            setIsReactivateModalOpen(false);
+            setReactivatingReading(null);
+          }}
+          onConfirm={handleReactivateConfirm}
         />
       )}
     </div>

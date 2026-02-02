@@ -8,6 +8,7 @@ interface ReadingCardProps {
   reading: Reading;
   onEdit: (reading: Reading) => void;
   onDelete: (reading: Reading) => void;
+  onReactivate?: (reading: Reading) => void;
   isDark?: boolean;
   isDetox?: boolean;
   isHighContrast?: boolean;
@@ -19,6 +20,7 @@ export default function ReadingCard({
   reading,
   onEdit,
   onDelete,
+  onReactivate,
   isDark = false,
   isDetox = false,
   isHighContrast = false,
@@ -35,6 +37,14 @@ export default function ReadingCard({
     e.preventDefault();
     e.stopPropagation();
     onDelete(reading);
+  };
+
+  const handleReactivateClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onReactivate) {
+      onReactivate(reading);
+    }
   };
 
   return (
@@ -130,6 +140,34 @@ export default function ReadingCard({
         )}
       </Link>
       <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        {isCompleted && onReactivate && (
+          <button
+            onClick={handleReactivateClick}
+            className={`p-1.5 rounded transition-all duration-200 shadow-sm ${
+              isHighContrast
+                ? "bg-white text-black border-2 border-white hover:bg-gray-200"
+                : isDetox
+                ? "bg-gray-900 text-white border-2 border-gray-900 hover:bg-gray-800"
+                : "bg-linear-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600"
+            }`}
+            aria-label={`Reactivar lectura: ${reading.title}`}
+            title="Reactivar lectura"
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
+            </svg>
+          </button>
+        )}
         <button
           onClick={handleEditClick}
           className={`p-1.5 rounded transition-all duration-200 shadow-sm ${
