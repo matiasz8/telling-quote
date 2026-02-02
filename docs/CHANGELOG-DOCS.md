@@ -1,5 +1,28 @@
 # Documentation Changelog
 
+## February 2, 2026 - Visual Testing Documentation
+
+### Overview
+Added comprehensive PRD for visual regression testing with Playwright, documenting automated screenshot testing strategy, theme validation, and CI/CD integration.
+
+### Changes
+
+#### New PRDs
+- **PRD-015**: Visual Regression Testing with Playwright
+  - Automated screenshot testing for all 4 themes
+  - Visual regression detection in CI/CD
+  - 24+ test scenarios covering pages and features
+  - Theme-specific validation rules
+  - Playwright configuration and setup guide
+  - Testing workflow documentation
+  - Success metrics and KPIs
+
+#### Updated Files
+- `docs/prd/README.md`: Added PRD-015 to Phase 2 features
+- `docs/CHANGELOG-DOCS.md`: This entry
+
+---
+
 ## November 2025 - Documentation Consistency Update
 
 ### Overview

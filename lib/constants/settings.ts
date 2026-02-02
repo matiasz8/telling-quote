@@ -1,4 +1,4 @@
-import { FontFamily, FontSize, Theme } from '@/types';
+import { FontFamily, FontSize, Theme, ReadingTransition } from '@/types';
 
 export const FONT_FAMILY_OPTIONS: { value: FontFamily; label: string; className: string }[] = [
   { value: 'serif', label: 'Serif (Clásica)', className: 'font-serif' },
@@ -24,6 +24,14 @@ export const THEME_OPTIONS: { value: Theme; label: string }[] = [
   { value: 'high-contrast', label: '♿ Alto Contraste' },
 ];
 
+export const READING_TRANSITION_OPTIONS: { value: ReadingTransition; label: string; description: string }[] = [
+  { value: 'none', label: 'None', description: 'Instant transitions' },
+  { value: 'fade-theme', label: 'Fade', description: 'Smooth fade with theme color' },
+  { value: 'swipe', label: 'Swipe', description: 'Horizontal slide animation' },
+  { value: 'line-focus', label: 'Line Focus', description: 'Blur surrounding lines' },
+  { value: 'spotlight', label: 'Spotlight', description: 'Theater spotlight effect' },
+];
+
 export const DEFAULT_SETTINGS = {
   fontSize: 'medium' as FontSize,
   theme: 'light' as Theme,
@@ -35,6 +43,7 @@ export const DEFAULT_SETTINGS = {
     highContrast: false,
     reduceMotion: false,
     focusMode: false,
+    readingTransition: 'fade-theme' as ReadingTransition,
   },
 };
 

@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Settings, FontFamily, FontSize, Theme, AccessibilitySettings, LetterSpacing, LineHeightOption, WordSpacing } from '@/types';
-import { FONT_FAMILY_OPTIONS, FONT_SIZE_OPTIONS, THEME_OPTIONS } from '@/lib/constants';
+import { Settings, FontFamily, FontSize, Theme, AccessibilitySettings, LetterSpacing, LineHeightOption, WordSpacing, ReadingTransition } from '@/types';
+import { FONT_FAMILY_OPTIONS, FONT_SIZE_OPTIONS, THEME_OPTIONS, READING_TRANSITION_OPTIONS } from '@/lib/constants';
 import { theme as themeConfig } from '@/config/theme';
 import { useFocusTrap } from '@/hooks/useFocusTrap';
 import { resetTutorial, startSettingsTutorial } from '@/lib/tutorial';
@@ -427,6 +427,30 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                       <p className="text-xs opacity-75">Content</p>
                     </div>
                   </div>
+                </div>
+              </div>
+
+              {/* Reading Transition */}
+              <div>
+                <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
+                  Reading Transition Effect
+                </label>
+                <div className="grid grid-cols-1 gap-2">
+                  {READING_TRANSITION_OPTIONS.map((option) => (
+                    <button
+                      key={option.value}
+                      onClick={() => handleAccessibilityChange('readingTransition', option.value)}
+                      aria-label={`Select ${option.label} reading transition`}
+                      className={`p-3 border-2 rounded-lg transition-all duration-200 text-left ${
+                        (accessibility.readingTransition || 'fade-theme') === option.value
+                          ? getActiveAccentClass()
+                          : getAccentClass()
+                      }`}
+                    >
+                      <div className="font-medium">{option.label}</div>
+                      <div className="text-xs opacity-75">{option.description}</div>
+                    </button>
+                  ))}
                 </div>
               </div>
 
