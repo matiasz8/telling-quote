@@ -401,9 +401,9 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
               </div>
 
               {/* Focus Mode Toggle */}
-              <div>
+              <div data-tour="settings-focus-mode">
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
-                  Focus Mode
+                  Modo Enfoque
                 </label>
                 <button
                   onClick={() => handleAccessibilityChange('focusMode', !accessibility.focusMode)}
@@ -431,7 +431,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                   />
                 </button>
                 <p className={`text-xs mt-2 ${getTextClass()} opacity-75`}>
-                  {accessibility.focusMode ? 'UI dimmed during reading' : 'Normal UI visibility'}
+                  {accessibility.focusMode ? 'Interfaz atenuada durante lectura' : 'Visibilidad normal de la interfaz'}
                 </p>
                 
                 {/* Visual Preview */}

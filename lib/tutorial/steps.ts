@@ -175,6 +175,16 @@ export const settingsTutorialSteps: DriveStep[] = [
     },
   },
   {
+    element: '[data-tour="settings-focus-mode"]',
+    popover: {
+      title: '🎯 Modo Enfoque',
+      description:
+        'Cuando estás leyendo, el Modo Enfoque atenúa toda la interfaz excepto el texto, eliminando distracciones visuales. Ideal para concentración máxima. Prueba activarlo y abre una lectura para ver el efecto.',
+      side: 'left',
+      align: 'start',
+    },
+  },
+  {
     element: '[data-tour="settings-content-width"]',
     popover: {
       title: '📖 Ancho del Contenido',
