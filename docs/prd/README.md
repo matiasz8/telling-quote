@@ -31,6 +31,7 @@ This directory contains Product Requirements Documents for tellingQuote features
 | [PRD-011](./PRD-011-internationalization.md) | Internationalization System (English/Spanish) | 📝 Draft | High |
 | [PRD-012](./PRD-012-auto-advance-timer.md) | Auto-Advance Timer (Temporizador Automático) | 📝 Draft | Medium |
 | [PRD-013](./PRD-013-text-to-speech.md) | Text-to-Speech for Reading Mode | 📝 Draft | High |
+| [PRD-014](./PRD-014-reading-reactivation.md) | Reading Reactivation (Reactivar Lecturas) | ✔️ Completed | Low |
 
 ---
 

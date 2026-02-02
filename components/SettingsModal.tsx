@@ -15,7 +15,8 @@ interface SettingsModalProps {
 }
 
 export default function SettingsModal({ isOpen, onClose, settings, onSave }: SettingsModalProps) {
-  const [expandedSection, setExpandedSection] = useState<'general' | 'accessibility' | ''>('general');
+  const [isGeneralOpen, setIsGeneralOpen] = useState(true);
+  const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(true);
   const modalRef = useRef<HTMLDivElement>(null);
 
   // Focus trap
@@ -164,22 +165,22 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
         {/* General Settings Section */}
         <div className="mb-6">
           <button
-            onClick={() => setExpandedSection(expandedSection === 'general' ? '' : 'general')}
+            onClick={() => setIsGeneralOpen(!isGeneralOpen)}
             className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors ${
-              expandedSection === 'general'
+              isGeneralOpen
                 ? getHeaderBgClass()
                 : getHoverClass()
             }`}
-            aria-expanded={expandedSection === 'general'}
+            aria-expanded={isGeneralOpen}
             aria-label="General settings section"
           >
             <span className="font-semibold">Ajustes Generales</span>
-            <svg className={`w-5 h-5 transition-transform ${expandedSection === 'general' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className={`w-5 h-5 transition-transform ${isGeneralOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
             </svg>
           </button>
 
-          {expandedSection === 'general' && (
+          {isGeneralOpen && (
             <div className="mt-4 space-y-6">
               {/* Font Family */}
               <div data-tour="settings-font-family">
@@ -279,22 +280,22 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
         {/* Accessibility Settings Section */}
         <div className="mb-6 border-t border-gray-300 dark:border-gray-700 pt-4">
           <button
-            onClick={() => setExpandedSection(expandedSection === 'accessibility' ? '' : 'accessibility')}
+            onClick={() => setIsAccessibilityOpen(!isAccessibilityOpen)}
             className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors ${
-              expandedSection === 'accessibility'
+              isAccessibilityOpen
                 ? getHeaderBgClass()
                 : getHoverClass()
             }`}
-            aria-expanded={expandedSection === 'accessibility'}
+            aria-expanded={isAccessibilityOpen}
             aria-label="Accessibility settings section"
           >
             <span className="font-semibold">Accesibilidad</span>
-            <svg className={`w-5 h-5 transition-transform ${expandedSection === 'accessibility' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className={`w-5 h-5 transition-transform ${isAccessibilityOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
             </svg>
           </button>
 
-          {expandedSection === 'accessibility' && (
+          {isAccessibilityOpen && (
             <div className="mt-4 space-y-6" data-tour="settings-accessibility-section">
               {/* Letter Spacing */}
               <div data-tour="settings-letter-spacing">
