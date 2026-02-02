@@ -87,6 +87,12 @@ export function startTutorial(customSteps?: DriveStep[]) {
         if (checkbox && checkbox.checked) {
           localStorage.setItem('tutorial-never-show', 'true');
         }
+        // Mark tutorial as completed
+        localStorage.setItem('tutorial-completed', 'true');
+        // Destroy the driver instance
+        if (driverInstance) {
+          driverInstance.destroy();
+        }
       },
     },
   };

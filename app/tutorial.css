@@ -91,12 +91,8 @@
 }
 
 .driverjs-theme-light .driver-popover-title {
-  color: #111827;
+  color: #000000;
   font-weight: 700;
-  background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .driverjs-theme-light .driver-popover-description {
@@ -135,12 +131,8 @@
 }
 
 .driverjs-theme-dark .driver-popover-title {
-  color: #f9fafb;
+  color: #ffffff;
   font-weight: 700;
-  background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .driverjs-theme-dark .driver-popover-description {
