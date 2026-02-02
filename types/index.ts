@@ -21,6 +21,13 @@ export type ContentWidth = 'narrow' | 'medium' | 'wide' | 'full';
 
 export type ReadingTransition = 'none' | 'fade-theme' | 'swipe' | 'line-focus' | 'spotlight';
 
+export type AutoAdvanceSettings = {
+  enabled: boolean;
+  wpm: number;
+  autoStart: boolean;
+  showProgress: boolean;
+};
+
 export type AccessibilitySettings = {
   fontFamily: FontFamily;
   letterSpacing: LetterSpacing;
@@ -36,4 +43,5 @@ export type Settings = {
   fontSize: FontSize;
   theme: Theme;
   accessibility?: AccessibilitySettings;
+  autoAdvance?: AutoAdvanceSettings;
 };

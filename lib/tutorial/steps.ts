@@ -175,6 +175,16 @@ export const settingsTutorialSteps: DriveStep[] = [
     },
   },
   {
+    element: '[data-tour="settings-auto-advance"]',
+    popover: {
+      title: '⏱️ Temporizador Automático',
+      description:
+        'Configura el avance automático basado en tu velocidad de lectura (WPM). Puedes activar el auto-inicio y mostrar un indicador de progreso durante la lectura.',
+      side: 'left',
+      align: 'start',
+    },
+  },
+  {
     element: '[data-tour="settings-focus-mode"]',
     popover: {
       title: '🎯 Modo Enfoque',

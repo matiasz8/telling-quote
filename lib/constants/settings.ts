@@ -45,5 +45,11 @@ export const DEFAULT_SETTINGS = {
     focusMode: false,
     readingTransition: 'fade-theme' as ReadingTransition,
   },
+  autoAdvance: {
+    enabled: false,
+    wpm: 200,
+    autoStart: false,
+    showProgress: true,
+  },
 };
 
