@@ -1,5 +1,11 @@
 /* Driver.js custom theme styles - Adorable & Friendly Design */
 
+/* Hide Preview during tutorial */
+.driver-active [data-preview],
+.driver-active .settings-preview {
+  display: none !important;
+}
+
 /* Global popover styling */
 .driver-popover {
   border-radius: 24px !important;

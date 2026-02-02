@@ -19,10 +19,10 @@ export function getTutorialConfig(options: TutorialConfig = {}): Config {
   return {
     showProgress: true,
     showButtons: ['next', 'previous', 'close'],
-    nextBtnText: 'Next →',
-    prevBtnText: '← Back',
-    doneBtnText: 'Finish',
-    progressText: '{{current}} of {{total}}',
+    nextBtnText: 'Siguiente →',
+    prevBtnText: '← Atrás',
+    doneBtnText: 'Finalizar',
+    progressText: '{{current}} de {{total}}',
     
     // Accessibility
     animate: !reduceMotion,
@@ -35,17 +35,6 @@ export function getTutorialConfig(options: TutorialConfig = {}): Config {
     // Callbacks
     onDestroyed: () => {
       localStorage.setItem('tutorial-completed', 'true');
-    },
-    
-    onDestroyStarted: () => {
-      if (
-        !localStorage.getItem('tutorial-completed') &&
-        confirm('Are you sure you want to skip the tutorial?')
-      ) {
-        localStorage.setItem('tutorial-skipped', 'true');
-        return true;
-      }
-      return false;
     },
   };
 }
