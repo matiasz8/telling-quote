@@ -101,15 +101,15 @@ export const settingsTutorialSteps: DriveStep[] = [
     popover: {
       title: '🎨 Panel de Ajustes',
       description:
-        'Aquí puedes personalizar completamente tu experiencia de lectura. Te mostraremos cada opción y cómo usar el Preview en tiempo real. 💡',
+        'Aquí puedes personalizar completamente tu experiencia de lectura. Vamos a explorar cada opción en detalle. 💡',
     },
   },
   {
-    element: '[data-tour="settings-theme-section"]',
+    element: '[data-tour="settings-font-family"]',
     popover: {
-      title: '🌈 Temas Visuales',
+      title: '🔤 Familia de Fuente',
       description:
-        '4 temas disponibles: Light (claro y brillante), Dark (nocturno para reducir fatiga), Detox (minimalista sin distracciones), y High Contrast (máxima legibilidad). El Preview muestra los cambios en tiempo real. 👀',
+        '7 fuentes disponibles: Serif (clásica para lectura), Sans Serif (moderna y limpia), Monospace (ideal para código), Sistema (tu fuente predeterminada), OpenDyslexic (diseñada para dislexia), Comic Neue (informal y amigable), y Atkinson Hyperlegible (máxima claridad). ¡Elige la que más te guste!',
       side: 'left',
       align: 'start',
     },
@@ -117,19 +117,69 @@ export const settingsTutorialSteps: DriveStep[] = [
   {
     element: '[data-tour="settings-font-section"]',
     popover: {
-      title: '🔤 Tipografía',
+      title: '📏 Tamaño de Letra',
       description:
-        'Elige entre 7 fuentes: Serif (clásica), Sans-serif (moderna), Monospace (código), OpenDyslexic (dislexia), Atkinson Hyperlegible (claridad), Comic Neue (informal), y Lexend (fluidez). Ajusta el tamaño: XS, S, M, L, XL. Pruébalas en el Preview! 📝',
+        'Ajusta el tamaño del texto: Pequeño (S), Mediano (M - predeterminado), Grande (L), o Extra Grande (XL). Encuentra el tamaño perfecto para tu comodidad visual. El Preview te muestra cómo se verá.',
       side: 'left',
       align: 'start',
     },
   },
   {
-    element: '[data-tour="settings-accessibility-section"]',
+    element: '[data-tour="settings-theme"]',
     popover: {
-      title: '♿ Accesibilidad',
+      title: '🌈 Temas Visuales',
       description:
-        'Personaliza el espaciado: Letter Spacing (separación entre letras), Line Height (altura de líneas), Word Spacing (espacio entre palabras), y Content Width (ancho del texto). Activa "Reducir Movimiento" para desactivar animaciones. Observa cada cambio en el Preview! ✨',
+        '☀️ Claro (brillante y enérgico), 🌙 Oscuro (perfecto para la noche), 🧘 Detox (minimalista sin distracciones), ♿ Alto Contraste (máxima legibilidad para baja visión). Cada tema cambia colores, fondos y estilos completamente.',
+      side: 'left',
+      align: 'start',
+    },
+  },
+  {
+    element: '[data-tour="settings-letter-spacing"]',
+    popover: {
+      title: '↔️ Espaciado entre Letras',
+      description:
+        'Controla el espacio entre cada letra: Normal (estándar), Compact (letras más juntas), o Relaxed (letras más separadas). Útil para mejorar la legibilidad según tus preferencias. Observa el cambio en el Preview.',
+      side: 'left',
+      align: 'start',
+    },
+  },
+  {
+    element: '[data-tour="settings-line-height"]',
+    popover: {
+      title: '📐 Altura de Línea',
+      description:
+        'Ajusta el espacio vertical entre líneas: Normal, Compact (líneas más juntas para ver más texto), o Relaxed (líneas más separadas para lectura pausada). Afecta directamente la densidad del texto.',
+      side: 'left',
+      align: 'start',
+    },
+  },
+  {
+    element: '[data-tour="settings-word-spacing"]',
+    popover: {
+      title: '🔤 Espaciado entre Palabras',
+      description:
+        'Controla la separación entre palabras: Normal, Compact (palabras más cercanas), o Relaxed (palabras más espaciadas). Ideal para encontrar tu ritmo de lectura perfecto.',
+      side: 'left',
+      align: 'start',
+    },
+  },
+  {
+    element: '[data-tour="settings-reduce-motion"]',
+    popover: {
+      title: '🔇 Reducir Movimiento',
+      description:
+        'Activa esta opción para desactivar todas las animaciones y transiciones. Perfecto si prefieres una experiencia más estática o si las animaciones te distraen o causan mareos.',
+      side: 'left',
+      align: 'start',
+    },
+  },
+  {
+    element: '[data-tour="settings-content-width"]',
+    popover: {
+      title: '📖 Ancho del Contenido',
+      description:
+        'Define el ancho máximo del texto en el lector: Angosto (45 caracteres - óptimo para lectura concentrada), Mediano (65 caracteres - balance perfecto), Ancho (80 caracteres - más información visible), o Ancho Completo (sin límite - usa toda la pantalla). Esta configuración solo afecta la vista de lectura.',
       side: 'left',
       align: 'start',
     },
@@ -139,7 +189,7 @@ export const settingsTutorialSteps: DriveStep[] = [
     popover: {
       title: '📚 Volver a ver Tutoriales',
       description:
-        '¿Necesitas un recordatorio? Usa "Tutorial de Ajustes" para ver este tutorial nuevamente, o "Tutorial Principal" para el tour completo de la app.',
+        '¿Necesitas un recordatorio? Usa "Tutorial de Ajustes" para ver este tutorial nuevamente, o "Tutorial Principal" para el tour completo de la app. Los tutoriales siempre están disponibles aquí.',
       side: 'top',
       align: 'start',
     },

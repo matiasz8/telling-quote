@@ -182,7 +182,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
           {expandedSection === 'general' && (
             <div className="mt-4 space-y-6">
               {/* Font Family */}
-              <div>
+              <div data-tour="settings-font-family">
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
                   Familia de Fuente
                 </label>
@@ -207,7 +207,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
               {/* Font Size */}
               <div>
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
-                  Font Size
+                  Tamaño de Letra
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {FONT_SIZE_OPTIONS.map((option) => (
@@ -228,7 +228,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
               </div>
 
               {/* Theme */}
-              <div data-tour="settings-theme-section">
+              <div data-tour="settings-theme">
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
                   Tema
                 </label>
@@ -297,7 +297,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
           {expandedSection === 'accessibility' && (
             <div className="mt-4 space-y-6" data-tour="settings-accessibility-section">
               {/* Letter Spacing */}
-              <div>
+              <div data-tour="settings-letter-spacing">
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
                   Espaciado entre Letras
                 </label>
@@ -320,7 +320,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
               </div>
 
               {/* Line Height */}
-              <div>
+              <div data-tour="settings-line-height">
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
                   Altura de Línea
                 </label>
@@ -343,7 +343,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
               </div>
 
               {/* Word Spacing */}
-              <div>
+              <div data-tour="settings-word-spacing">
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
                   Espaciado entre Palabras
                 </label>
@@ -366,7 +366,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
               </div>
 
               {/* Reduce Motion Toggle */}
-              <div>
+              <div data-tour="settings-reduce-motion">
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
                   Reducir Movimiento y Animaciones
                 </label>
@@ -454,7 +454,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
               </div>
 
               {/* Content Width */}
-              <div>
+              <div data-tour="settings-content-width">
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
                   Ancho del Contenido (en Lector)
                 </label>
@@ -468,8 +468,8 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                         : getAccentClass()
                     }`}
                   >
-                    <div className="font-medium">Narrow</div>
-                    <div className="text-xs opacity-75">45 chars - Better for reading</div>
+                    <div className="font-medium">Angosto</div>
+                    <div className="text-xs opacity-75">45 caracteres - Más fácil de leer</div>
                   </button>
                   <button
                     onClick={() => handleAccessibilityChange('contentWidth', 'medium')}
@@ -480,8 +480,8 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                         : getAccentClass()
                     }`}
                   >
-                    <div className="font-medium">Medium</div>
-                    <div className="text-xs opacity-75">65 chars - Default</div>
+                    <div className="font-medium">Mediano</div>
+                    <div className="text-xs opacity-75">65 caracteres - Predeterminado</div>
                   </button>
                   <button
                     onClick={() => handleAccessibilityChange('contentWidth', 'wide')}
@@ -492,8 +492,8 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                         : getAccentClass()
                     }`}
                   >
-                    <div className="font-medium">Wide</div>
-                    <div className="text-xs opacity-75">80 chars - More content visible</div>
+                    <div className="font-medium">Ancho</div>
+                    <div className="text-xs opacity-75">80 caracteres - Más contenido visible</div>
                   </button>
                   <button
                     onClick={() => handleAccessibilityChange('contentWidth', 'full')}
@@ -504,8 +504,8 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                         : getAccentClass()
                     }`}
                   >
-                    <div className="font-medium">Full Width</div>
-                    <div className="text-xs opacity-75">Unlimited - Uses entire screen</div>
+                    <div className="font-medium">Ancho Completo</div>
+                    <div className="text-xs opacity-75">Ilimitado - Usa toda la pantalla</div>
                   </button>
                 </div>
               </div>
