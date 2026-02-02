@@ -252,7 +252,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
               </div>
 
               {/* Font Size */}
-              <div data-tour="settings-font-section">
+              <div data-tour="settings-font-size">
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
                   Tamaño de Letra
                 </label>

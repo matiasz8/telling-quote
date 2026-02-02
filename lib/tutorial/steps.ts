@@ -115,11 +115,11 @@ export const settingsTutorialSteps: DriveStep[] = [
     },
   },
   {
-    element: '[data-tour="settings-font-section"]',
+    element: '[data-tour="settings-font-size"]',
     popover: {
       title: '📏 Tamaño de Letra',
       description:
-        'Ajusta el tamaño del texto: Pequeño (S), Mediano (M - predeterminado), Grande (L), o Extra Grande (XL). Encuentra el tamaño perfecto para tu comodidad visual. El Preview te muestra cómo se verá.',
+        'Ajusta el tamaño del texto en el lector: Pequeño (S - 16px), Mediano (M - 18px, predeterminado), Grande (L - 20px), o Extra Grande (XL - 24px). Encuentra el tamaño perfecto para tu comodidad visual. Puedes ver cómo se verá en el Preview de abajo.',
       side: 'left',
       align: 'start',
     },
