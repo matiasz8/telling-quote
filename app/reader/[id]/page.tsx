@@ -834,7 +834,7 @@ export default function ReaderPage() {
           )}
 
           {/* Actions */}
-          <div className="flex items-center justify-center gap-4 mt-6">
+          <div data-tour="reader-navigation" className="flex items-center justify-center gap-4 mt-6">
             {/* Go to start */}
             <button
               onClick={goToStart}

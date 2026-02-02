@@ -160,6 +160,7 @@ export default function Home() {
         <div className="flex justify-center mb-8">
           <button
             onClick={() => setIsModalOpen(true)}
+            data-tour="new-reading-button"
             className={`
               group relative px-8 py-4 rounded-xl font-semibold text-lg
               transform transition-all duration-300 ease-out

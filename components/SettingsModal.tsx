@@ -5,6 +5,7 @@ import { Settings, FontFamily, FontSize, Theme, AccessibilitySettings, LetterSpa
 import { FONT_FAMILY_OPTIONS, FONT_SIZE_OPTIONS, THEME_OPTIONS } from '@/lib/constants';
 import { theme as themeConfig } from '@/config/theme';
 import { useFocusTrap } from '@/hooks/useFocusTrap';
+import { resetTutorial, startSettingsTutorial } from '@/lib/tutorial';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -137,8 +138,8 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
         </div>
 
         {/* Preview Text */}
-        <div className={`sticky top-0 z-10 mb-6 p-4 rounded-lg border-2 ${getBgClass()} ${getAccentClass()}`}>
-          <div className={`text-xs font-medium mb-2 ${getTextClass()}`}>Preview</div>
+        <div data-preview className={`sticky top-0 z-10 mb-6 p-4 rounded-lg border-2 ${getBgClass()} ${getAccentClass()}`}>
+          <div className={`text-xs font-medium mb-2 ${getTextClass()}`}>Vista Previa</div>
           <div
             style={{
               fontFamily: themeConfig.fontFamilies[accessibility.fontFamily].family,
@@ -172,7 +173,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
             aria-expanded={expandedSection === 'general'}
             aria-label="General settings section"
           >
-            <span className="font-semibold">General Settings</span>
+            <span className="font-semibold">Ajustes Generales</span>
             <svg className={`w-5 h-5 transition-transform ${expandedSection === 'general' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
             </svg>
@@ -181,9 +182,9 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
           {expandedSection === 'general' && (
             <div className="mt-4 space-y-6">
               {/* Font Family */}
-              <div>
+              <div data-tour="settings-font-family">
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
-                  Font Family
+                  Familia de Fuente
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {FONT_FAMILY_OPTIONS.map((option) => (
@@ -204,9 +205,9 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
               </div>
 
               {/* Font Size */}
-              <div>
+              <div data-tour="settings-font-size">
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
-                  Font Size
+                  Tamaño de Letra
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {FONT_SIZE_OPTIONS.map((option) => (
@@ -227,9 +228,9 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
               </div>
 
               {/* Theme */}
-              <div>
+              <div data-tour="settings-theme">
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
-                  Theme
+                  Tema
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {THEME_OPTIONS.map((option) => (
@@ -264,18 +265,18 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
             aria-expanded={expandedSection === 'accessibility'}
             aria-label="Accessibility settings section"
           >
-            <span className="font-semibold">Accessibility</span>
+            <span className="font-semibold">Accesibilidad</span>
             <svg className={`w-5 h-5 transition-transform ${expandedSection === 'accessibility' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
             </svg>
           </button>
 
           {expandedSection === 'accessibility' && (
-            <div className="mt-4 space-y-6">
+            <div className="mt-4 space-y-6" data-tour="settings-accessibility-section">
               {/* Letter Spacing */}
-              <div>
+              <div data-tour="settings-letter-spacing">
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
-                  Letter Spacing
+                  Espaciado entre Letras
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {Object.entries(themeConfig.letterSpacing).map(([key, option]) => (
@@ -296,9 +297,9 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
               </div>
 
               {/* Line Height */}
-              <div>
+              <div data-tour="settings-line-height">
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
-                  Line Height
+                  Altura de Línea
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {Object.entries(themeConfig.lineHeight).map(([key, option]) => (
@@ -319,9 +320,9 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
               </div>
 
               {/* Word Spacing */}
-              <div>
+              <div data-tour="settings-word-spacing">
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
-                  Word Spacing
+                  Espaciado entre Palabras
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {Object.entries(themeConfig.wordSpacing).map(([key, option]) => (
@@ -342,9 +343,9 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
               </div>
 
               {/* Reduce Motion Toggle */}
-              <div>
+              <div data-tour="settings-reduce-motion">
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
-                  Reduce Motion & Animations
+                  Reducir Movimiento y Animaciones
                 </label>
                 <button
                   onClick={() => handleAccessibilityChange('reduceMotion', !accessibility.reduceMotion)}
@@ -377,9 +378,9 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
               </div>
 
               {/* Focus Mode Toggle */}
-              <div>
+              <div data-tour="settings-focus-mode">
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
-                  Focus Mode
+                  Modo Enfoque
                 </label>
                 <button
                   onClick={() => handleAccessibilityChange('focusMode', !accessibility.focusMode)}
@@ -407,12 +408,12 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                   />
                 </button>
                 <p className={`text-xs mt-2 ${getTextClass()} opacity-75`}>
-                  {accessibility.focusMode ? 'UI dimmed during reading' : 'Normal UI visibility'}
+                  {accessibility.focusMode ? 'Interfaz atenuada durante lectura' : 'Visibilidad normal de la interfaz'}
                 </p>
                 
                 {/* Visual Preview */}
-                <div className={`mt-3 p-3 rounded-lg border-2 ${getAccentClass()}`}>
-                  <p className={`text-xs font-medium mb-2 ${getTextClass()}`}>Preview:</p>
+                <div data-preview className={`p-4 rounded-lg border ${getAccentClass()}`}>
+                  <p className={`text-xs font-medium mb-2 ${getTextClass()}`}>Vista Previa:</p>
                   <div className="flex items-center gap-3">
                     {/* Simulated UI elements */}
                     <div className={`flex-1 space-y-2 transition-opacity duration-300 ${accessibility.focusMode ? 'opacity-40' : 'opacity-100'}`}>
@@ -430,9 +431,9 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
               </div>
 
               {/* Content Width */}
-              <div>
+              <div data-tour="settings-content-width">
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
-                  Content Width (in Reader)
+                  Ancho del Contenido (en Lector)
                 </label>
                 <div className="grid grid-cols-1 gap-2">
                   <button
@@ -444,8 +445,8 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                         : getAccentClass()
                     }`}
                   >
-                    <div className="font-medium">Narrow</div>
-                    <div className="text-xs opacity-75">45 chars - Better for reading</div>
+                    <div className="font-medium">Angosto</div>
+                    <div className="text-xs opacity-75">45 caracteres - Más fácil de leer</div>
                   </button>
                   <button
                     onClick={() => handleAccessibilityChange('contentWidth', 'medium')}
@@ -456,8 +457,8 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                         : getAccentClass()
                     }`}
                   >
-                    <div className="font-medium">Medium</div>
-                    <div className="text-xs opacity-75">65 chars - Default</div>
+                    <div className="font-medium">Mediano</div>
+                    <div className="text-xs opacity-75">65 caracteres - Predeterminado</div>
                   </button>
                   <button
                     onClick={() => handleAccessibilityChange('contentWidth', 'wide')}
@@ -468,8 +469,8 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                         : getAccentClass()
                     }`}
                   >
-                    <div className="font-medium">Wide</div>
-                    <div className="text-xs opacity-75">80 chars - More content visible</div>
+                    <div className="font-medium">Ancho</div>
+                    <div className="text-xs opacity-75">80 caracteres - Más contenido visible</div>
                   </button>
                   <button
                     onClick={() => handleAccessibilityChange('contentWidth', 'full')}
@@ -480,8 +481,8 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                         : getAccentClass()
                     }`}
                   >
-                    <div className="font-medium">Full Width</div>
-                    <div className="text-xs opacity-75">Unlimited - Uses entire screen</div>
+                    <div className="font-medium">Ancho Completo</div>
+                    <div className="text-xs opacity-75">Ilimitado - Usa toda la pantalla</div>
                   </button>
                 </div>
               </div>
@@ -489,9 +490,49 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
           )}
         </div>
 
-        <div className={`flex justify-end pt-4 border-t ${
+        <div className={`flex justify-between items-center gap-4 pt-4 border-t ${
           isHighContrast ? 'border-white' : isDetox ? 'border-gray-300' : 'border-gray-300 dark:border-gray-700'
         }`}>
+          <button
+            onClick={() => {
+              startSettingsTutorial();
+            }}
+            data-tour="settings-tutorial-button"
+            className={`px-4 py-2.5 rounded-lg transition-all duration-200 font-medium shadow-sm hover:shadow-md flex items-center gap-2 ${
+              isHighContrast
+                ? 'bg-black text-white border-2 border-white hover:bg-gray-900'
+                : isDetox
+                ? 'bg-white text-gray-900 border-2 border-gray-300 hover:bg-gray-50'
+                : isDark
+                ? 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Tutorial de Ajustes
+          </button>
+          <button
+            onClick={() => {
+              resetTutorial();
+              onClose();
+            }}
+            className={`px-4 py-2.5 rounded-lg transition-all duration-200 font-medium shadow-sm hover:shadow-md flex items-center gap-2 ${
+              isHighContrast
+                ? 'bg-black text-white border-2 border-white hover:bg-gray-900'
+                : isDetox
+                ? 'bg-white text-gray-900 border-2 border-gray-300 hover:bg-gray-50'
+                : isDark
+                ? 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Tutorial Principal
+          </button>
           <button
             onClick={onClose}
             aria-label="Close settings modal"
@@ -501,11 +542,11 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                 : isDetox
                 ? 'bg-gray-200 text-gray-900 hover:bg-gray-300'
                 : isDark
-                ? 'bg-linear-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white'
-                : 'bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white'
+                ? 'bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white'
+                : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white'
             }`}
           >
-            Close
+            Cerrar
           </button>
         </div>
       </div>
