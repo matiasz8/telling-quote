@@ -1,5 +1,54 @@
 # Documentation Changelog
 
+## February 2, 2026 - Recovered Missing Documentation
+
+### Overview
+Recovered documentation for features that were implemented in the codebase but lacked proper PRD/TRD files. These features were fully functional but documentation was lost when feature branches merged before docs were pushed to main.
+
+### Changes
+
+#### Recovered PRDs
+- **PRD-009**: Spotlight Reading Mode
+  - Theater-style spotlight effect with radial gradient overlay
+  - Theme-specific glow colors (yellow, purple, white)
+  - CSS-only implementation with GPU acceleration
+  - Accessibility support (reduce motion, high contrast)
+  - Already implemented in `app/globals.css` and reader component
+  
+- **PRD-012**: Auto-Advance Timer
+  - Automatic slide advancement based on text length
+  - WPM calculation (100-400 range)
+  - Play/pause/resume controls
+  - Visual progress indicator
+  - Integration with reading transitions
+  
+- **PRD-013**: Text-to-Speech (TTS)
+  - Browser-native TTS (Web Speech API)
+  - Spanish (2 voices) and English (2 voices) support
+  - Playback controls and speed adjustment
+  - Sentence highlighting and progress tracking
+  - Integration with auto-advance timer
+
+#### Recovered TRDs
+- **TRD-009**: Spotlight Mode Technical Reference
+  - Complete CSS architecture documentation
+  - Theme-specific variable reference (all 4 themes)
+  - Performance optimization guide
+  - Browser compatibility matrix
+  - Troubleshooting guide (5 common issues)
+
+#### Updated Files
+- `docs/prd/README.md`: Already contained PRD-009, 012, 013 entries
+- `docs/CHANGELOG-DOCS.md`: This entry
+
+#### Verification Notes
+- All code implementations verified to exist in codebase
+- Spotlight mode: ~400 lines of CSS in `app/globals.css` (lines 504-920)
+- Component integration confirmed in `app/reader/[id]/page.tsx`
+- No functionality was lost during git rebases (only documentation)
+
+---
+
 ## February 2, 2026 - Visual Testing Documentation
 
 ### Overview
