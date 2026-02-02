@@ -1,0 +1,164 @@
+/* Driver.js custom theme styles */
+
+/* Light Theme */
+.driverjs-theme-light .driver-popover {
+  background-color: #ffffff;
+  color: #1f2937;
+}
+
+.driverjs-theme-light .driver-popover-title {
+  color: #111827;
+  font-weight: 600;
+}
+
+.driverjs-theme-light .driver-popover-description {
+  color: #4b5563;
+}
+
+.driverjs-theme-light .driver-popover-footer button {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.driverjs-theme-light .driver-popover-footer button:hover {
+  background-color: #2563eb;
+}
+
+.driverjs-theme-light .driver-popover-close-btn {
+  color: #6b7280;
+}
+
+.driverjs-theme-light .driver-popover-close-btn:hover {
+  color: #111827;
+}
+
+.driverjs-theme-light .driver-popover-progress-text {
+  color: #6b7280;
+}
+
+/* Dark Theme */
+.driverjs-theme-dark .driver-popover {
+  background-color: #1f2937;
+  color: #f9fafb;
+  border: 1px solid #4b5563;
+}
+
+.driverjs-theme-dark .driver-popover-title {
+  color: #f9fafb;
+  font-weight: 600;
+}
+
+.driverjs-theme-dark .driver-popover-description {
+  color: #d1d5db;
+}
+
+.driverjs-theme-dark .driver-popover-footer button {
+  background-color: #8b5cf6;
+  color: #ffffff;
+}
+
+.driverjs-theme-dark .driver-popover-footer button:hover {
+  background-color: #7c3aed;
+}
+
+.driverjs-theme-dark .driver-popover-close-btn {
+  color: #9ca3af;
+}
+
+.driverjs-theme-dark .driver-popover-close-btn:hover {
+  color: #f9fafb;
+}
+
+.driverjs-theme-dark .driver-popover-progress-text {
+  color: #9ca3af;
+}
+
+/* Detox Theme (Minimal, Monochrome) */
+.driverjs-theme-detox .driver-popover {
+  background-color: #ffffff;
+  color: #111827;
+  border: 2px solid #374151;
+}
+
+.driverjs-theme-detox .driver-popover-title {
+  color: #000000;
+  font-weight: 600;
+}
+
+.driverjs-theme-detox .driver-popover-description {
+  color: #374151;
+}
+
+.driverjs-theme-detox .driver-popover-footer button {
+  background-color: #111827;
+  color: #ffffff;
+  border: 1px solid #111827;
+}
+
+.driverjs-theme-detox .driver-popover-footer button:hover {
+  background-color: #374151;
+}
+
+.driverjs-theme-detox .driver-popover-close-btn {
+  color: #6b7280;
+}
+
+.driverjs-theme-detox .driver-popover-close-btn:hover {
+  color: #000000;
+}
+
+.driverjs-theme-detox .driver-popover-progress-text {
+  color: #6b7280;
+}
+
+/* High Contrast Theme (Accessibility) */
+.driverjs-theme-high-contrast .driver-popover {
+  background-color: #000000;
+  color: #ffffff;
+  border: 3px solid #ffffff;
+}
+
+.driverjs-theme-high-contrast .driver-popover-title {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.driverjs-theme-high-contrast .driver-popover-description {
+  color: #ffffff;
+  font-size: 1.125rem;
+}
+
+.driverjs-theme-high-contrast .driver-popover-footer button {
+  background-color: #ffffff;
+  color: #000000;
+  border: 2px solid #ffffff;
+  font-weight: 600;
+}
+
+.driverjs-theme-high-contrast .driver-popover-footer button:hover {
+  background-color: #e5e5e5;
+}
+
+.driverjs-theme-high-contrast .driver-popover-close-btn {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.driverjs-theme-high-contrast .driver-popover-close-btn:hover {
+  color: #cccccc;
+}
+
+.driverjs-theme-high-contrast .driver-popover-progress-text {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* Override animation for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .driver-popover,
+  .driver-overlay {
+    transition: none !important;
+    animation: none !important;
+  }
+}

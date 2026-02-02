@@ -203,19 +203,21 @@ Now create your first reading and start focusing!
 
 ### Technical Implementation
 
-#### Library Choice: react-joyride
+#### Library Choice: driver.js
 
 **Installation:**
 ```bash
-npm install react-joyride
+npm install driver.js
 ```
 
 **Rationale:**
-- Mature library (5k+ GitHub stars)
+- Modern, vanilla JavaScript library (23k+ GitHub stars)
+- Framework-agnostic (works with React 19+)
 - Excellent TypeScript support
 - Built-in accessibility features
 - Customizable styling per theme
-- Lightweight (~20KB gzipped)
+- Very lightweight (~5KB gzipped)
+- Active development and maintenance
 
 #### State Management
 
@@ -243,56 +245,47 @@ interface UseTutorialReturn {
 
 **Files to Create:**
 ```
-components/
-  Tutorial/
-    index.tsx              # Main tutorial component
+lib/
+  tutorial/
+    index.ts               # Tutorial initialization
     steps.ts               # Step definitions
-    WelcomeModal.tsx       # Welcome screen
-    CompletionModal.tsx    # Completion screen
+    config.ts              # Driver.js configuration
     
-hooks/
-  useTutorial.ts           # Tutorial state management
-
 lib/constants/
   tutorialSteps.ts         # Step configurations
 ```
 
 #### Theme Integration
 
-**Joyride Styles per Theme:**
+**Driver.js Styles per Theme:**
 
 ```typescript
 // Light Theme
 {
-  backgroundColor: '#ffffff',
-  textColor: '#1f2937',
-  primaryColor: '#3b82f6',
-  spotlightShadow: '0 0 15px rgba(0, 0, 0, 0.5)',
+  popoverClass: 'driverjs-theme-light',
+  overlayColor: 'rgba(0, 0, 0, 0.5)',
+  smoothScroll: true,
 }
 
 // Dark Theme
 {
-  backgroundColor: '#1f2937',
-  textColor: '#f9fafb',
-  primaryColor: '#8b5cf6',
-  spotlightShadow: '0 0 15px rgba(139, 92, 246, 0.5)',
+  popoverClass: 'driverjs-theme-dark',
+  overlayColor: 'rgba(0, 0, 0, 0.7)',
+  smoothScroll: true,
 }
 
 // Detox Theme
 {
-  backgroundColor: '#ffffff',
-  textColor: '#111827',
-  primaryColor: '#6b7280',
-  spotlightShadow: '0 0 15px rgba(0, 0, 0, 0.3)',
+  popoverClass: 'driverjs-theme-detox',
+  overlayColor: 'rgba(0, 0, 0, 0.4)',
+  smoothScroll: true,
 }
 
 // High-Contrast Theme
 {
-  backgroundColor: '#000000',
-  textColor: '#ffffff',
-  primaryColor: '#ffffff',
-  spotlightShadow: 'none',
-  beaconColor: '#ffffff',
+  popoverClass: 'driverjs-theme-high-contrast',
+  overlayColor: 'rgba(0, 0, 0, 0.9)',
+  smoothScroll: false, // Respect reduceMotion
 }
 ```
 
@@ -317,9 +310,8 @@ lib/constants/
 **Reduce Motion:**
 ```typescript
 if (settings.reduceMotion) {
-  disableAnimation: true,
-  disableOverlay: false, // Keep overlay for focus
-  spotlightClicks: false,
+  animate: false,
+  smoothScroll: false,
 }
 ```
 
@@ -344,14 +336,19 @@ Add new option:
 
 #### App Layout (app/layout.tsx)
 ```tsx
-import Tutorial from '@/components/Tutorial';
+'use client';
+import { useEffect } from 'react';
+import { initTutorial } from '@/lib/tutorial';
 
 export default function RootLayout({ children }) {
+  useEffect(() => {
+    initTutorial();
+  }, []);
+
   return (
     <html>
       <body>
         {children}
-        <Tutorial />
       </body>
     </html>
   );
@@ -463,8 +460,8 @@ Reset tutorial state
 ## Implementation Phases
 
 ### Phase 1: Core Tutorial (MVP)
-- Install react-joyride
-- Create Tutorial component with 5 basic steps
+- Install driver.js
+- Create tutorial configuration with 5 basic steps
 - Add data attributes to target elements
 - Implement localStorage persistence
 - Basic styling for light/dark themes
@@ -523,7 +520,8 @@ Reset tutorial state
 ## Changelog
 
 - **2026-02-02:** Initial PRD created
-- **TBD:** Implementation started
+- **2026-02-02:** Changed from react-joyride to driver.js (React 19 compatibility)
+- **2026-02-02:** Implementation completed - Phase 1 (MVP)
 - **TBD:** Testing completed
 - **TBD:** Released to production
 
@@ -532,16 +530,16 @@ Reset tutorial state
 ### Alternative Libraries Considered
 
 **driver.js:**
-- Pros: Lighter, vanilla JS
-- Cons: Less React integration, fewer features
-- Verdict: Good alternative if bundle size critical
-
-**react-tour:**
-- Pros: Simpler API
-- Cons: Less maintained, fewer stars
-- Verdict: Not recommended
+- Pros: Lighter (~5KB), framework-agnostic, React 19 compatible
+- Cons: More manual setup than dedicated React lib
+- Verdict: ✅ **Selected** - Modern, lightweight, compatible
 
 **intro.js:**
 - Pros: Very popular, mature
 - Cons: Paid for commercial use, heavier
-- Verdict: react-joyride is better fit
+- Verdict: driver.js is better fit
+
+**shepherd.js:**
+- Pros: Popular, feature-rich
+- Cons: Heavier (~15KB), more complex API
+- Verdict: driver.js is simpler and lighter
