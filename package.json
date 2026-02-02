@@ -11,10 +11,6 @@
     "type-check": "tsc --noEmit",
     "clean": "rm -rf .next out node_modules/.cache",
     "validate": "npm run type-check && npm run lint",
-    "test:visual": "playwright test",
-    "test:visual:update": "playwright test --update-snapshots",
-    "test:visual:ui": "playwright test --ui",
-    "test:visual:report": "playwright show-report",
     "prepare": "husky"
   },
   "lint-staged": {
@@ -35,7 +31,6 @@
     "react-dom": "^19.2.3"
   },
   "devDependencies": {
-    "@playwright/test": "^1.58.1",
     "@tailwindcss/postcss": "^4",
     "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^20",

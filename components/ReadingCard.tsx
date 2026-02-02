@@ -50,7 +50,6 @@ export default function ReadingCard({
   return (
     <div
       data-tour="reading-card"
-      data-testid="reading-card"
       className={`w-full ${
         isHighContrast
           ? "bg-black border-2 border-white text-white"
