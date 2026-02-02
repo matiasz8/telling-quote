@@ -37,6 +37,21 @@ Recovered documentation for features that were implemented in the codebase but l
   - Browser compatibility matrix
   - Troubleshooting guide (5 common issues)
 
+- **TRD-010**: Onboarding Tutorial Technical Reference
+  - driver.js implementation guide
+  - 3 guided tours (Welcome, New Reading, Settings)
+  - Theme-specific styling (4 themes)
+  - localStorage state management
+  - Accessibility guide (reduce motion, keyboard navigation)
+  - Troubleshooting guide (5 common issues)
+
+- **TRD-014**: Reading Reactivation Technical Reference
+  - Component architecture and data flow
+  - localStorage schema documentation
+  - Emerald button implementation (theme-specific)
+  - Accessibility guide (focus trap, keyboard shortcuts)
+  - Troubleshooting guide (5 common issues)
+
 #### Updated Files
 - `docs/prd/README.md`: Already contained PRD-009, 012, 013 entries
 - `docs/CHANGELOG-DOCS.md`: This entry
