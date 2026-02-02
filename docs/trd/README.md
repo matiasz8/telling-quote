@@ -18,6 +18,9 @@ This directory contains Technical Requirements Documents for tellingQuote featur
 | [TRD-003](./TRD-003-detox-theme.md) | Detox Theme Implementation | [PRD-003](../prd/PRD-003-detox-theme.md) | 📝 Draft | Medium |
 | [TRD-004](./TRD-004-accessibility.md) | Accessibility Implementation | [PRD-004](../prd/PRD-004-accessibility.md) | 📝 Draft | High |
 | [TRD-005](./TRD-005-firebase-auth.md) | Firebase Auth & Sync | [PRD-005](../prd/PRD-005-firebase-auth.md) | 📝 Draft | Medium |
+| [TRD-009](./TRD-009-spotlight-mode.md) | Spotlight Mode Implementation | [PRD-009](../prd/PRD-009-spotlight-mode.md) | ✔️ Completed | High |
+| [TRD-010](./TRD-010-onboarding-tutorial.md) | Onboarding Tutorial Implementation | [PRD-010](../prd/PRD-010-onboarding-tutorial.md) | ✔️ Completed | High |
+| [TRD-014](./TRD-014-reading-reactivation.md) | Reading Reactivation Implementation | [PRD-014](../prd/PRD-014-reading-reactivation.md) | ✔️ Completed | Low |
 
 ---
 

@@ -28,7 +28,7 @@ This directory contains Product Requirements Documents for tellingQuote features
 | [PRD-008](./PRD-008-advanced-accessibility-blind-users.md) | Advanced Accessibility for Blind Users (Voice + TTS) | 📝 Draft | Critical |
 | [PRD-009](./PRD-009-spotlight-mode.md) | Spotlight Reading Mode | ✔️ Completed | High |
 | [PRD-010](./PRD-010-onboarding-tutorial.md) | Interactive Onboarding Tutorial | ✔️ Completed | High |
-| [PRD-011](./PRD-011-internationalization.md) | Internationalization (i18n) | ✔️ Completed | Medium |
+| [PRD-011](./PRD-011-internationalization.md) | Internationalization (i18n) | 📝 Draft | Medium |
 | [PRD-012](./PRD-012-auto-advance-timer.md) | Auto-Advance Timer | 📝 Draft | Medium |
 | [PRD-013](./PRD-013-text-to-speech.md) | Text-to-Speech (TTS) | 📝 Draft | Medium |
 | [PRD-014](./PRD-014-reading-reactivation.md) | Reading Reactivation | ✔️ Completed | Low |
