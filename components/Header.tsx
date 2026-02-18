@@ -175,13 +175,15 @@ export default function Header() {
                   aria-label="User menu"
                 >
                   {user?.photoURL ? (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={user.photoURL}
                       alt={user.displayName || 'User'}
-                      className="w-8 h-8 rounded-full"
+                      className="w-8 h-8 rounded-full object-cover border-2 border-current"
+                      referrerPolicy="no-referrer"
                     />
                   ) : (
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold ${
                       isHighContrast
                         ? 'bg-white text-black'
                         : isDetox
