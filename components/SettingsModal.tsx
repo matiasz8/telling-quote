@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Settings, FontFamily, FontSize, Theme, AccessibilitySettings, LetterSpacing, LineHeightOption, WordSpacing, ReadingTransition } from '@/types';
+import { Settings, FontFamily, FontSize, Theme, AccessibilitySettings, LetterSpacing, LineHeightOption, WordSpacing, AutoAdvanceSettings } from '@/types';
 import { FONT_FAMILY_OPTIONS, FONT_SIZE_OPTIONS, THEME_OPTIONS, READING_TRANSITION_OPTIONS } from '@/lib/constants';
 import { theme as themeConfig } from '@/config/theme';
 import { useFocusTrap } from '@/hooks/useFocusTrap';
@@ -85,6 +85,13 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
     contentWidth: 'medium',
   };
 
+  const autoAdvance = settings.autoAdvance || {
+    enabled: false,
+    wpm: 200,
+    autoStart: false,
+    showProgress: true,
+  };
+
   const handleFontFamilyChange = (fontFamily: FontFamily) => {
     onSave({
       ...settings,
@@ -111,6 +118,19 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
       ...settings,
       accessibility: {
         ...accessibility,
+        [key]: value,
+      },
+    });
+  };
+
+  const handleAutoAdvanceChange = <K extends keyof AutoAdvanceSettings>(
+    key: K,
+    value: AutoAdvanceSettings[K]
+  ) => {
+    onSave({
+      ...settings,
+      autoAdvance: {
+        ...autoAdvance,
         [key]: value,
       },
     });
@@ -172,6 +192,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
             }`}
             aria-expanded={expandedSection === 'general'}
             aria-label="General settings section"
+            data-tour="settings-general-section"
           >
             <span className="font-semibold">Ajustes Generales</span>
             <svg className={`w-5 h-5 transition-transform ${expandedSection === 'general' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -264,6 +285,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
             }`}
             aria-expanded={expandedSection === 'accessibility'}
             aria-label="Accessibility settings section"
+            data-tour="settings-accessibility-header"
           >
             <span className="font-semibold">Accesibilidad</span>
             <svg className={`w-5 h-5 transition-transform ${expandedSection === 'accessibility' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -451,6 +473,126 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                       <div className="text-xs opacity-75">{option.description}</div>
                     </button>
                   ))}
+                </div>
+              </div>
+
+              {/* Auto-Advance Timer */}
+              <div data-tour="settings-auto-advance">
+                <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
+                  Auto-Advance Timer
+                </label>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className={`text-sm ${getTextClass()}`}>Activar avance automático</span>
+                    <button
+                      onClick={() => handleAutoAdvanceChange('enabled', !autoAdvance.enabled)}
+                      className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                        autoAdvance.enabled
+                          ? isHighContrast
+                            ? 'bg-white'
+                            : isDetox
+                            ? 'bg-gray-900'
+                            : isDark
+                            ? 'bg-purple-600'
+                            : 'bg-lime-500'
+                          : isHighContrast
+                          ? 'bg-gray-700'
+                          : 'bg-gray-300'
+                      }`}
+                      role="switch"
+                      aria-checked={autoAdvance.enabled}
+                      aria-label="Toggle auto-advance timer"
+                    >
+                      <span
+                        className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                          autoAdvance.enabled ? 'translate-x-7' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  <div>
+                    <label className={`block text-xs font-medium ${getTextClass()} mb-2`}>
+                      Velocidad de lectura: {autoAdvance.wpm} WPM
+                    </label>
+                    <input
+                      type="range"
+                      min={100}
+                      max={400}
+                      step={25}
+                      value={autoAdvance.wpm}
+                      onChange={(e) => handleAutoAdvanceChange('wpm', Number(e.target.value))}
+                      className="w-full"
+                      aria-label="Adjust auto-advance reading speed"
+                    />
+                    <div className={`flex justify-between text-xs ${getTextClass()} opacity-70 mt-1`}>
+                      <span>Lento (100)</span>
+                      <span>Promedio (200)</span>
+                      <span>Rápido (400)</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className={`text-sm ${getTextClass()}`}>Auto-iniciar al abrir lectura</span>
+                    <button
+                      onClick={() => {
+                        if (!autoAdvance.enabled) return;
+                        handleAutoAdvanceChange('autoStart', !autoAdvance.autoStart);
+                      }}
+                      className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                        autoAdvance.autoStart
+                          ? isHighContrast
+                            ? 'bg-white'
+                            : isDetox
+                            ? 'bg-gray-900'
+                            : isDark
+                            ? 'bg-purple-600'
+                            : 'bg-lime-500'
+                          : isHighContrast
+                          ? 'bg-gray-700'
+                          : 'bg-gray-300'
+                      } ${!autoAdvance.enabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      role="switch"
+                      aria-checked={autoAdvance.autoStart}
+                      aria-disabled={!autoAdvance.enabled}
+                      aria-label="Toggle auto-start for auto-advance"
+                    >
+                      <span
+                        className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                          autoAdvance.autoStart ? 'translate-x-7' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className={`text-sm ${getTextClass()}`}>Mostrar progreso visual</span>
+                    <button
+                      onClick={() => handleAutoAdvanceChange('showProgress', !autoAdvance.showProgress)}
+                      className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                        autoAdvance.showProgress
+                          ? isHighContrast
+                            ? 'bg-white'
+                            : isDetox
+                            ? 'bg-gray-900'
+                            : isDark
+                            ? 'bg-purple-600'
+                            : 'bg-lime-500'
+                          : isHighContrast
+                          ? 'bg-gray-700'
+                          : 'bg-gray-300'
+                      }`}
+                      role="switch"
+                      aria-checked={autoAdvance.showProgress}
+                      aria-label="Toggle auto-advance progress indicator"
+                    >
+                      <span
+                        className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                          autoAdvance.showProgress ? 'translate-x-7' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
                 </div>
               </div>
 

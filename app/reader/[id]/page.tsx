@@ -8,7 +8,7 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useSettings } from '@/hooks/useSettings';
 import { useApplyAccessibilitySettings } from '@/hooks/useApplyAccessibilitySettings';
 import { Reading } from '@/types';
-import { processContent, getFontFamilyClass, getFontSizeClasses, getThemeClasses } from '@/lib/utils';
+import { processContent, getFontFamilyClass, getFontSizeClasses, getThemeClasses, ProcessedText } from '@/lib/utils';
 import { STORAGE_KEYS, NAVIGATION_KEYS, TOUCH_SWIPE_THRESHOLD, ANNOUNCE_DEBOUNCE_TIME } from '@/lib/constants';
 import confetti from 'canvas-confetti';
 import { theme } from '@/config/theme';
@@ -284,6 +284,39 @@ function formatText(text: string, isDark: boolean): React.ReactNode {
   );
 }
 
+function countWords(text: string): number {
+  if (!text) return 0;
+  return text.trim().split(/\s+/).filter(Boolean).length;
+}
+
+function getAutoAdvanceDurationMs(sentence: ProcessedText, wpm: number): number {
+  if (sentence.isImage) return 5000;
+
+  const safeWpm = Math.max(100, Math.min(400, wpm || 200));
+  const rawText = sentence.sentence || '';
+  let adjustedWords = countWords(rawText);
+  const rawChars = rawText.replace(/\s+/g, '').length;
+
+  if (sentence.isCodeBlock) {
+    adjustedWords *= 2;
+  }
+
+  if (sentence.isTable) {
+    adjustedWords *= 1.4;
+  }
+
+  if (sentence.isSubtitleIntro) {
+    adjustedWords = Math.max(adjustedWords, 8);
+  }
+
+  const wordMs = (adjustedWords / safeWpm) * 60 * 1000;
+  const charsPerMinute = safeWpm * 5;
+  const charMs = rawChars > 0 ? (rawChars / charsPerMinute) * 60 * 1000 : 0;
+  const ms = Math.max(wordMs, charMs);
+
+  return Math.max(3000, Math.min(60000, ms));
+}
+
 export default function ReaderPage() {
   const params = useParams();
   const router = useRouter();
@@ -302,11 +335,25 @@ export default function ReaderPage() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const touchStartX = useRef<number>(0);
   const touchEndX = useRef<number>(0);
+  const [isAutoAdvanceActive, setIsAutoAdvanceActive] = useState(false);
+  const [isAutoAdvancePaused, setIsAutoAdvancePaused] = useState(false);
+  const [autoAdvanceElapsed, setAutoAdvanceElapsed] = useState(0);
+  const autoAdvanceIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const autoAdvanceStartRef = useRef<number | null>(null);
 
   const fontFamilyClass = getFontFamilyClass(settings.accessibility?.fontFamily || 'serif');
   const fontSizeClasses = getFontSizeClasses(settings.fontSize);
   const themeClasses = getThemeClasses(settings.theme);
   const isDark = settings.theme === 'dark';
+  const isDetox = settings.theme === 'detox';
+  const isHighContrast = settings.theme === 'high-contrast';
+
+  const autoAdvance = settings.autoAdvance || {
+    enabled: false,
+    wpm: 200,
+    autoStart: false,
+    showProgress: true,
+  };
   
   // Get reading transition setting
   const readingTransition = settings.accessibility?.readingTransition || 'fade-theme';
@@ -329,6 +376,12 @@ export default function ReaderPage() {
     if (!reading) return [];
     return processContent(reading.title, reading.content);
   }, [reading]);
+
+  const autoAdvanceDurationMs = useMemo(() => {
+    if (processedText.length === 0) return 0;
+    const safeIndex = Math.max(0, Math.min(currentIndex, processedText.length - 1));
+    return getAutoAdvanceDurationMs(processedText[safeIndex], autoAdvance.wpm);
+  }, [processedText, currentIndex, autoAdvance.wpm]);
 
   // Reset index when reading changes (using derived state pattern)
   if (id !== lastReadingId) {
@@ -357,8 +410,44 @@ export default function ReaderPage() {
     };
   }, [currentIndex]);
 
+  const clearAutoAdvanceTimer = useCallback(() => {
+    if (autoAdvanceIntervalRef.current) {
+      clearInterval(autoAdvanceIntervalRef.current);
+      autoAdvanceIntervalRef.current = null;
+    }
+  }, []);
+
+  // Reset auto-advance when disabled
+  useEffect(() => {
+    if (!autoAdvance.enabled && (isAutoAdvanceActive || autoAdvanceElapsed > 0)) {
+      clearAutoAdvanceTimer();
+      // Use callback form to avoid setting state during render
+      setTimeout(() => {
+        setIsAutoAdvanceActive(false);
+        setIsAutoAdvancePaused(false);
+        setAutoAdvanceElapsed(0);
+      }, 0);
+    }
+  }, [autoAdvance.enabled, clearAutoAdvanceTimer, isAutoAdvanceActive, autoAdvanceElapsed]);
+
+  // Auto-start when enabled
+  useEffect(() => {
+    if (autoAdvance.enabled && autoAdvance.autoStart && !isAutoAdvanceActive) {
+      setTimeout(() => {
+        setIsAutoAdvanceActive(true);
+        setIsAutoAdvancePaused(false);
+      }, 0);
+    }
+  }, [autoAdvance.enabled, autoAdvance.autoStart, id, isAutoAdvanceActive]);
+
   const handleNext = useCallback(() => {
     if (isTransitioning) return; // Prevent multiple transitions
+    
+    // Reset auto-advance timer when advancing
+    setAutoAdvanceElapsed(0);
+    if (isAutoAdvanceActive && !isAutoAdvancePaused) {
+      autoAdvanceStartRef.current = Date.now();
+    }
     
     // Skip transition if reduce motion is enabled, transition is 'none', 'spotlight', or 'line-focus'
     // (spotlight and line-focus don't use enter/exit animations)
@@ -387,10 +476,71 @@ export default function ReaderPage() {
         return prev;
       });
     }
-  }, [processedText.length, isTransitioning, settings.accessibility?.reduceMotion, readingTransition]);
+  }, [processedText.length, isTransitioning, settings.accessibility?.reduceMotion, readingTransition, isAutoAdvanceActive, isAutoAdvancePaused]);
+
+  useEffect(() => {
+    if (!autoAdvance.enabled || !isAutoAdvanceActive || isAutoAdvancePaused || autoAdvanceDurationMs === 0) {
+      clearAutoAdvanceTimer();
+      return;
+    }
+
+    autoAdvanceStartRef.current = Date.now() - autoAdvanceElapsed;
+
+    autoAdvanceIntervalRef.current = setInterval(() => {
+      const elapsed = Date.now() - (autoAdvanceStartRef.current ?? Date.now());
+      setAutoAdvanceElapsed(elapsed);
+
+      if (elapsed >= autoAdvanceDurationMs) {
+        clearAutoAdvanceTimer();
+        setAutoAdvanceElapsed(0);
+
+        if (currentIndex < processedText.length - 1) {
+          handleNext();
+        } else {
+          setIsAutoAdvanceActive(false);
+          setIsAutoAdvancePaused(false);
+        }
+      }
+    }, 100);
+
+    return () => {
+      clearAutoAdvanceTimer();
+    };
+  }, [
+    autoAdvance.enabled,
+    autoAdvanceDurationMs,
+    autoAdvanceElapsed,
+    clearAutoAdvanceTimer,
+    currentIndex,
+    handleNext,
+    isAutoAdvanceActive,
+    isAutoAdvancePaused,
+    processedText.length,
+  ]);
+
+  const handleAutoAdvanceToggle = () => {
+    if (!isAutoAdvanceActive) {
+      setIsAutoAdvanceActive(true);
+      setIsAutoAdvancePaused(false);
+      return;
+    }
+
+    if (isAutoAdvancePaused) {
+      setIsAutoAdvancePaused(false);
+    } else {
+      setIsAutoAdvancePaused(true);
+    }
+  };
 
   const handlePrevious = useCallback(() => {
     if (isTransitioning) return; // Prevent multiple transitions
+    
+    // Reset auto-advance timer when going back
+    setAutoAdvanceElapsed(0);
+    if (isAutoAdvanceActive && !isAutoAdvancePaused) {
+      setIsAutoAdvancePaused(true);
+      autoAdvanceStartRef.current = Date.now();
+    }
     
     // Skip transition if reduce motion is enabled, transition is 'none', 'spotlight', or 'line-focus'
     const shouldAnimate = !settings.accessibility?.reduceMotion && 
@@ -418,7 +568,7 @@ export default function ReaderPage() {
         return prev;
       });
     }
-  }, [isTransitioning, settings.accessibility?.reduceMotion, readingTransition]);
+  }, [isTransitioning, settings.accessibility?.reduceMotion, readingTransition, isAutoAdvanceActive, isAutoAdvancePaused]);
 
   const toggleFullscreen = useCallback(() => {
     if (!pageRef.current) return;
@@ -430,12 +580,18 @@ export default function ReaderPage() {
   }, []);
 
   const goToStart = useCallback(() => {
+    if (isAutoAdvanceActive && !isAutoAdvancePaused) {
+      setIsAutoAdvancePaused(true);
+    }
     setCurrentIndex(0);
-  }, []);
+  }, [isAutoAdvanceActive, isAutoAdvancePaused]);
 
   const goToEnd = useCallback(() => {
+    if (isAutoAdvanceActive && !isAutoAdvancePaused) {
+      setIsAutoAdvancePaused(true);
+    }
     setCurrentIndex(processedText.length - 1);
-  }, [processedText.length]);
+  }, [processedText.length, isAutoAdvanceActive, isAutoAdvancePaused]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -638,6 +794,12 @@ export default function ReaderPage() {
   const currentSentence = processedText[safeIndex];
   const progress = processedText.length > 0 ? ((safeIndex + 1) / processedText.length) * 100 : 0;
   const isFinished = safeIndex === processedText.length - 1;
+  const autoAdvanceProgress = autoAdvanceDurationMs > 0
+    ? Math.min(100, (autoAdvanceElapsed / autoAdvanceDurationMs) * 100)
+    : 0;
+  const autoAdvanceRingRadius = 20;
+  const autoAdvanceRingCircumference = 2 * Math.PI * autoAdvanceRingRadius;
+  const autoAdvanceRingOffset = autoAdvanceRingCircumference - (autoAdvanceProgress / 100) * autoAdvanceRingCircumference;
 
   // Use debounced index for announcements
   const safeAnnouncedIndex = Math.max(0, Math.min(announcedIndex, processedText.length - 1));
@@ -951,6 +1113,69 @@ export default function ReaderPage() {
                 </svg>
               )}
             </button>
+            {autoAdvance.enabled && (
+              <div className="relative flex flex-col items-center">
+                {autoAdvance.showProgress && (
+                  <svg className={`absolute inset-0 w-12 h-12 ${
+                    isHighContrast
+                      ? 'text-white'
+                      : isDetox
+                      ? 'text-gray-800'
+                      : isDark
+                      ? 'text-purple-400'
+                      : 'text-emerald-500'
+                  }`} viewBox="0 0 48 48">
+                    <circle
+                      cx="24"
+                      cy="24"
+                      r={autoAdvanceRingRadius}
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      fill="none"
+                      className="opacity-20"
+                    />
+                    <circle
+                      cx="24"
+                      cy="24"
+                      r={autoAdvanceRingRadius}
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      fill="none"
+                      strokeDasharray={`${autoAdvanceRingCircumference} ${autoAdvanceRingCircumference}`}
+                      strokeDashoffset={autoAdvanceRingOffset}
+                      strokeLinecap="round"
+                      className="transition-all duration-100 ease-linear"
+                    />
+                  </svg>
+                )}
+                <button
+                  onClick={handleAutoAdvanceToggle}
+                  className="relative w-12 h-12 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors"
+                  title={
+                    !isAutoAdvanceActive
+                      ? 'Start auto-advance'
+                      : isAutoAdvancePaused
+                      ? 'Resume auto-advance'
+                      : 'Pause auto-advance'
+                  }
+                  aria-label="Toggle auto-advance timer"
+                >
+                  {isAutoAdvanceActive && !isAutoAdvancePaused ? (
+                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                      <rect x="6" y="5" width="4" height="14" rx="1" />
+                      <rect x="14" y="5" width="4" height="14" rx="1" />
+                    </svg>
+                  ) : (
+                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                      <polygon points="6,4 20,12 6,20" />
+                    </svg>
+                  )}
+                </button>
+                <span className={`mt-1 text-[10px] ${themeClasses.textSecondary}`}>
+                  Auto {autoAdvance.wpm} WPM
+                </span>
+              </div>
+            )}
             {/* Finish reading button - only shown when finished */}
             {isFinished && (
               <Link
