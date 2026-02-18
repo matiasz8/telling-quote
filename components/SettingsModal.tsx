@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Settings, FontFamily, FontSize, Theme, AccessibilitySettings, LetterSpacing, LineHeightOption, WordSpacing, ReadingTransition, AutoAdvanceSettings } from '@/types';
+import { Settings, FontFamily, FontSize, Theme, AccessibilitySettings, LetterSpacing, LineHeightOption, WordSpacing, AutoAdvanceSettings } from '@/types';
 import { FONT_FAMILY_OPTIONS, FONT_SIZE_OPTIONS, THEME_OPTIONS, READING_TRANSITION_OPTIONS } from '@/lib/constants';
 import { theme as themeConfig } from '@/config/theme';
 import { useFocusTrap } from '@/hooks/useFocusTrap';
@@ -192,6 +192,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
             }`}
             aria-expanded={expandedSection === 'general'}
             aria-label="General settings section"
+            data-tour="settings-general-section"
           >
             <span className="font-semibold">Ajustes Generales</span>
             <svg className={`w-5 h-5 transition-transform ${expandedSection === 'general' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -284,6 +285,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
             }`}
             aria-expanded={expandedSection === 'accessibility'}
             aria-label="Accessibility settings section"
+            data-tour="settings-accessibility-header"
           >
             <span className="font-semibold">Accesibilidad</span>
             <svg className={`w-5 h-5 transition-transform ${expandedSection === 'accessibility' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -533,7 +535,10 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                   <div className="flex items-center justify-between">
                     <span className={`text-sm ${getTextClass()}`}>Auto-iniciar al abrir lectura</span>
                     <button
-                      onClick={() => handleAutoAdvanceChange('autoStart', !autoAdvance.autoStart)}
+                      onClick={() => {
+                        if (!autoAdvance.enabled) return;
+                        handleAutoAdvanceChange('autoStart', !autoAdvance.autoStart);
+                      }}
                       className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
                         autoAdvance.autoStart
                           ? isHighContrast
@@ -546,9 +551,10 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                           : isHighContrast
                           ? 'bg-gray-700'
                           : 'bg-gray-300'
-                      }`}
+                      } ${!autoAdvance.enabled ? 'opacity-50 cursor-not-allowed' : ''}`}
                       role="switch"
                       aria-checked={autoAdvance.autoStart}
+                      aria-disabled={!autoAdvance.enabled}
                       aria-label="Toggle auto-start for auto-advance"
                     >
                       <span

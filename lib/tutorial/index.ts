@@ -160,9 +160,9 @@ export function startSettingsTutorial() {
       accessibilityButton.click();
     }
     
-    // Hacer scroll al primer elemento del tutorial después de expandir
+    // Hacer scroll al encabezado de Ajustes Generales antes de iniciar el tutorial
     setTimeout(() => {
-      const firstElement = document.querySelector('[data-tour="settings-font-family"]');
+      const firstElement = document.querySelector('[data-tour="settings-general-section"]');
       if (firstElement) {
         firstElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }

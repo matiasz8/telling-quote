@@ -105,6 +105,16 @@ export const settingsTutorialSteps: DriveStep[] = [
     },
   },
   {
+    element: '[data-tour="settings-general-section"]',
+    popover: {
+      title: '🧭 Ajustes Generales',
+      description:
+        'En esta sección puedes cambiar la fuente, tamaño y tema. Primero revisaremos estos ajustes básicos.',
+      side: 'bottom',
+      align: 'start',
+    },
+  },
+  {
     element: '[data-tour="settings-font-family"]',
     popover: {
       title: '🔤 Familia de Fuente',
@@ -171,6 +181,16 @@ export const settingsTutorialSteps: DriveStep[] = [
       description:
         'Activa esta opción para desactivar todas las animaciones y transiciones. Perfecto si prefieres una experiencia más estática o si las animaciones te distraen o causan mareos.',
       side: 'left',
+      align: 'start',
+    },
+  },
+  {
+    element: '[data-tour="settings-accessibility-header"]',
+    popover: {
+      title: '♿ Ajustes de Accesibilidad',
+      description:
+        'Ahora pasamos a accesibilidad: espaciados, enfoque, ancho de contenido y más opciones para lectura cómoda.',
+      side: 'bottom',
       align: 'start',
     },
   },
