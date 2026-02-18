@@ -3,6 +3,11 @@ export type Reading = {
   title: string;
   content: string;
   tags?: string[]; // Optional, default empty array
+  createdAt?: Date | number;
+  updatedAt?: Date | number;
+  isCompleted?: boolean;
+  syncedAt?: number;
+  deletedAt?: number | null;
 };
 
 export type FontFamily = 'serif' | 'sans' | 'mono' | 'system' | 'opendyslexic' | 'comic-sans' | 'atkinson';
@@ -36,4 +41,22 @@ export type Settings = {
   fontSize: FontSize;
   theme: Theme;
   accessibility?: AccessibilitySettings;
+  syncedAt?: number;
+};
+
+export type User = {
+  uid: string;
+  email: string | null;
+  displayName: string | null;
+  photoURL: string | null;
+  createdAt?: number;
+  lastSeen?: number;
+};
+
+export type SyncStatus = {
+  isSignedIn: boolean;
+  isSyncing: boolean;
+  lastSyncAt: number | null;
+  syncError: string | null;
+  isOffline: boolean;
 };
