@@ -3,13 +3,22 @@
 import { useState, useEffect } from 'react';
 import SettingsModal from './SettingsModal';
 import KeyboardShortcutsModal from './KeyboardShortcutsModal';
+import SignInModal from './SignInModal';
+import MigrationModal from './MigrationModal';
+import UserMenu from './UserMenu';
 import { useSettings } from '@/hooks/useSettings';
+import { useAuth } from '@/hooks/useAuth';
 import { resetTutorial } from '@/lib/tutorial';
+import { deleteAccount } from '@/lib/firebase/auth';
+import { deleteAllUserData } from '@/lib/firebase/firestore';
 
 export default function Header() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
+  const [isSignInOpen, setIsSignInOpen] = useState(false);
+  const [isMigrationOpen, setIsMigrationOpen] = useState(false);
   const { settings, setSettings } = useSettings();
+  const { user } = useAuth();
   const isDark = settings.theme === 'dark';
   const isDetox = settings.theme === 'detox';
   const isHighContrast = settings.theme === 'high-contrast';
@@ -32,6 +41,54 @@ export default function Header() {
     document.addEventListener('keydown', handleKeyPress);
     return () => document.removeEventListener('keydown', handleKeyPress);
   }, []);
+
+  const handleExportData = () => {
+    // Get readings from localStorage
+    const readings = localStorage.getItem('readings');
+    const settings = localStorage.getItem('settings');
+    const data = {
+      readings: readings ? JSON.parse(readings) : [],
+      settings: settings ? JSON.parse(settings) : {},
+      exportDate: new Date().toISOString(),
+    };
+
+    // Create and download JSON file
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `tellingquote-export-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!user) return;
+
+    const confirmed = window.confirm(
+      '¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer y se eliminarán todos tus datos.'
+    );
+
+    if (confirmed) {
+      try {
+        // Delete all user data from Firestore
+        await deleteAllUserData(user.uid);
+        // Delete user account
+        await deleteAccount();
+        alert('Cuenta eliminada exitosamente');
+      } catch (error) {
+        console.error('Error deleting account:', error);
+        alert('Error al eliminar la cuenta. Por favor intenta de nuevo.');
+      }
+    }
+  };
+
+  const handleMigrateToCloud = () => {
+    setIsSignInOpen(false);
+    setIsMigrationOpen(true);
+  };
 
   return (
     <>
@@ -129,6 +186,32 @@ export default function Header() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
           </button>
+          
+          {/* Auth: Show User Menu or Sign In button */}
+          {user ? (
+            <UserMenu
+              user={user}
+              onExportData={handleExportData}
+              onDeleteAccount={handleDeleteAccount}
+            />
+          ) : (
+            <button
+              onClick={() => setIsSignInOpen(true)}
+              data-tour="sign-in-button"
+              className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                isHighContrast
+                  ? 'bg-white text-black hover:bg-gray-200'
+                  : isDetox
+                  ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                  : isDark
+                  ? 'bg-linear-to-r from-emerald-500 to-teal-500 text-white hover:shadow-lg'
+                  : 'bg-linear-to-r from-emerald-500 to-teal-500 text-white hover:shadow-lg'
+              }`}
+              title="Iniciar Sesión"
+            >
+              Iniciar Sesión
+            </button>
+          )}
           </div>
         </div>
       </header>
@@ -143,6 +226,24 @@ export default function Header() {
       <KeyboardShortcutsModal
         isOpen={isShortcutsOpen}
         onClose={() => setIsShortcutsOpen(false)}
+      />
+
+      <SignInModal
+        isOpen={isSignInOpen}
+        onClose={() => setIsSignInOpen(false)}
+        onMigrate={handleMigrateToCloud}
+      />
+
+      <MigrationModal
+        isOpen={isMigrationOpen}
+        onConfirm={async (migrate) => {
+          if (migrate && user) {
+            // Migration logic handled in page.tsx
+            // This is just for UI flow
+          }
+          setIsMigrationOpen(false);
+        }}
+        readingCount={0}
       />
     </>
   );
