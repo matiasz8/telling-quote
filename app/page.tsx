@@ -6,9 +6,12 @@ import NewReadingModal from "@/components/NewReadingModal";
 import EditTitleModal from "@/components/EditTitleModal";
 import ConfirmDeleteModal from "@/components/ConfirmDeleteModal";
 import ConfirmReactivateModal from "@/components/ConfirmReactivateModal";
+import MigrationModal from "@/components/MigrationModal";
 import ReadingCard from "@/components/ReadingCard";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useSettings } from "@/hooks/useSettings";
+import { useAuth } from "@/hooks/useAuth";
+import { useReadingSync } from "@/hooks/useReadingSync";
 import { Reading } from "@/types";
 import { STORAGE_KEYS } from "@/lib/constants";
 import {
@@ -21,6 +24,7 @@ export default function Home() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isReactivateModalOpen, setIsReactivateModalOpen] = useState(false);
+  const [isMigrationModalOpen, setIsMigrationModalOpen] = useState(false);
   const [editingReading, setEditingReading] = useState<Reading | null>(null);
   const [deletingReading, setDeletingReading] = useState<Reading | null>(null);
   const [reactivatingReading, setReactivatingReading] = useState<Reading | null>(null);
@@ -37,7 +41,10 @@ export default function Home() {
     "active"
   );
   const { settings } = useSettings();
+  const { user } = useAuth();
+  const { syncReading, syncUpdateReading, syncDeleteReading, subscribeReadings, fetchReadings } = useReadingSync();
   const hasInitializedExample = useRef(false);
+  const hasSyncedFromCloud = useRef(false);
 
   // Auto-create example reading on first load
   useEffect(() => {
@@ -63,6 +70,59 @@ export default function Home() {
     hasInitializedExample.current = true;
   }, [readings, setReadings]);
 
+  // Sync with Firestore when user signs in
+  useEffect(() => {
+    if (!user) {
+      hasSyncedFromCloud.current = false;
+      return;
+    }
+
+    // Check if we should show migration modal
+    const hasLocalReadings = readings.length > 0;
+    const hasMigrated = localStorage.getItem('hasMigratedToCloud') === 'true';
+
+    if (hasLocalReadings && !hasMigrated && !hasSyncedFromCloud.current) {
+      setTimeout(() => setIsMigrationModalOpen(true), 0);
+      return;
+    }
+
+    // Load readings from Firestore if not migrated
+    if (!hasSyncedFromCloud.current) {
+      fetchReadings().then((cloudReadings) => {
+        if (cloudReadings.length > 0) {
+          setReadings(cloudReadings);
+        }
+        hasSyncedFromCloud.current = true;
+      });
+    }
+
+    // Subscribe to real-time updates
+    const unsubscribe = subscribeReadings((cloudReadings) => {
+      setReadings(cloudReadings);
+    });
+
+    return () => unsubscribe();
+  }, [user, readings.length, fetchReadings, subscribeReadings, setReadings]);
+
+  const handleMigrateToCloud = async (shouldMigrate: boolean) => {
+    if (!user) return;
+
+    if (shouldMigrate) {
+      // Sync all local readings to Firestore
+      for (const reading of readings) {
+        try {
+          await syncReading(reading);
+        } catch (error) {
+          console.error('Error migrating reading:', error);
+        }
+      }
+    }
+
+    // Mark as migrated to prevent showing modal again
+    localStorage.setItem('hasMigratedToCloud', 'true');
+    setIsMigrationModalOpen(false);
+  };
+
   // Filter readings based on active tab
   const activeReadings = readings.filter(
     (r) => !completedReadings.includes(r.id)
@@ -73,8 +133,17 @@ export default function Home() {
   const displayedReadings =
     activeTab === "active" ? activeReadings : completedReadingsList;
 
-  const handleSave = (reading: Reading) => {
+  const handleSave = async (reading: Reading) => {
     setReadings((prev) => [...prev, reading]);
+    
+    // Sync to Firestore if user is signed in
+    if (user) {
+      try {
+        await syncReading(reading);
+      } catch (error) {
+        console.error('Error syncing new reading:', error);
+      }
+    }
   };
 
   const handleEdit = (reading: Reading) => {
@@ -82,7 +151,7 @@ export default function Home() {
     setIsEditModalOpen(true);
   };
 
-  const handleEditSave = (newTitle: string, newTags: string[] = []) => {
+  const handleEditSave = async (newTitle: string, newTags: string[] = []) => {
     if (!editingReading) return;
     setReadings((prev) =>
       prev.map((r) =>
@@ -91,6 +160,16 @@ export default function Home() {
           : r
       )
     );
+    
+    // Sync update to Firestore
+    if (user) {
+      try {
+        await syncUpdateReading(editingReading.id, { title: newTitle, tags: newTags });
+      } catch (error) {
+        console.error('Error syncing reading update:', error);
+      }
+    }
+    
     setIsEditModalOpen(false);
     setEditingReading(null);
   };
@@ -100,7 +179,7 @@ export default function Home() {
     setIsDeleteModalOpen(true);
   };
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (!deletingReading) return;
 
     // If deleting the example reading, mark it as dismissed
@@ -109,6 +188,16 @@ export default function Home() {
     }
 
     setReadings((prev) => prev.filter((r) => r.id !== deletingReading.id));
+    
+    // Sync deletion to Firestore
+    if (user) {
+      try {
+        await syncDeleteReading(deletingReading.id);
+      } catch (error) {
+        console.error('Error syncing reading deletion:', error);
+      }
+    }
+    
     setIsDeleteModalOpen(false);
     setDeletingReading(null);
   };
@@ -173,9 +262,9 @@ export default function Home() {
               }
               ${
                 isDark
-                  ? "bg-gradient-to-r from-purple-600 via-violet-600 to-fuchsia-600 text-white shadow-lg shadow-purple-500/50 hover:shadow-xl hover:shadow-purple-500/70"
+                  ? "bg-linear-to-r from-purple-600 via-violet-600 to-fuchsia-600 text-white shadow-lg shadow-purple-500/50 hover:shadow-xl hover:shadow-purple-500/70"
                   : !isDetox && !isHighContrast
-                  ? "bg-gradient-to-r from-lime-500 via-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/50 hover:shadow-xl hover:shadow-emerald-500/70"
+                  ? "bg-linear-to-r from-lime-500 via-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/50 hover:shadow-xl hover:shadow-emerald-500/70"
                   : ""
               }
             `}
@@ -465,6 +554,12 @@ export default function Home() {
           onConfirm={handleReactivateConfirm}
         />
       )}
+      
+      <MigrationModal
+        isOpen={isMigrationModalOpen}
+        onConfirm={handleMigrateToCloud}
+        readingCount={readings.length}
+      />
     </div>
   );
 }
