@@ -45,6 +45,12 @@ export default function Home() {
   const { syncReading, syncUpdateReading, syncDeleteReading, subscribeReadings, fetchReadings } = useReadingSync();
   const hasInitializedExample = useRef(false);
   const hasSyncedFromCloud = useRef(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Prevent hydration mismatch by only rendering client-side features after mount
+  useEffect(() => {
+    setTimeout(() => setMounted(true), 0);
+  }, []);
 
   // Auto-create example reading on first load
   useEffect(() => {
@@ -72,7 +78,7 @@ export default function Home() {
 
   // Sync with Firestore when user signs in
   useEffect(() => {
-    if (!user) {
+    if (!mounted || !user) {
       hasSyncedFromCloud.current = false;
       return;
     }
@@ -102,7 +108,7 @@ export default function Home() {
     });
 
     return () => unsubscribe();
-  }, [user, readings.length, fetchReadings, subscribeReadings, setReadings]);
+  }, [mounted, user, readings.length, fetchReadings, subscribeReadings, setReadings]);
 
   const handleMigrateToCloud = async (shouldMigrate: boolean) => {
     if (!user) return;
