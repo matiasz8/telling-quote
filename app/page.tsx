@@ -25,6 +25,7 @@ export default function Home() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isReactivateModalOpen, setIsReactivateModalOpen] = useState(false);
   const [isMigrationModalOpen, setIsMigrationModalOpen] = useState(false);
+  const [migrationReadingCount, setMigrationReadingCount] = useState(0);
   const [editingReading, setEditingReading] = useState<Reading | null>(null);
   const [deletingReading, setDeletingReading] = useState<Reading | null>(null);
   const [reactivatingReading, setReactivatingReading] = useState<Reading | null>(null);
@@ -42,15 +43,34 @@ export default function Home() {
   );
   const { settings } = useSettings();
   const { user } = useAuth();
-  const { syncReading, syncUpdateReading, syncDeleteReading, subscribeReadings, fetchReadings } = useReadingSync();
+  const { syncReading, syncUpdateReading, syncDeleteReading, subscribeReadings } = useReadingSync();
   const hasInitializedExample = useRef(false);
   const hasSyncedFromCloud = useRef(false);
+  const localReadingsToMigrate = useRef<Reading[]>([]);
   const [mounted, setMounted] = useState(false);
 
   // Prevent hydration mismatch by only rendering client-side features after mount
   useEffect(() => {
     setTimeout(() => setMounted(true), 0);
   }, []);
+
+  // Check for migration on first user sign-in
+  useEffect(() => {
+    if (!mounted || !user || hasSyncedFromCloud.current) return;
+
+    const hasLocalReadings = readings.length > 0;
+    const hasMigrated = localStorage.getItem('hasMigratedToCloud') === 'true';
+
+    if (hasLocalReadings && !hasMigrated) {
+      // Save local readings before they get overwritten
+      localReadingsToMigrate.current = [...readings];
+      setTimeout(() => {
+        setMigrationReadingCount(readings.length);
+        setIsMigrationModalOpen(true);
+      }, 0);
+      hasSyncedFromCloud.current = true; // Prevent re-triggering
+    }
+  }, [mounted, user, readings]);
 
   // Auto-create example reading on first load
   useEffect(() => {
@@ -76,30 +96,15 @@ export default function Home() {
     hasInitializedExample.current = true;
   }, [readings, setReadings]);
 
-  // Sync with Firestore when user signs in
+  // Sync with Firestore when user signs in (after migration handled)
   useEffect(() => {
-    if (!mounted || !user) {
-      hasSyncedFromCloud.current = false;
+    if (!mounted || !user || isMigrationModalOpen) {
       return;
     }
 
-    // Check if we should show migration modal
-    const hasLocalReadings = readings.length > 0;
     const hasMigrated = localStorage.getItem('hasMigratedToCloud') === 'true';
-
-    if (hasLocalReadings && !hasMigrated && !hasSyncedFromCloud.current) {
-      setTimeout(() => setIsMigrationModalOpen(true), 0);
-      return;
-    }
-
-    // Load readings from Firestore if not migrated
-    if (!hasSyncedFromCloud.current) {
-      fetchReadings().then((cloudReadings) => {
-        if (cloudReadings.length > 0) {
-          setReadings(cloudReadings);
-        }
-        hasSyncedFromCloud.current = true;
-      });
+    if (!hasMigrated) {
+      return; // Wait for migration to complete
     }
 
     // Subscribe to real-time updates
@@ -108,25 +113,41 @@ export default function Home() {
     });
 
     return () => unsubscribe();
-  }, [mounted, user, readings.length, fetchReadings, subscribeReadings, setReadings]);
+  }, [mounted, user, isMigrationModalOpen, subscribeReadings, setReadings]);
 
   const handleMigrateToCloud = async (shouldMigrate: boolean) => {
     if (!user) return;
 
     if (shouldMigrate) {
+      // Use saved local readings, not current state (which might have been overwritten)
+      const readingsToSync = localReadingsToMigrate.current;
+      
+      console.log(`Migrating ${readingsToSync.length} readings to Firestore...`);
+      
       // Sync all local readings to Firestore
-      for (const reading of readings) {
+      for (const reading of readingsToSync) {
         try {
           await syncReading(reading);
+          console.log(`✓ Migrated: ${reading.title}`);
         } catch (error) {
-          console.error('Error migrating reading:', error);
+          console.error(`✗ Error migrating "${reading.title}":`, error);
         }
       }
+      
+      console.log('Migration complete!');
+    } else {
+      console.log('User chose to start fresh, skipping migration');
+      // Clear local readings if user wants to start fresh
+      setReadings([]);
     }
 
     // Mark as migrated to prevent showing modal again
     localStorage.setItem('hasMigratedToCloud', 'true');
     setIsMigrationModalOpen(false);
+    setMigrationReadingCount(0);
+    
+    // Clear the saved readings
+    localReadingsToMigrate.current = [];
   };
 
   // Filter readings based on active tab
@@ -564,7 +585,7 @@ export default function Home() {
       <MigrationModal
         isOpen={isMigrationModalOpen}
         onConfirm={handleMigrateToCloud}
-        readingCount={readings.length}
+        readingCount={migrationReadingCount}
       />
     </div>
   );
