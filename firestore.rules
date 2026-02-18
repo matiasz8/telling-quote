@@ -9,30 +9,25 @@ service cloud.firestore {
     // Helper function to validate reading data
     function isValidReading() {
       let reading = request.resource.data;
-      return reading.keys().hasAll(['id', 'title', 'content', 'tags', 'createdAt', 'updatedAt'])
+      return reading.keys().hasAll(['id', 'title', 'content', 'tags'])
         && reading.id is string
         && reading.title is string
         && reading.content is string
-        && reading.tags is list
-        && reading.createdAt is string
-        && reading.updatedAt is timestamp;
+        && reading.tags is list;
     }
 
     // Helper function to validate settings data
     function isValidSettings() {
       let settings = request.resource.data;
-      return settings.keys().hasAll(['fontSize', 'fontFamily', 'theme', 'updatedAt'])
+      return settings.keys().hasAll(['fontSize', 'fontFamily', 'theme'])
         && settings.fontSize is string
         && settings.fontFamily is string
-        && settings.theme is string
-        && settings.updatedAt is timestamp;
+        && settings.theme is string;
     }
 
     // Helper function to validate accessibility settings
     function isValidAccessibility() {
-      let accessibility = request.resource.data;
-      return accessibility.keys().hasAll(['updatedAt'])
-        && accessibility.updatedAt is timestamp;
+      return true; // Less strict validation for accessibility
     }
 
     // User profile rules
@@ -44,8 +39,7 @@ service cloud.firestore {
     // Readings rules
     match /users/{uid}/readings/{readingId} {
       allow read: if isOwner(uid);
-      allow create: if isOwner(uid) && isValidReading();
-      allow update: if isOwner(uid) && isValidReading();
+      allow create, update: if isOwner(uid) && isValidReading();
       allow delete: if isOwner(uid);
     }
 
