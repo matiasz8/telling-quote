@@ -3,13 +3,19 @@
 import { useState, useEffect } from 'react';
 import SettingsModal from './SettingsModal';
 import KeyboardShortcutsModal from './KeyboardShortcutsModal';
+import LoginModal from './LoginModal';
 import { useSettings } from '@/hooks/useSettings';
 import { resetTutorial } from '@/lib/tutorial';
+import { useAuth } from '@/context/AuthContext';
+import { logOut } from '@/lib/firebase/auth';
 
 export default function Header() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const { settings, setSettings } = useSettings();
+  const { user, isAuthenticated } = useAuth();
   const isDark = settings.theme === 'dark';
   const isDetox = settings.theme === 'detox';
   const isHighContrast = settings.theme === 'high-contrast';
@@ -32,6 +38,30 @@ export default function Header() {
     document.addEventListener('keydown', handleKeyPress);
     return () => document.removeEventListener('keydown', handleKeyPress);
   }, []);
+
+  // Close user menu when clicking outside
+  useEffect(() => {
+    if (!isUserMenuOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('[data-user-menu]')) {
+        setIsUserMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [isUserMenuOpen]);
+
+  const handleSignOut = async () => {
+    try {
+      await logOut();
+      setIsUserMenuOpen(false);
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
+  };
 
   return (
     <>
@@ -110,6 +140,122 @@ export default function Header() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </button>
+            
+            {/* Auth: Sign In button or User Menu */}
+            {!isAuthenticated ? (
+              <button
+                onClick={() => setIsLoginOpen(true)}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  isHighContrast
+                    ? 'bg-white text-black hover:bg-gray-200'
+                    : isDetox
+                    ? 'bg-gray-900 text-white hover:bg-gray-800'
+                    : isDark
+                    ? 'bg-purple-600 text-white hover:bg-purple-700'
+                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                }`}
+                title="Sign in to sync your data"
+              >
+                Sign In
+              </button>
+            ) : (
+              <div className="relative" data-user-menu>
+                <button
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className={`p-2 rounded-lg transition-colors flex items-center gap-2 ${
+                    isHighContrast
+                      ? 'text-white hover:bg-white hover:text-black'
+                      : isDetox
+                      ? 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                      : isDark
+                      ? 'text-gray-300 hover:text-gray-100 hover:bg-purple-800'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  }`}
+                  title={user?.email || 'User menu'}
+                  aria-label="User menu"
+                >
+                  {user?.photoURL ? (
+                    <img
+                      src={user.photoURL}
+                      alt={user.displayName || 'User'}
+                      className="w-8 h-8 rounded-full"
+                    />
+                  ) : (
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                      isHighContrast
+                        ? 'bg-white text-black'
+                        : isDetox
+                        ? 'bg-gray-300 text-gray-700'
+                        : isDark
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-blue-600 text-white'
+                    }`}>
+                      {user?.email?.[0].toUpperCase() || 'U'}
+                    </div>
+                  )}
+                </button>
+
+                {isUserMenuOpen && (
+                  <div className={`absolute right-0 mt-2 w-64 rounded-lg shadow-lg overflow-hidden z-50 ${
+                    isHighContrast
+                      ? 'bg-black border-2 border-white'
+                      : isDetox
+                      ? 'bg-white border border-gray-200'
+                      : isDark
+                      ? 'bg-gray-800 border border-purple-700'
+                      : 'bg-white border border-gray-200'
+                  }`}>
+                    <div className={`px-4 py-3 border-b ${
+                      isHighContrast
+                        ? 'border-white'
+                        : isDetox
+                        ? 'border-gray-200'
+                        : isDark
+                        ? 'border-purple-700'
+                        : 'border-gray-200'
+                    }`}>
+                      <p className={`text-sm font-medium ${
+                        isHighContrast
+                          ? 'text-white'
+                          : isDetox
+                          ? 'text-gray-900'
+                          : isDark
+                          ? 'text-gray-100'
+                          : 'text-gray-900'
+                      }`}>
+                        {user?.displayName || 'User'}
+                      </p>
+                      <p className={`text-xs ${
+                        isHighContrast
+                          ? 'text-gray-300'
+                          : isDetox
+                          ? 'text-gray-600'
+                          : isDark
+                          ? 'text-gray-400'
+                          : 'text-gray-500'
+                      }`}>
+                        {user?.email}
+                      </p>
+                    </div>
+                    <button
+                      onClick={handleSignOut}
+                      className={`w-full px-4 py-2 text-left text-sm transition-colors ${
+                        isHighContrast
+                          ? 'text-white hover:bg-white hover:text-black'
+                          : isDetox
+                          ? 'text-gray-700 hover:bg-gray-100'
+                          : isDark
+                          ? 'text-gray-300 hover:bg-purple-800'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
             <button
               onClick={() => setIsSettingsOpen(true)}
               data-tour="settings-button"
@@ -143,6 +289,11 @@ export default function Header() {
       <KeyboardShortcutsModal
         isOpen={isShortcutsOpen}
         onClose={() => setIsShortcutsOpen(false)}
+      />
+
+      <LoginModal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
       />
     </>
   );
