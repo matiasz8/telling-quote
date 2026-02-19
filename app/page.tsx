@@ -47,6 +47,7 @@ export default function Home() {
   const hasInitializedExample = useRef(false);
   const hasSyncedFromCloud = useRef(false);
   const localReadingsToMigrate = useRef<Reading[]>([]);
+  const hasAutoSynced = useRef(false);
   const [mounted, setMounted] = useState(false);
 
   // Prevent hydration mismatch by only rendering client-side features after mount
@@ -128,7 +129,32 @@ export default function Home() {
     console.log('[Firestore sync effect] SUBSCRIBING to Firestore...');
     const unsubscribe = subscribeReadings((cloudReadings) => {
       console.log('[Firestore sync effect] Received cloudReadings:', cloudReadings.length, 'readings');
-      console.log('[Firestore sync effect] cloudReadings:', cloudReadings);
+      console.log('[Firestore sync effect] Current local readings:', readings.length);
+      console.log('[Firestore sync effect] hasAutoSynced.current:', hasAutoSynced.current);
+      
+      // If Firestore is empty but we have local readings, sync them automatically (once)
+      if (cloudReadings.length === 0 && readings.length > 0 && !hasAutoSynced.current) {
+        console.log('[Firestore sync effect] Firestore is empty but we have', readings.length, 'local readings - syncing them now');
+        hasAutoSynced.current = true;
+        
+        // Sync local readings to Firestore
+        const syncPromises = readings.map(async (reading) => {
+          try {
+            await syncReading(reading);
+            console.log('[Firestore sync effect] Auto-synced:', reading.title);
+          } catch (error) {
+            console.error('[Firestore sync effect] Error auto-syncing:', error);
+          }
+        });
+        
+        Promise.all(syncPromises).then(() => {
+          console.log('[Firestore sync effect] Auto-sync complete');
+        });
+        
+        // Don't overwrite local readings with empty array - wait for Firestore to return synced data
+        return;
+      }
+      
       setReadings(cloudReadings);
     });
 
@@ -136,7 +162,7 @@ export default function Home() {
       console.log('[Firestore sync effect] CLEANUP - unsubscribing');
       unsubscribe();
     };
-  }, [mounted, user, isMigrationModalOpen, subscribeReadings, setReadings]);
+  }, [mounted, user, isMigrationModalOpen, subscribeReadings, setReadings, readings, syncReading]);
 
   const handleMigrateToCloud = async (shouldMigrate: boolean) => {
     console.log('[handleMigrateToCloud] shouldMigrate:', shouldMigrate);
