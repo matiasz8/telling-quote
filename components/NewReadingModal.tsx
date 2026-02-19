@@ -105,6 +105,8 @@ export default function NewReadingModal({
       tags: normalizeTags(tagsInput),
     };
 
+    console.log(`[NewReadingModal] Calling onSave with reading:`, newReading.id, newReading.title);
+    console.log(`[NewReadingModal] Stack trace:`, new Error().stack);
     onSave(newReading);
     setText("");
     setTitleInput("");

@@ -22,16 +22,21 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T 
 
   // Persist to localStorage whenever value changes
   const setValue = useCallback((value: T | ((val: T) => T)) => {
+    console.log(`[useLocalStorage ${key}] setValue called`);
     try {
       // Use functional update to get current value
       setStoredValue((currentValue) => {
         const valueToStore = value instanceof Function ? value(currentValue) : value;
+        console.log(`[useLocalStorage ${key}] setValue: currentValue length:`, Array.isArray(currentValue) ? currentValue.length : 'N/A');
+        console.log(`[useLocalStorage ${key}] setValue: newValue length:`, Array.isArray(valueToStore) ? valueToStore.length : 'N/A');
         
         if (typeof window !== 'undefined') {
           window.localStorage.setItem(key, JSON.stringify(valueToStore));
           // Trigger custom event for same-page sync
           // Only dispatch if value actually changed
-          if (JSON.stringify(valueToStore) !== JSON.stringify(currentValue)) {
+          const hasChanged = JSON.stringify(valueToStore) !== JSON.stringify(currentValue);
+          console.log(`[useLocalStorage ${key}] setValue: dispatching event?`, hasChanged);
+          if (hasChanged) {
             const event = new CustomEvent(STORAGE_EVENTS.CHANGE, {
               detail: { key, value: valueToStore },
             });
@@ -62,13 +67,17 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T 
 
     const handleCustomStorageChange = (e: Event) => {
       const customEvent = e as CustomEvent<{ key: string; value: T }>;
+      console.log(`[useLocalStorage ${key}] handleCustomStorageChange: received event for key`, customEvent.detail.key);
       if (customEvent.detail.key === key) {
         // Only update if value actually changed to avoid duplicate updates
         setStoredValue((currentValue) => {
           const newValue = customEvent.detail.value;
-          if (JSON.stringify(newValue) === JSON.stringify(currentValue)) {
+          const isSame = JSON.stringify(newValue) === JSON.stringify(currentValue);
+          console.log(`[useLocalStorage ${key}] handleCustomStorageChange: isSame?`, isSame);
+          if (isSame) {
             return currentValue; // No change, don't trigger re-render
           }
+          console.log(`[useLocalStorage ${key}] handleCustomStorageChange: updating value`);
           return newValue;
         });
       }

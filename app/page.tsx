@@ -163,12 +163,21 @@ export default function Home() {
     activeTab === "active" ? activeReadings : completedReadingsList;
 
   const handleSave = async (reading: Reading) => {
-    setReadings((prev) => [...prev, reading]);
+    console.log(`[page.tsx handleSave] CALLED with reading:`, reading.id, reading.title);
+    console.log(`[page.tsx handleSave] Stack trace:`, new Error().stack);
+    setReadings((prev) => {
+      console.log(`[page.tsx handleSave] setReadings: prev.length =`, prev.length);
+      const newReadings = [...prev, reading];
+      console.log(`[page.tsx handleSave] setReadings: new.length =`, newReadings.length);
+      return newReadings;
+    });
     
     // Sync to Firestore if user is signed in
     if (user) {
       try {
+        console.log(`[page.tsx handleSave] Syncing to Firestore...`);
         await syncReading(reading);
+        console.log(`[page.tsx handleSave] Sync complete`);
       } catch (error) {
         console.error('Error syncing new reading:', error);
       }
