@@ -118,8 +118,7 @@ export default function Home() {
       console.log('Unsubscribing from Firestore...');
       unsubscribe();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mounted, user, isMigrationModalOpen]);
+  }, [mounted, user, isMigrationModalOpen, subscribeReadings, setReadings]);
 
   const handleMigrateToCloud = async (shouldMigrate: boolean) => {
     if (!user) return;
