@@ -30,10 +30,13 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T 
         if (typeof window !== 'undefined') {
           window.localStorage.setItem(key, JSON.stringify(valueToStore));
           // Trigger custom event for same-page sync
-          const event = new CustomEvent(STORAGE_EVENTS.CHANGE, {
-            detail: { key, value: valueToStore },
-          });
-          window.dispatchEvent(event);
+          // Only dispatch if value actually changed
+          if (JSON.stringify(valueToStore) !== JSON.stringify(currentValue)) {
+            const event = new CustomEvent(STORAGE_EVENTS.CHANGE, {
+              detail: { key, value: valueToStore },
+            });
+            window.dispatchEvent(event);
+          }
         }
         
         return valueToStore;
@@ -60,7 +63,14 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T 
     const handleCustomStorageChange = (e: Event) => {
       const customEvent = e as CustomEvent<{ key: string; value: T }>;
       if (customEvent.detail.key === key) {
-        setStoredValue(customEvent.detail.value);
+        // Only update if value actually changed to avoid duplicate updates
+        setStoredValue((currentValue) => {
+          const newValue = customEvent.detail.value;
+          if (JSON.stringify(newValue) === JSON.stringify(currentValue)) {
+            return currentValue; // No change, don't trigger re-render
+          }
+          return newValue;
+        });
       }
     };
 
@@ -75,4 +85,3 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T 
 
   return [storedValue, setValue];
 }
-

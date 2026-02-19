@@ -108,14 +108,11 @@ export default function Home() {
     }
 
     // Subscribe to real-time updates only after migration completes
-    console.log('Starting Firestore real-time subscription...');
     const unsubscribe = subscribeReadings((cloudReadings) => {
-      console.log(`Firestore sync: received ${cloudReadings.length} readings`);
       setReadings(cloudReadings);
     });
 
     return () => {
-      console.log('Unsubscribing from Firestore...');
       unsubscribe();
     };
   }, [mounted, user, isMigrationModalOpen, subscribeReadings, setReadings]);
@@ -166,18 +163,12 @@ export default function Home() {
     activeTab === "active" ? activeReadings : completedReadingsList;
 
   const handleSave = async (reading: Reading) => {
-    console.log('handleSave: Adding new reading', reading.title);
-    setReadings((prev) => {
-      console.log(`handleSave: Current readings: ${prev.length}, after add: ${prev.length + 1}`);
-      return [...prev, reading];
-    });
+    setReadings((prev) => [...prev, reading]);
     
     // Sync to Firestore if user is signed in
     if (user) {
       try {
-        console.log('handleSave: Syncing to Firestore...');
         await syncReading(reading);
-        console.log('handleSave: Sync complete');
       } catch (error) {
         console.error('Error syncing new reading:', error);
       }
