@@ -334,7 +334,7 @@ export default function Home() {
         </div>
 
         {/* Tabs */}
-        {readings.length > 0 && (
+        {mounted && readings.length > 0 && (
           <div className="mb-6">
             <div className="flex gap-2 justify-center border-b border-gray-300 dark:border-gray-700">
               <button
@@ -489,7 +489,7 @@ export default function Home() {
         )}
 
         {/* Reading Cards */}
-        {readings.length > 0 && displayedReadings.length > 0 && (
+        {mounted && readings.length > 0 && displayedReadings.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
             {displayedReadings.map((reading) => (
               <ReadingCard
@@ -509,7 +509,7 @@ export default function Home() {
         )}
 
         {/* Empty State */}
-        {readings.length > 0 && displayedReadings.length === 0 && (
+        {mounted && readings.length > 0 && displayedReadings.length === 0 && (
           <div className="flex flex-col items-center justify-center py-16 px-4">
             <div
               className={`text-center ${
