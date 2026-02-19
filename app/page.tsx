@@ -125,20 +125,24 @@ export default function Home() {
       return; // Wait for migration to complete
     }
 
+    // Capture current local readings BEFORE subscribing
+    const localReadingsSnapshot = [...readings];
+    console.log('[Firestore sync effect] Local readings snapshot:', localReadingsSnapshot.length);
+
     // Subscribe to real-time updates only after migration completes
     console.log('[Firestore sync effect] SUBSCRIBING to Firestore...');
     const unsubscribe = subscribeReadings((cloudReadings) => {
       console.log('[Firestore sync effect] Received cloudReadings:', cloudReadings.length, 'readings');
-      console.log('[Firestore sync effect] Current local readings:', readings.length);
+      console.log('[Firestore sync effect] Local snapshot had:', localReadingsSnapshot.length, 'readings');
       console.log('[Firestore sync effect] hasAutoSynced.current:', hasAutoSynced.current);
       
-      // If Firestore is empty but we have local readings, sync them automatically (once)
-      if (cloudReadings.length === 0 && readings.length > 0 && !hasAutoSynced.current) {
-        console.log('[Firestore sync effect] Firestore is empty but we have', readings.length, 'local readings - syncing them now');
+      // If Firestore is empty but we had local readings, sync them automatically (once)
+      if (cloudReadings.length === 0 && localReadingsSnapshot.length > 0 && !hasAutoSynced.current) {
+        console.log('[Firestore sync effect] Firestore is empty but we have', localReadingsSnapshot.length, 'local readings - syncing them now');
         hasAutoSynced.current = true;
         
         // Sync local readings to Firestore
-        const syncPromises = readings.map(async (reading) => {
+        const syncPromises = localReadingsSnapshot.map(async (reading) => {
           try {
             await syncReading(reading);
             console.log('[Firestore sync effect] Auto-synced:', reading.title);
@@ -155,6 +159,7 @@ export default function Home() {
         return;
       }
       
+      console.log('[Firestore sync effect] Setting readings to cloudReadings');
       setReadings(cloudReadings);
     });
 
