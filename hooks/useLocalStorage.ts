@@ -23,21 +23,25 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T 
   // Persist to localStorage whenever value changes
   const setValue = useCallback((value: T | ((val: T) => T)) => {
     try {
-      const valueToStore = value instanceof Function ? value(storedValue) : value;
-      setStoredValue(valueToStore);
-      
-      if (typeof window !== 'undefined') {
-        window.localStorage.setItem(key, JSON.stringify(valueToStore));
-        // Trigger custom event for same-page sync
-        const event = new CustomEvent(STORAGE_EVENTS.CHANGE, {
-          detail: { key, value: valueToStore },
-        });
-        window.dispatchEvent(event);
-      }
+      // Use functional update to get current value
+      setStoredValue((currentValue) => {
+        const valueToStore = value instanceof Function ? value(currentValue) : value;
+        
+        if (typeof window !== 'undefined') {
+          window.localStorage.setItem(key, JSON.stringify(valueToStore));
+          // Trigger custom event for same-page sync
+          const event = new CustomEvent(STORAGE_EVENTS.CHANGE, {
+            detail: { key, value: valueToStore },
+          });
+          window.dispatchEvent(event);
+        }
+        
+        return valueToStore;
+      });
     } catch (error) {
       console.error(error);
     }
-  }, [key, storedValue]);
+  }, [key]);
 
   // Listen for changes from other tabs/windows and same page
   useEffect(() => {
