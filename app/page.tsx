@@ -47,6 +47,7 @@ export default function Home() {
   const hasInitializedExample = useRef(false);
   const hasSyncedFromCloud = useRef(false);
   const localReadingsToMigrate = useRef<Reading[]>([]);
+  const hasAutoSynced = useRef(false);
   const [mounted, setMounted] = useState(false);
 
   // Prevent hydration mismatch by only rendering client-side features after mount
@@ -54,21 +55,34 @@ export default function Home() {
     setTimeout(() => setMounted(true), 0);
   }, []);
 
+  // DEBUG: Log whenever readings change
+  useEffect(() => {
+    console.log('[DEBUG readings changed] readings.length:', readings.length);
+    console.log('[DEBUG readings changed] readings:', readings.map(r => ({ id: r.id, title: r.title })));
+  }, [readings]);
+
   // Check for migration on first user sign-in
   useEffect(() => {
+    console.log('[Migration check effect] mounted:', mounted, 'user:', !!user, 'hasSyncedFromCloud:', hasSyncedFromCloud.current);
     if (!mounted || !user || hasSyncedFromCloud.current) return;
 
     const hasLocalReadings = readings.length > 0;
     const hasMigrated = localStorage.getItem('hasMigratedToCloud') === 'true';
+    console.log('[Migration check effect] hasLocalReadings:', hasLocalReadings, 'readings.length:', readings.length);
+    console.log('[Migration check effect] hasMigrated:', hasMigrated);
 
     if (hasLocalReadings && !hasMigrated) {
       // Save local readings before they get overwritten
       localReadingsToMigrate.current = [...readings];
+      console.log('[Migration check effect] Saved', readings.length, 'readings to migrate');
       setTimeout(() => {
         setMigrationReadingCount(readings.length);
         setIsMigrationModalOpen(true);
+        console.log('[Migration check effect] Showing migration modal');
       }, 0);
       hasSyncedFromCloud.current = true; // Prevent re-triggering
+    } else {
+      console.log('[Migration check effect] No migration needed');
     }
   }, [mounted, user, readings]);
 
@@ -98,53 +112,101 @@ export default function Home() {
 
   // Sync with Firestore when user signs in (after migration handled)
   useEffect(() => {
+    console.log('[Firestore sync effect] mounted:', mounted, 'user:', !!user, 'isMigrationModalOpen:', isMigrationModalOpen);
     if (!mounted || !user || isMigrationModalOpen) {
+      console.log('[Firestore sync effect] SKIPPING - conditions not met');
       return;
     }
 
     const hasMigrated = localStorage.getItem('hasMigratedToCloud') === 'true';
+    console.log('[Firestore sync effect] hasMigrated:', hasMigrated);
     if (!hasMigrated) {
+      console.log('[Firestore sync effect] SKIPPING - not migrated yet');
       return; // Wait for migration to complete
     }
 
-    // Subscribe to real-time updates
+    // Capture current local readings BEFORE subscribing
+    const localReadingsSnapshot = [...readings];
+    console.log('[Firestore sync effect] Local readings snapshot:', localReadingsSnapshot.length);
+
+    // Subscribe to real-time updates only after migration completes
+    console.log('[Firestore sync effect] SUBSCRIBING to Firestore...');
     const unsubscribe = subscribeReadings((cloudReadings) => {
+      console.log('[Firestore sync effect] Received cloudReadings:', cloudReadings.length, 'readings');
+      console.log('[Firestore sync effect] Local snapshot had:', localReadingsSnapshot.length, 'readings');
+      console.log('[Firestore sync effect] hasAutoSynced.current:', hasAutoSynced.current);
+      
+      // If Firestore is empty but we had local readings, sync them automatically (once)
+      if (cloudReadings.length === 0 && localReadingsSnapshot.length > 0 && !hasAutoSynced.current) {
+        console.log('[Firestore sync effect] Firestore is empty but we have', localReadingsSnapshot.length, 'local readings - syncing them now');
+        hasAutoSynced.current = true;
+        
+        // Sync local readings to Firestore
+        const syncPromises = localReadingsSnapshot.map(async (reading) => {
+          try {
+            await syncReading(reading);
+            console.log('[Firestore sync effect] Auto-synced:', reading.title);
+          } catch (error) {
+            console.error('[Firestore sync effect] Error auto-syncing:', error);
+          }
+        });
+        
+        Promise.all(syncPromises).then(() => {
+          console.log('[Firestore sync effect] Auto-sync complete');
+        });
+        
+        // Don't overwrite local readings with empty array - wait for Firestore to return synced data
+        return;
+      }
+      
+      console.log('[Firestore sync effect] Setting readings to cloudReadings');
       setReadings(cloudReadings);
     });
 
-    return () => unsubscribe();
-  }, [mounted, user, isMigrationModalOpen, subscribeReadings, setReadings]);
+    return () => {
+      console.log('[Firestore sync effect] CLEANUP - unsubscribing');
+      unsubscribe();
+    };
+  }, [mounted, user, isMigrationModalOpen, subscribeReadings, setReadings, readings, syncReading]);
 
   const handleMigrateToCloud = async (shouldMigrate: boolean) => {
+    console.log('[handleMigrateToCloud] shouldMigrate:', shouldMigrate);
+    console.log('[handleMigrateToCloud] user:', !!user);
+    console.log('[handleMigrateToCloud] current readings.length:', readings.length);
+    console.log('[handleMigrateToCloud] localReadingsToMigrate.length:', localReadingsToMigrate.current.length);
+    
     if (!user) return;
 
     if (shouldMigrate) {
       // Use saved local readings, not current state (which might have been overwritten)
       const readingsToSync = localReadingsToMigrate.current;
       
-      console.log(`Migrating ${readingsToSync.length} readings to Firestore...`);
+      console.log(`[handleMigrateToCloud] Migrating ${readingsToSync.length} readings to Firestore...`);
       
       // Sync all local readings to Firestore
       for (const reading of readingsToSync) {
         try {
           await syncReading(reading);
-          console.log(`✓ Migrated: ${reading.title}`);
+          console.log(`[handleMigrateToCloud] ✓ Migrated: ${reading.title}`);
         } catch (error) {
-          console.error(`✗ Error migrating "${reading.title}":`, error);
+          console.error(`[handleMigrateToCloud] ✗ Error migrating "${reading.title}":`, error);
         }
       }
       
-      console.log('Migration complete!');
+      console.log('[handleMigrateToCloud] Migration complete!');
     } else {
-      console.log('User chose to start fresh, skipping migration');
+      console.log('[handleMigrateToCloud] User chose to start fresh, skipping migration');
       // Clear local readings if user wants to start fresh
       setReadings([]);
     }
 
     // Mark as migrated to prevent showing modal again
+    console.log('[handleMigrateToCloud] Setting hasMigratedToCloud = true');
     localStorage.setItem('hasMigratedToCloud', 'true');
+    console.log('[handleMigrateToCloud] Closing migration modal');
     setIsMigrationModalOpen(false);
     setMigrationReadingCount(0);
+    console.log('[handleMigrateToCloud] DONE - readings.length now:', readings.length);
     
     // Clear the saved readings
     localReadingsToMigrate.current = [];
@@ -161,12 +223,21 @@ export default function Home() {
     activeTab === "active" ? activeReadings : completedReadingsList;
 
   const handleSave = async (reading: Reading) => {
-    setReadings((prev) => [...prev, reading]);
+    console.log(`[page.tsx handleSave] CALLED with reading:`, reading.id, reading.title);
+    console.log(`[page.tsx handleSave] Stack trace:`, new Error().stack);
+    setReadings((prev) => {
+      console.log(`[page.tsx handleSave] setReadings: prev.length =`, prev.length);
+      const newReadings = [...prev, reading];
+      console.log(`[page.tsx handleSave] setReadings: new.length =`, newReadings.length);
+      return newReadings;
+    });
     
     // Sync to Firestore if user is signed in
     if (user) {
       try {
+        console.log(`[page.tsx handleSave] Syncing to Firestore...`);
         await syncReading(reading);
+        console.log(`[page.tsx handleSave] Sync complete`);
       } catch (error) {
         console.error('Error syncing new reading:', error);
       }
@@ -323,7 +394,7 @@ export default function Home() {
         </div>
 
         {/* Tabs */}
-        {readings.length > 0 && (
+        {mounted && readings.length > 0 && (
           <div className="mb-6">
             <div className="flex gap-2 justify-center border-b border-gray-300 dark:border-gray-700">
               <button
@@ -478,7 +549,7 @@ export default function Home() {
         )}
 
         {/* Reading Cards */}
-        {readings.length > 0 && displayedReadings.length > 0 && (
+        {mounted && readings.length > 0 && displayedReadings.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
             {displayedReadings.map((reading) => (
               <ReadingCard
@@ -498,7 +569,7 @@ export default function Home() {
         )}
 
         {/* Empty State */}
-        {readings.length > 0 && displayedReadings.length === 0 && (
+        {mounted && readings.length > 0 && displayedReadings.length === 0 && (
           <div className="flex flex-col items-center justify-center py-16 px-4">
             <div
               className={`text-center ${
