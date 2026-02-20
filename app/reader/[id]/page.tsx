@@ -602,6 +602,40 @@ export default function ReaderPage() {
         return;
       }
 
+      // Auto-advance keyboard shortcuts (PRD-012)
+      // Esc: Stop auto-advance
+      if (e.key === 'Escape' && autoAdvance.enabled && isAutoAdvanceActive) {
+        e.preventDefault();
+        setIsAutoAdvanceActive(false);
+        setIsAutoAdvancePaused(false);
+        setAutoAdvanceElapsed(0);
+        return;
+      }
+      // +/= : Increase WPM speed
+      else if ((e.key === '+' || e.key === '=') && autoAdvance.enabled) {
+        e.preventDefault();
+        const newWpm = Math.min(400, autoAdvance.wpm + 25);
+        const newSettings = {
+          ...settings,
+          autoAdvance: { ...autoAdvance, wpm: newWpm }
+        };
+        localStorage.setItem('settings', JSON.stringify(newSettings));
+        window.dispatchEvent(new Event('storage'));
+        return;
+      }
+      // - : Decrease WPM speed
+      else if (e.key === '-' && autoAdvance.enabled) {
+        e.preventDefault();
+        const newWpm = Math.max(100, autoAdvance.wpm - 25);
+        const newSettings = {
+          ...settings,
+          autoAdvance: { ...autoAdvance, wpm: newWpm }
+        };
+        localStorage.setItem('settings', JSON.stringify(newSettings));
+        window.dispatchEvent(new Event('storage'));
+        return;
+      }
+
       // Arrow keys and basic navigation
       if (NAVIGATION_KEYS.NEXT.includes(e.key)) {
         e.preventDefault();
@@ -610,10 +644,13 @@ export default function ReaderPage() {
         e.preventDefault();
         handlePrevious();
       }
-      // Space key navigation
+      // Space key - toggle auto-advance if enabled, otherwise navigate
       else if (e.key === ' ') {
         e.preventDefault();
-        if (e.shiftKey) {
+        if (autoAdvance.enabled) {
+          // Toggle play/pause auto-advance
+          handleAutoAdvanceToggle();
+        } else if (e.shiftKey) {
           handlePrevious();
         } else {
           handleNext();
@@ -641,7 +678,7 @@ export default function ReaderPage() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleNext, handlePrevious, goToStart, goToEnd, toggleFullscreen, router]);
+  }, [handleNext, handlePrevious, goToStart, goToEnd, toggleFullscreen, router, autoAdvance, isAutoAdvanceActive, handleAutoAdvanceToggle, settings]);
 
   // Touch gestures for mobile
   useEffect(() => {
