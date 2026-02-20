@@ -18,7 +18,7 @@ This directory contains Product Requirements Documents for tellingQuote features
 | [PRD-003](./PRD-003-detox-theme.md) | Detox Theme Mode | ✔️ Completed | Medium |
 | [PRD-004](./PRD-004-accessibility.md) | Accessibility Features | ✔️ Completed | High |
 
-### Phase 2 - Enhanced Features (8/11 COMPLETED ✅)
+### Phase 2 - Enhanced Features (9/11 COMPLETED ✅)
 
 | PRD | Feature | Status | Priority |
 |-----|---------|--------|----------|
@@ -29,7 +29,7 @@ This directory contains Product Requirements Documents for tellingQuote features
 | [PRD-009](./PRD-009-spotlight-mode.md) | Spotlight Reading Mode | ✔️ Completed | High |
 | [PRD-010](./PRD-010-onboarding-tutorial.md) | Interactive Onboarding Tutorial | ✔️ Completed | High |
 | [PRD-011](./PRD-011-internationalization.md) | Internationalization (i18n) | 📝 Draft | Medium |
-| [PRD-012](./PRD-012-auto-advance-timer.md) | Auto-Advance Timer | 📝 Draft | Medium |
+| [PRD-012](./PRD-012-auto-advance-timer.md) | Auto-Advance Timer | ✔️ Completed | Medium |
 | [PRD-013](./PRD-013-text-to-speech.md) | Text-to-Speech (TTS) | 📝 Draft | Medium |
 | [PRD-014](./PRD-014-reading-reactivation.md) | Reading Reactivation | ✔️ Completed | Low |
 | [PRD-015](./PRD-015-visual-testing-playwright.md) | Visual Regression Testing with Playwright | 📝 Draft | Medium |

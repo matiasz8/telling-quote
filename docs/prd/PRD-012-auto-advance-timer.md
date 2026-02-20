@@ -1,10 +1,10 @@
 # PRD-012: Auto-Advance Timer
 
-**Status:** 📝 Draft  
+**Status:** ✔️ Completed  
 **Priority:** Medium  
 **Target Release:** v0.5.0  
 **Created:** February 2, 2026  
-**Last Updated:** February 2, 2026  
+**Last Updated:** February 20, 2026  
 **Owner:** Development Team  
 **Related PRDs:** PRD-013 (Text-to-Speech), PRD-009 (Spotlight Mode)
 
@@ -476,7 +476,47 @@ function useAutoAdvance(settings: Settings, currentSlide: number) {
 
 ---
 
-**Document Version:** 1.0  
-**Status:** Draft (Not Implemented)  
-**Last Review:** February 2, 2026  
-**Next Review:** March 2, 2026
+**Document Version:** 1.1  
+**Status:** ✔️ Completed (Implemented)  
+**Implementation Date:** February 20, 2026  
+**Last Review:** February 20, 2026
+
+---
+
+## Implementation Summary
+
+### Completed Features ✅
+- ✅ Time calculation algorithm based on word count and content type
+- ✅ Configurable WPM speed (100-400)
+- ✅ Play/Pause/Resume controls
+- ✅ Visual progress ring indicator
+- ✅ Settings integration (enable/disable, WPM slider, auto-start)
+- ✅ Integration with all reading transitions
+- ✅ Theme-aware styling (4 themes supported)
+- ✅ Keyboard shortcuts:
+  - `Space`: Toggle play/pause auto-advance
+  - `+/-`: Increase/decrease WPM speed (±25)
+  - `Esc`: Stop auto-advance
+- ✅ Accessibility: ARIA labels, reduce motion support
+- ✅ Automatic stop on last slide
+- ✅ Auto-start option when opening reading
+
+### Implementation Files
+- `app/reader/[id]/page.tsx` - Main auto-advance logic and keyboard shortcuts
+- `components/SettingsModal.tsx` - Settings UI controls
+- `types/index.ts` - AutoAdvanceSettings type definition
+- `lib/constants/settings.ts` - Default settings
+
+### Technical Details
+- Timer precision: 100ms intervals
+- Min slide duration: 3 seconds
+- Max slide duration: 60 seconds
+- Content adjustments:
+  - Code blocks: 2x slower
+  - Tables: 1.4x slower
+  - Images: Fixed 5 seconds
+  - Subtitle intros: Minimum 8 words
+
+### Not Implemented (Optional)
+- ❌ Audio notification on advance (marked as optional in PRD)
+- ❌ Pause on tab focus loss (marked as optional in PRD)
