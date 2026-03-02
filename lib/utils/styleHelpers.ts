@@ -1,5 +1,14 @@
 import { FontFamily, FontSize, Theme } from '@/types';
 
+/**
+ * Combines CSS class names conditionally
+ * @param classes - Array of class names or conditional expressions
+ * @returns Combined class string
+ */
+export function cn(...classes: (string | boolean | undefined | null)[]): string {
+  return classes.filter(Boolean).join(' ');
+}
+
 export const getFontFamilyClass = (fontFamily: FontFamily): string => {
   const classes: Record<FontFamily, string> = {
     serif: 'font-serif',

@@ -13,6 +13,7 @@ import { STORAGE_KEYS, NAVIGATION_KEYS, TOUCH_SWIPE_THRESHOLD, ANNOUNCE_DEBOUNCE
 import confetti from 'canvas-confetti';
 import { theme } from '@/config/theme';
 import CodeBlock from '@/components/CodeBlock';
+import { TTSPlayer } from '@/components/TTSPlayer';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 
@@ -1230,6 +1231,20 @@ export default function ReaderPage() {
           </div>
         </div>
       </div>
+
+      {/* Text-to-Speech Player */}
+      {settings.tts && settings.tts.enabled && (
+        <TTSPlayer
+          text={currentSentence.sentence}
+          settings={settings.tts}
+          onComplete={() => {
+            // When TTS completes current sentence, move to next
+            if (!isFinished) {
+              handleNext();
+            }
+          }}
+        />
+      )}
     </div>
   );
 }

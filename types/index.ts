@@ -28,6 +28,15 @@ export type AutoAdvanceSettings = {
   showProgress: boolean;
 };
 
+export type TTSSettings = {
+  enabled: boolean;
+  voice: string; // Voice name (e.g., 'es-MX-DaliaNeural')
+  rate: number; // 0.5 - 2.0
+  autoPlay: boolean; // Auto-start when opening reading
+  highlightText: boolean; // Highlight current sentence
+  skipCode: boolean; // Skip code blocks
+};
+
 export type AccessibilitySettings = {
   fontFamily: FontFamily;
   letterSpacing: LetterSpacing;
@@ -44,4 +53,5 @@ export type Settings = {
   theme: Theme;
   accessibility?: AccessibilitySettings;
   autoAdvance?: AutoAdvanceSettings;
+  tts?: TTSSettings;
 };

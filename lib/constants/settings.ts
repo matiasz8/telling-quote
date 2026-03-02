@@ -51,5 +51,13 @@ export const DEFAULT_SETTINGS = {
     autoStart: false,
     showProgress: true,
   },
+  tts: {
+    enabled: false,
+    voice: 'es-MX-DaliaNeural',
+    rate: 1.0,
+    autoPlay: false,
+    highlightText: true,
+    skipCode: true,
+  },
 };
 

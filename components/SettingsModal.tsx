@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Settings, FontFamily, FontSize, Theme, AccessibilitySettings, LetterSpacing, LineHeightOption, WordSpacing, AutoAdvanceSettings } from '@/types';
+import { Settings, FontFamily, FontSize, Theme, AccessibilitySettings, LetterSpacing, LineHeightOption, WordSpacing, AutoAdvanceSettings, TTSSettings } from '@/types';
 import { FONT_FAMILY_OPTIONS, FONT_SIZE_OPTIONS, THEME_OPTIONS, READING_TRANSITION_OPTIONS } from '@/lib/constants';
 import { theme as themeConfig } from '@/config/theme';
 import { useFocusTrap } from '@/hooks/useFocusTrap';
@@ -92,6 +92,15 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
     showProgress: true,
   };
 
+  const tts = settings.tts || {
+    enabled: false,
+    voice: 'es-MX-DaliaNeural',
+    rate: 1.0,
+    autoPlay: false,
+    highlightText: true,
+    skipCode: true,
+  };
+
   const handleFontFamilyChange = (fontFamily: FontFamily) => {
     onSave({
       ...settings,
@@ -131,6 +140,19 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
       ...settings,
       autoAdvance: {
         ...autoAdvance,
+        [key]: value,
+      },
+    });
+  };
+
+  const handleTTSChange = <K extends keyof TTSSettings>(
+    key: K,
+    value: TTSSettings[K]
+  ) => {
+    onSave({
+      ...settings,
+      tts: {
+        ...tts,
         [key]: value,
       },
     });
@@ -592,6 +614,198 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                         }`}
                       />
                     </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Text-to-Speech */}
+              <div>
+                <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
+                  Text-to-Speech (Lectura en Voz Alta)
+                </label>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className={`text-sm ${getTextClass()}`}>Activar lectura en voz alta</span>
+                    <button
+                      onClick={() => handleTTSChange('enabled', !tts.enabled)}
+                      className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                        tts.enabled
+                          ? isHighContrast
+                            ? 'bg-white'
+                            : isDetox
+                            ? 'bg-gray-900'
+                            : isDark
+                            ? 'bg-purple-600'
+                            : 'bg-lime-500'
+                          : isHighContrast
+                          ? 'bg-gray-700'
+                          : 'bg-gray-300'
+                      }`}
+                      role="switch"
+                      aria-checked={tts.enabled}
+                      aria-label="Toggle text-to-speech"
+                    >
+                      <span
+                        className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                          tts.enabled ? 'translate-x-7' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  <div>
+                    <label className={`block text-xs font-medium ${getTextClass()} mb-2`}>
+                      Voz predeterminada
+                    </label>
+                    <select
+                      value={tts.voice}
+                      onChange={(e) => handleTTSChange('voice', e.target.value)}
+                      className={`w-full px-3 py-2 rounded-lg border ${
+                        isDark
+                          ? 'bg-gray-800 border-gray-700 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
+                      disabled={!tts.enabled}
+                      aria-label="Select voice for text-to-speech"
+                    >
+                      <optgroup label="Español">
+                        <option value="es-MX-DaliaNeural">Dalia (Femenino, México)</option>
+                        <option value="es-ES-AlvaroNeural">Alvaro (Masculino, España)</option>
+                        <option value="es-ES-ElviraNeural">Elvira (Femenino, España)</option>
+                      </optgroup>
+                      <optgroup label="English">
+                        <option value="en-US-AriaNeural">Aria (Female, US)</option>
+                        <option value="en-US-GuyNeural">Guy (Male, US)</option>
+                        <option value="en-GB-SoniaNeural">Sonia (Female, UK)</option>
+                      </optgroup>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className={`block text-xs font-medium ${getTextClass()} mb-2`}>
+                      Velocidad de voz: {tts.rate.toFixed(2)}x
+                    </label>
+                    <input
+                      type="range"
+                      min={0.5}
+                      max={2.0}
+                      step={0.25}
+                      value={tts.rate}
+                      onChange={(e) => handleTTSChange('rate', Number(e.target.value))}
+                      className="w-full"
+                      disabled={!tts.enabled}
+                      aria-label="Adjust text-to-speech rate"
+                    />
+                    <div className={`flex justify-between text-xs ${getTextClass()} opacity-70 mt-1`}>
+                      <span>Lento (0.5x)</span>
+                      <span>Normal (1.0x)</span>
+                      <span>Rápido (2.0x)</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className={`text-sm ${getTextClass()}`}>Auto-iniciar al abrir lectura</span>
+                    <button
+                      onClick={() => {
+                        if (!tts.enabled) return;
+                        handleTTSChange('autoPlay', !tts.autoPlay);
+                      }}
+                      className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                        tts.autoPlay
+                          ? isHighContrast
+                            ? 'bg-white'
+                            : isDetox
+                            ? 'bg-gray-900'
+                            : isDark
+                            ? 'bg-purple-600'
+                            : 'bg-lime-500'
+                          : isHighContrast
+                          ? 'bg-gray-700'
+                          : 'bg-gray-300'
+                      } ${!tts.enabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      role="switch"
+                      aria-checked={tts.autoPlay}
+                      aria-disabled={!tts.enabled}
+                      aria-label="Toggle auto-play for text-to-speech"
+                    >
+                      <span
+                        className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                          tts.autoPlay ? 'translate-x-7' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className={`text-sm ${getTextClass()}`}>Resaltar texto hablado</span>
+                    <button
+                      onClick={() => {
+                        if (!tts.enabled) return;
+                        handleTTSChange('highlightText', !tts.highlightText);
+                      }}
+                      className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                        tts.highlightText
+                          ? isHighContrast
+                            ? 'bg-white'
+                            : isDetox
+                            ? 'bg-gray-900'
+                            : isDark
+                            ? 'bg-purple-600'
+                            : 'bg-lime-500'
+                          : isHighContrast
+                          ? 'bg-gray-700'
+                          : 'bg-gray-300'
+                      } ${!tts.enabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      role="switch"
+                      aria-checked={tts.highlightText}
+                      aria-disabled={!tts.enabled}
+                      aria-label="Toggle text highlighting during speech"
+                    >
+                      <span
+                        className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                          tts.highlightText ? 'translate-x-7' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className={`text-sm ${getTextClass()}`}>Omitir bloques de código</span>
+                    <button
+                      onClick={() => {
+                        if (!tts.enabled) return;
+                        handleTTSChange('skipCode', !tts.skipCode);
+                      }}
+                      className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                        tts.skipCode
+                          ? isHighContrast
+                            ? 'bg-white'
+                            : isDetox
+                            ? 'bg-gray-900'
+                            : isDark
+                            ? 'bg-purple-600'
+                            : 'bg-lime-500'
+                          : isHighContrast
+                          ? 'bg-gray-700'
+                          : 'bg-gray-300'
+                      } ${!tts.enabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      role="switch"
+                      aria-checked={tts.skipCode}
+                      aria-disabled={!tts.enabled}
+                      aria-label="Toggle skipping code blocks during speech"
+                    >
+                      <span
+                        className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                          tts.skipCode ? 'translate-x-7' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  <div className={`text-xs ${getTextClass()} opacity-75 mt-2 p-3 rounded-lg ${
+                    isDark ? 'bg-gray-800' : 'bg-gray-100'
+                  }`}>
+                    ⌨️ Atajos: Alt+P (reproducir/pausar), Alt+S (detener), Alt+← / Alt+→ (oración anterior/siguiente)
                   </div>
                 </div>
               </div>
