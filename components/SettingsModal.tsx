@@ -15,7 +15,7 @@ interface SettingsModalProps {
 }
 
 export default function SettingsModal({ isOpen, onClose, settings, onSave }: SettingsModalProps) {
-  const [expandedSection, setExpandedSection] = useState<'general' | 'accessibility' | ''>('general');
+  const [expandedSection, setExpandedSection] = useState<'general' | 'accessibility' | 'reading' | ''>('general');
   const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -214,6 +214,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
         </div>
 
         {/* Preview Text */}
+        {expandedSection !== 'reading' && (
         <div data-preview className={`sticky top-0 z-10 mb-6 p-4 rounded-lg border-2 ${getBgClass()} ${getAccentClass()}`}>
           <div className={`text-xs font-medium mb-2 ${getTextClass()}`}>Vista Previa</div>
           <div
@@ -236,6 +237,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
             <div>Max line width: {accessibility.contentWidth === 'narrow' ? '45 chars (easier to read)' : accessibility.contentWidth === 'wide' ? '80 chars (more content)' : accessibility.contentWidth === 'full' ? 'unlimited (full width)' : '65 chars (default)'}</div>
           </div>
         </div>
+        )}
 
         {/* General Settings Section */}
         <div className="mb-6">
@@ -532,10 +534,90 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                 </div>
               </div>
 
+              {/* Content Width */}
+              <div data-tour="settings-content-width">
+                <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
+                  Ancho del Contenido (en Lector)
+                </label>
+                <div className="grid grid-cols-1 gap-2">
+                  <button
+                    onClick={() => handleAccessibilityChange('contentWidth', 'narrow')}
+                    aria-label="Select narrow content width (45 characters)"
+                    className={`p-3 border-2 rounded-lg transition-all duration-200 text-left ${
+                      accessibility.contentWidth === 'narrow'
+                        ? getActiveAccentClass()
+                        : getAccentClass()
+                    }`}
+                  >
+                    <div className="font-medium">Angosto</div>
+                    <div className="text-xs opacity-75">45 caracteres - Más fácil de leer</div>
+                  </button>
+                  <button
+                    onClick={() => handleAccessibilityChange('contentWidth', 'medium')}
+                    aria-label="Select medium content width (65 characters)"
+                    className={`p-3 border-2 rounded-lg transition-all duration-200 text-left ${
+                      accessibility.contentWidth === 'medium' || !accessibility.contentWidth
+                        ? getActiveAccentClass()
+                        : getAccentClass()
+                    }`}
+                  >
+                    <div className="font-medium">Mediano</div>
+                    <div className="text-xs opacity-75">65 caracteres - Predeterminado</div>
+                  </button>
+                  <button
+                    onClick={() => handleAccessibilityChange('contentWidth', 'wide')}
+                    aria-label="Select wide content width (80 characters)"
+                    className={`p-3 border-2 rounded-lg transition-all duration-200 text-left ${
+                      accessibility.contentWidth === 'wide'
+                        ? getActiveAccentClass()
+                        : getAccentClass()
+                    }`}
+                  >
+                    <div className="font-medium">Ancho</div>
+                    <div className="text-xs opacity-75">80 caracteres - Más contenido visible</div>
+                  </button>
+                  <button
+                    onClick={() => handleAccessibilityChange('contentWidth', 'full')}
+                    aria-label="Select full content width (unlimited)"
+                    className={`p-3 border-2 rounded-lg transition-all duration-200 text-left ${
+                      accessibility.contentWidth === 'full'
+                        ? getActiveAccentClass()
+                        : getAccentClass()
+                    }`}
+                  >
+                    <div className="font-medium">Ancho Completo</div>
+                    <div className="text-xs opacity-75">Ilimitado - Usa toda la pantalla</div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Reading Settings Section (Timer + TTS) */}
+        <div className="mb-6 border-t border-gray-300 dark:border-gray-700 pt-4">
+          <button
+            onClick={() => setExpandedSection(expandedSection === 'reading' ? '' : 'reading')}
+            className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors ${
+              expandedSection === 'reading'
+                ? getHeaderBgClass()
+                : getHoverClass()
+            }`}
+            aria-expanded={expandedSection === 'reading'}
+            aria-label="Reading settings section (timer and text-to-speech)"
+          >
+            <span className="font-semibold">📖 Lectura (Timer & Voz)</span>
+            <svg className={`w-5 h-5 transition-transform ${expandedSection === 'reading' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+          </button>
+
+          {expandedSection === 'reading' && (
+            <div className="mt-4 space-y-6">
               {/* Auto-Advance Timer */}
               <div data-tour="settings-auto-advance">
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
-                  Auto-Advance Timer
+                  ⏱️ Auto-Advance Timer
                 </label>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
@@ -655,7 +737,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
               {/* Text-to-Speech */}
               <div>
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
-                  Text-to-Speech (Lectura en Voz Alta)
+                  🔊 Text-to-Speech (Lectura en Voz Alta)
                 </label>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
@@ -883,63 +965,6 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                   }`}>
                     ⌨️ Atajos: Alt+P (reproducir/pausar), Alt+S (detener), Alt+← / Alt+→ (oración anterior/siguiente)
                   </div>
-                </div>
-              </div>
-
-              {/* Content Width */}
-              <div data-tour="settings-content-width">
-                <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
-                  Ancho del Contenido (en Lector)
-                </label>
-                <div className="grid grid-cols-1 gap-2">
-                  <button
-                    onClick={() => handleAccessibilityChange('contentWidth', 'narrow')}
-                    aria-label="Select narrow content width (45 characters)"
-                    className={`p-3 border-2 rounded-lg transition-all duration-200 text-left ${
-                      accessibility.contentWidth === 'narrow'
-                        ? getActiveAccentClass()
-                        : getAccentClass()
-                    }`}
-                  >
-                    <div className="font-medium">Angosto</div>
-                    <div className="text-xs opacity-75">45 caracteres - Más fácil de leer</div>
-                  </button>
-                  <button
-                    onClick={() => handleAccessibilityChange('contentWidth', 'medium')}
-                    aria-label="Select medium content width (65 characters)"
-                    className={`p-3 border-2 rounded-lg transition-all duration-200 text-left ${
-                      accessibility.contentWidth === 'medium' || !accessibility.contentWidth
-                        ? getActiveAccentClass()
-                        : getAccentClass()
-                    }`}
-                  >
-                    <div className="font-medium">Mediano</div>
-                    <div className="text-xs opacity-75">65 caracteres - Predeterminado</div>
-                  </button>
-                  <button
-                    onClick={() => handleAccessibilityChange('contentWidth', 'wide')}
-                    aria-label="Select wide content width (80 characters)"
-                    className={`p-3 border-2 rounded-lg transition-all duration-200 text-left ${
-                      accessibility.contentWidth === 'wide'
-                        ? getActiveAccentClass()
-                        : getAccentClass()
-                    }`}
-                  >
-                    <div className="font-medium">Ancho</div>
-                    <div className="text-xs opacity-75">80 caracteres - Más contenido visible</div>
-                  </button>
-                  <button
-                    onClick={() => handleAccessibilityChange('contentWidth', 'full')}
-                    aria-label="Select full content width (unlimited)"
-                    className={`p-3 border-2 rounded-lg transition-all duration-200 text-left ${
-                      accessibility.contentWidth === 'full'
-                        ? getActiveAccentClass()
-                        : getAccentClass()
-                    }`}
-                  >
-                    <div className="font-medium">Ancho Completo</div>
-                    <div className="text-xs opacity-75">Ilimitado - Usa toda la pantalla</div>
-                  </button>
                 </div>
               </div>
             </div>
