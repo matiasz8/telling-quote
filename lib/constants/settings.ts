@@ -53,7 +53,7 @@ export const DEFAULT_SETTINGS = {
   },
   tts: {
     enabled: false,
-    voice: 'es-MX-DaliaNeural',
+    voice: '', // Auto-select first available voice in browser
     rate: 1.0,
     autoPlay: false,
     highlightText: true,

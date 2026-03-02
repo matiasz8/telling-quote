@@ -784,23 +784,13 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                       disabled={!tts.enabled}
                       aria-label="Select voice for text-to-speech"
                     >
-                      {/* Recommended voices (Azure/Microsoft) */}
-                      <optgroup label="Español (Recomendadas)">
-                        <option value="es-MX-DaliaNeural">Dalia (Femenino, México)</option>
-                        <option value="es-ES-AlvaroNeural">Alvaro (Masculino, España)</option>
-                        <option value="es-ES-ElviraNeural">Elvira (Femenino, España)</option>
-                      </optgroup>
-                      <optgroup label="English (Recommended)">
-                        <option value="en-US-AriaNeural">Aria (Female, US)</option>
-                        <option value="en-US-GuyNeural">Guy (Male, US)</option>
-                        <option value="en-GB-SoniaNeural">Sonia (Female, UK)</option>
-                      </optgroup>
-                      
-                      {/* Available browser voices */}
-                      {availableVoices.length > 0 && (
+                      {availableVoices.length === 0 ? (
+                        <option value="">Cargando voces...</option>
+                      ) : (
                         <>
+                          {/* Spanish voices */}
                           {availableVoices.filter(v => v.lang.startsWith('es')).length > 0 && (
-                            <optgroup label="Español (Sistema)">
+                            <optgroup label="🇪🇸 Español">
                               {availableVoices
                                 .filter(v => v.lang.startsWith('es'))
                                 .map(voice => (
@@ -811,8 +801,9 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                             </optgroup>
                           )}
                           
+                          {/* English voices */}
                           {availableVoices.filter(v => v.lang.startsWith('en')).length > 0 && (
-                            <optgroup label="English (System)">
+                            <optgroup label="🇬🇧 English">
                               {availableVoices
                                 .filter(v => v.lang.startsWith('en'))
                                 .map(voice => (
@@ -823,8 +814,9 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                             </optgroup>
                           )}
                           
+                          {/* Other languages */}
                           {availableVoices.filter(v => !v.lang.startsWith('es') && !v.lang.startsWith('en')).length > 0 && (
-                            <optgroup label="Otros idiomas (Sistema)">
+                            <optgroup label="🌍 Otros idiomas">
                               {availableVoices
                                 .filter(v => !v.lang.startsWith('es') && !v.lang.startsWith('en'))
                                 .map(voice => (
@@ -837,6 +829,9 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                         </>
                       )}
                     </select>
+                    <p className={`text-xs mt-1 ${getTextClass()} opacity-60`}>
+                      Mostrando solo voces disponibles en tu navegador
+                    </p>
                   </div>
 
                   <div>
