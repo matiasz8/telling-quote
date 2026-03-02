@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo } from 'react';
 import type { TTSSettings } from '@/types';
 
 export type TTSState = {
@@ -8,7 +8,6 @@ export type TTSState = {
   totalSentences: number;
   isSupported: boolean;
   availableVoices: SpeechSynthesisVoice[];
-  currentVoice: SpeechSynthesisVoice | null;
 };
 
 type UseTTSOptions = {
@@ -31,8 +30,41 @@ export function useTTS(options: UseTTSOptions) {
     totalSentences: 0,
     isSupported,
     availableVoices: [],
-    currentVoice: null,
   });
+
+  // Compute current voice based on settings and available voices
+  const currentVoice = useMemo(() => {
+    if (state.availableVoices.length === 0) {
+      console.log('[useTTS] No voices available yet for selection');
+      return null;
+    }
+
+    console.log('[useTTS] Selecting voice:', settings.voice);
+    
+    // Try to find the requested voice
+    const selectedVoice = state.availableVoices.find(
+      (voice) => voice.name === settings.voice
+    );
+
+    if (selectedVoice) {
+      console.log('[useTTS] Found exact match:', selectedVoice.name);
+      return selectedVoice;
+    }
+    
+    // Fallback: try to find any Spanish voice
+    const spanishVoice = state.availableVoices.find(
+      (voice) => voice.lang.startsWith('es')
+    );
+    
+    if (spanishVoice) {
+      console.log('[useTTS] Using fallback Spanish voice:', spanishVoice.name);
+      return spanishVoice;
+    }
+    
+    // Last resort: use first available voice
+    console.log('[useTTS] Using first available voice:', state.availableVoices[0].name);
+    return state.availableVoices[0];
+  }, [settings.voice, state.availableVoices]);
 
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const sentencesRef = useRef<string[]>([]);
@@ -46,12 +78,19 @@ export function useTTS(options: UseTTSOptions) {
     }
   }, [isSupported, onError]);
 
-  // Load available voices
-  useEffect(() => {
+  // Load available voices (using useLayoutEffect to load synchronously)
+  useLayoutEffect(() => {
     if (!state.isSupported) return;
 
     const loadVoices = () => {
       const voices = window.speechSynthesis.getVoices();
+      
+      if (voices.length === 0) {
+        console.log('[useTTS] No voices loaded yet');
+        return;
+      }
+
+      console.log('[useTTS] Loaded', voices.length, 'voices');
       
       // Prefer Neural/Premium voices
       const sortedVoices = voices.sort((a, b) => {
@@ -63,15 +102,6 @@ export function useTTS(options: UseTTSOptions) {
       });
 
       setState((prev) => ({ ...prev, availableVoices: sortedVoices }));
-
-      // Set default voice based on settings
-      const selectedVoice = sortedVoices.find(
-        (voice) => voice.name === settings.voice
-      ) || sortedVoices.find(
-        (voice) => voice.lang.startsWith('es')
-      ) || sortedVoices[0];
-
-      setState((prev) => ({ ...prev, currentVoice: selectedVoice }));
     };
 
     // Load voices immediately
@@ -85,7 +115,7 @@ export function useTTS(options: UseTTSOptions) {
     return () => {
       window.speechSynthesis.onvoiceschanged = null;
     };
-  }, [state.isSupported, settings.voice]);
+  }, [state.isSupported]);
 
   // Parse text into sentences
   const parseTextIntoSentences = useCallback((text: string): string[] => {
@@ -128,7 +158,21 @@ export function useTTS(options: UseTTSOptions) {
 
   // Speak a specific sentence
   const speakSentence = useCallback((index: number) => {
-    if (!state.isSupported || !state.currentVoice || index >= sentencesRef.current.length) {
+    if (!state.isSupported || index >= sentencesRef.current.length) {
+      console.log('[useTTS] Cannot speak - not supported or invalid index:', index);
+      return;
+    }
+
+    // Get current voice or fallback
+    let voice = currentVoice;
+    
+    if (!voice && state.availableVoices.length > 0) {
+      console.log('[useTTS] No voice set, using fallback');
+      voice = state.availableVoices.find(v => v.lang.startsWith('es')) || state.availableVoices[0];
+    }
+    
+    if (!voice) {
+      console.error('[useTTS] No voice available at all');
       return;
     }
 
@@ -136,13 +180,16 @@ export function useTTS(options: UseTTSOptions) {
     window.speechSynthesis.cancel();
 
     const sentence = sentencesRef.current[index];
+    console.log('[useTTS] Speaking sentence', index, 'of', sentencesRef.current.length, ':', sentence.substring(0, 50));
+    
     const utterance = new SpeechSynthesisUtterance(sentence);
     
-    utterance.voice = state.currentVoice;
+    utterance.voice = voice;
     utterance.rate = settings.rate;
-    utterance.lang = state.currentVoice.lang;
+    utterance.lang = voice.lang;
 
     utterance.onstart = () => {
+      console.log('[useTTS] Started speaking sentence:', index);
       setState((prev) => ({ 
         ...prev, 
         isPlaying: true, 
@@ -156,7 +203,10 @@ export function useTTS(options: UseTTSOptions) {
     };
 
     utterance.onend = () => {
+      console.log('[useTTS] Sentence complete:', index);
+      
       if (isStoppedRef.current) {
+        console.log('[useTTS] Was stopped, not advancing');
         isStoppedRef.current = false;
         return;
       }
@@ -165,11 +215,13 @@ export function useTTS(options: UseTTSOptions) {
       const nextIndex = index + 1;
       
       if (nextIndex < sentencesRef.current.length) {
+        console.log('[useTTS] Moving to next sentence:', nextIndex);
         // Use ref to avoid closure issue
         if (speakSentenceRef.current) {
           speakSentenceRef.current(nextIndex);
         }
       } else {
+        console.log('[useTTS] All sentences complete, calling onComplete');
         // All sentences complete
         setState((prev) => ({ 
           ...prev, 
@@ -178,6 +230,7 @@ export function useTTS(options: UseTTSOptions) {
         }));
         
         if (onComplete) {
+          console.log('[useTTS] Calling onComplete callback');
           onComplete();
         }
       }
@@ -194,7 +247,7 @@ export function useTTS(options: UseTTSOptions) {
 
     utteranceRef.current = utterance;
     window.speechSynthesis.speak(utterance);
-  }, [state.isSupported, state.currentVoice, settings.rate, onSentenceChange, onComplete, onError]);
+  }, [state.isSupported, currentVoice, state.availableVoices, settings.rate, onSentenceChange, onComplete, onError]);
 
   // Store the function in ref to avoid closure issues
   useEffect(() => {
@@ -288,18 +341,15 @@ export function useTTS(options: UseTTSOptions) {
 
   // Change voice
   const setVoice = useCallback((voiceName: string) => {
-    const voice = state.availableVoices.find((v) => v.name === voiceName);
-    if (voice) {
-      setState((prev) => ({ ...prev, currentVoice: voice }));
-      
-      // If playing, restart with new voice
-      if (state.isPlaying) {
-        const currentIndex = state.currentSentenceIndex;
-        stop();
-        setTimeout(() => speakSentence(currentIndex), 100);
-      }
+    console.warn('[useTTS] setVoice is deprecated. Please update settings.voice instead.');
+    
+    // If playing, restart with new voice after settings are updated
+    if (state.isPlaying) {
+      const currentIndex = state.currentSentenceIndex;
+      stop();
+      setTimeout(() => speakSentence(currentIndex), 100);
     }
-  }, [state.availableVoices, state.isPlaying, state.currentSentenceIndex, stop, speakSentence]);
+  }, [state.isPlaying, state.currentSentenceIndex, stop, speakSentence]);
 
   // Get estimated duration for current sentence (for auto-advance sync)
   const getCurrentSentenceDuration = useCallback((): number => {
@@ -317,7 +367,10 @@ export function useTTS(options: UseTTSOptions) {
   }, []);
 
   return {
-    state,
+    state: {
+      ...state,
+      currentVoice, // Add computed currentVoice to state for API compatibility
+    },
     actions: {
       load,
       play,

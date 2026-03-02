@@ -16,6 +16,7 @@ interface SettingsModalProps {
 
 export default function SettingsModal({ isOpen, onClose, settings, onSave }: SettingsModalProps) {
   const [expandedSection, setExpandedSection] = useState<'general' | 'accessibility' | ''>('general');
+  const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
   const modalRef = useRef<HTMLDivElement>(null);
 
   // Focus trap
@@ -34,6 +35,39 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, onClose]);
+
+  // Load available voices for TTS
+  useEffect(() => {
+    if (!isOpen) return;
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+
+    const loadVoices = () => {
+      const voices = window.speechSynthesis.getVoices();
+      if (voices.length > 0) {
+        console.log('[SettingsModal] Loaded voices:', voices.map(v => v.name));
+        // Sort: Neural/Premium first, then by language
+        const sorted = voices.sort((a, b) => {
+          const aIsNeural = a.name.includes('Neural') || a.name.includes('Premium') || a.name.includes('Natural');
+          const bIsNeural = b.name.includes('Neural') || b.name.includes('Premium') || b.name.includes('Natural');
+          if (aIsNeural && !bIsNeural) return -1;
+          if (!aIsNeural && bIsNeural) return 1;
+          return a.name.localeCompare(b.name);
+        });
+        setAvailableVoices(sorted);
+      }
+    };
+
+    loadVoices();
+
+    // Voices might load asynchronously
+    if (window.speechSynthesis.onvoiceschanged !== undefined) {
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+
+    return () => {
+      window.speechSynthesis.onvoiceschanged = null;
+    };
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -668,16 +702,58 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                       disabled={!tts.enabled}
                       aria-label="Select voice for text-to-speech"
                     >
-                      <optgroup label="Español">
+                      {/* Recommended voices (Azure/Microsoft) */}
+                      <optgroup label="Español (Recomendadas)">
                         <option value="es-MX-DaliaNeural">Dalia (Femenino, México)</option>
                         <option value="es-ES-AlvaroNeural">Alvaro (Masculino, España)</option>
                         <option value="es-ES-ElviraNeural">Elvira (Femenino, España)</option>
                       </optgroup>
-                      <optgroup label="English">
+                      <optgroup label="English (Recommended)">
                         <option value="en-US-AriaNeural">Aria (Female, US)</option>
                         <option value="en-US-GuyNeural">Guy (Male, US)</option>
                         <option value="en-GB-SoniaNeural">Sonia (Female, UK)</option>
                       </optgroup>
+                      
+                      {/* Available browser voices */}
+                      {availableVoices.length > 0 && (
+                        <>
+                          {availableVoices.filter(v => v.lang.startsWith('es')).length > 0 && (
+                            <optgroup label="Español (Sistema)">
+                              {availableVoices
+                                .filter(v => v.lang.startsWith('es'))
+                                .map(voice => (
+                                  <option key={voice.name} value={voice.name}>
+                                    {voice.name} ({voice.lang})
+                                  </option>
+                                ))}
+                            </optgroup>
+                          )}
+                          
+                          {availableVoices.filter(v => v.lang.startsWith('en')).length > 0 && (
+                            <optgroup label="English (System)">
+                              {availableVoices
+                                .filter(v => v.lang.startsWith('en'))
+                                .map(voice => (
+                                  <option key={voice.name} value={voice.name}>
+                                    {voice.name} ({voice.lang})
+                                  </option>
+                                ))}
+                            </optgroup>
+                          )}
+                          
+                          {availableVoices.filter(v => !v.lang.startsWith('es') && !v.lang.startsWith('en')).length > 0 && (
+                            <optgroup label="Otros idiomas (Sistema)">
+                              {availableVoices
+                                .filter(v => !v.lang.startsWith('es') && !v.lang.startsWith('en'))
+                                .map(voice => (
+                                  <option key={voice.name} value={voice.name}>
+                                    {voice.name} ({voice.lang})
+                                  </option>
+                                ))}
+                            </optgroup>
+                          )}
+                        </>
+                      )}
                     </select>
                   </div>
 
