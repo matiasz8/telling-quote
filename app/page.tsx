@@ -159,8 +159,22 @@ export default function Home() {
         return;
       }
       
-      console.log('[Firestore sync effect] Setting readings to cloudReadings');
-      setReadings(cloudReadings);
+      console.log('[Firestore sync effect] Merging cloudReadings with local state');
+      setReadings((currentLocal) => {
+        // Merge strategy: keep cloud readings + any local-only readings not yet synced
+        const cloudIds = new Set(cloudReadings.map(r => r.id));
+        const localOnly = currentLocal.filter(r => !cloudIds.has(r.id));
+        
+        console.log('[Firestore sync effect] Cloud readings:', cloudReadings.length);
+        console.log('[Firestore sync effect] Local-only readings:', localOnly.length);
+        
+        // If there are local-only readings, they're likely being synced right now
+        // Keep them in the list temporarily
+        const merged = [...cloudReadings, ...localOnly];
+        console.log('[Firestore sync effect] Merged total:', merged.length);
+        
+        return merged;
+      });
     });
 
     return () => {
