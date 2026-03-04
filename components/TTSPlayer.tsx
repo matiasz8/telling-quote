@@ -5,6 +5,11 @@ import type { TTSSettings } from '@/types';
 import { useTTS } from '@/hooks/useTTS';
 import { cn } from '@/lib/utils';
 
+const isDev = process.env.NODE_ENV === 'development';
+const dlog = (...args: unknown[]) => {
+  if (isDev) console.log(...args);
+};
+
 type TTSPlayerProps = {
   text: string;
   settings: TTSSettings;
@@ -63,7 +68,7 @@ export function TTSPlayer({
     const isTextChanged = text !== prevTextRef.current;
     const wasPlaying = state.isPlaying;
 
-    console.log('[TTSPlayer] Load effect triggered:', {
+    dlog('[TTSPlayer] Load effect triggered:', {
       isTextChanged,
       wasPlaying,
       hasLoaded: hasLoadedRef.current,
@@ -84,7 +89,7 @@ export function TTSPlayer({
       }
     } else if (!hasLoadedRef.current) {
       // Initial load
-      console.log('[TTSPlayer] Initial load - loading text');
+      dlog('[TTSPlayer] Initial load - loading text');
       actions.load(text);
       hasLoadedRef.current = true;
       // AutoPlay will be handled by separate useEffect when sentences are ready
@@ -101,12 +106,12 @@ export function TTSPlayer({
       hasLoadedRef.current &&
       !autoPlayTriggeredRef.current
     ) {
-      console.log('[TTSPlayer] Text loaded and ready, triggering auto-play');
+      dlog('[TTSPlayer] Text loaded and ready, triggering auto-play');
       autoPlayTriggeredRef.current = true; // Mark as triggered
       
       // Small delay to ensure everything is ready
       const timer = setTimeout(() => {
-        console.log('[TTSPlayer] Executing auto-play');
+        dlog('[TTSPlayer] Executing auto-play');
         actions.play();
       }, 100);
       
