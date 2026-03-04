@@ -10,7 +10,7 @@ import { startNewReadingTutorial } from "@/lib/tutorial";
 interface NewReadingModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (reading: Reading) => void;
+  onSave: (reading: Reading) => Promise<void> | void;
 }
 
 export default function NewReadingModal({
@@ -27,6 +27,7 @@ export default function NewReadingModal({
   const [titleInput, setTitleInput] = useState("");
   const [tagsInput, setTagsInput] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   const titleInputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -67,7 +68,7 @@ export default function NewReadingModal({
 
   if (!isOpen) return null;
 
-  const handleSave = () => {
+  const handleSave = async () => {
     // Validate content
     const trimmedText = text.trim();
     if (!trimmedText) {
@@ -106,13 +107,21 @@ export default function NewReadingModal({
     };
 
     console.log(`[NewReadingModal] Calling onSave with reading:`, newReading.id, newReading.title);
-    console.log(`[NewReadingModal] Stack trace:`, new Error().stack);
-    onSave(newReading);
-    setText("");
-    setTitleInput("");
-    setTagsInput("");
-    setError(null);
-    onClose();
+    
+    setIsSaving(true);
+    try {
+      await onSave(newReading);
+      setText("");
+      setTitleInput("");
+      setTagsInput("");
+      setError(null);
+      onClose();
+    } catch (err) {
+      console.error('[NewReadingModal] Error saving:', err);
+      setError("Error saving reading. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -253,8 +262,11 @@ export default function NewReadingModal({
         <div className="flex gap-4 mt-4">
           <button
             onClick={handleSave}
+            disabled={isSaving}
             data-tour="reading-create-button"
             className={`px-6 py-2.5 rounded-lg transition-all duration-200 font-medium shadow-md hover:shadow-lg transform hover:scale-105 ${
+              isSaving ? 'opacity-50 cursor-not-allowed' : ''
+            } ${
               isHighContrast
                 ? "bg-white text-black hover:bg-gray-200"
                 : isDetox
@@ -264,11 +276,14 @@ export default function NewReadingModal({
                 : "bg-gradient-to-r from-lime-500 to-emerald-500 text-white hover:from-lime-600 hover:to-emerald-600"
             }`}
           >
-            Guardar Lectura
+            {isSaving ? 'Guardando...' : 'Guardar Lectura'}
           </button>
           <button
             onClick={handleCancel}
+            disabled={isSaving}
             className={`px-6 py-2.5 rounded-lg transition-all duration-200 font-medium ${
+              isSaving ? 'opacity-50 cursor-not-allowed' : ''
+            } ${
               isHighContrast
                 ? "bg-gray-800 text-white hover:bg-gray-700 border border-white"
                 : isDetox

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Settings, FontFamily, FontSize, Theme, AccessibilitySettings, LetterSpacing, LineHeightOption, WordSpacing, AutoAdvanceSettings } from '@/types';
+import { Settings, FontFamily, FontSize, Theme, AccessibilitySettings, LetterSpacing, LineHeightOption, WordSpacing, AutoAdvanceSettings, TTSSettings } from '@/types';
 import { FONT_FAMILY_OPTIONS, FONT_SIZE_OPTIONS, THEME_OPTIONS, READING_TRANSITION_OPTIONS } from '@/lib/constants';
 import { theme as themeConfig } from '@/config/theme';
 import { useFocusTrap } from '@/hooks/useFocusTrap';
@@ -15,7 +15,8 @@ interface SettingsModalProps {
 }
 
 export default function SettingsModal({ isOpen, onClose, settings, onSave }: SettingsModalProps) {
-  const [expandedSection, setExpandedSection] = useState<'general' | 'accessibility' | ''>('general');
+  const [expandedSection, setExpandedSection] = useState<'general' | 'accessibility' | 'reading' | ''>('general');
+  const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
   const modalRef = useRef<HTMLDivElement>(null);
 
   // Focus trap
@@ -34,6 +35,39 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, onClose]);
+
+  // Load available voices for TTS
+  useEffect(() => {
+    if (!isOpen) return;
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+
+    const loadVoices = () => {
+      const voices = window.speechSynthesis.getVoices();
+      if (voices.length > 0) {
+        console.log('[SettingsModal] Loaded voices:', voices.map(v => v.name));
+        // Sort: Neural/Premium first, then by language
+        const sorted = voices.sort((a, b) => {
+          const aIsNeural = a.name.includes('Neural') || a.name.includes('Premium') || a.name.includes('Natural');
+          const bIsNeural = b.name.includes('Neural') || b.name.includes('Premium') || b.name.includes('Natural');
+          if (aIsNeural && !bIsNeural) return -1;
+          if (!aIsNeural && bIsNeural) return 1;
+          return a.name.localeCompare(b.name);
+        });
+        setAvailableVoices(sorted);
+      }
+    };
+
+    loadVoices();
+
+    // Voices might load asynchronously
+    if (window.speechSynthesis.onvoiceschanged !== undefined) {
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+
+    return () => {
+      window.speechSynthesis.onvoiceschanged = null;
+    };
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -92,6 +126,15 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
     showProgress: true,
   };
 
+  const tts = settings.tts || {
+    enabled: false,
+    voice: 'es-MX-DaliaNeural',
+    rate: 1.0,
+    autoPlay: false,
+    highlightText: true,
+    skipCode: true,
+  };
+
   const handleFontFamilyChange = (fontFamily: FontFamily) => {
     onSave({
       ...settings,
@@ -136,6 +179,19 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
     });
   };
 
+  const handleTTSChange = <K extends keyof TTSSettings>(
+    key: K,
+    value: TTSSettings[K]
+  ) => {
+    onSave({
+      ...settings,
+      tts: {
+        ...tts,
+        [key]: value,
+      },
+    });
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div
@@ -158,6 +214,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
         </div>
 
         {/* Preview Text */}
+        {expandedSection !== 'reading' && (
         <div data-preview className={`sticky top-0 z-10 mb-6 p-4 rounded-lg border-2 ${getBgClass()} ${getAccentClass()}`}>
           <div className={`text-xs font-medium mb-2 ${getTextClass()}`}>Vista Previa</div>
           <div
@@ -180,6 +237,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
             <div>Max line width: {accessibility.contentWidth === 'narrow' ? '45 chars (easier to read)' : accessibility.contentWidth === 'wide' ? '80 chars (more content)' : accessibility.contentWidth === 'full' ? 'unlimited (full width)' : '65 chars (default)'}</div>
           </div>
         </div>
+        )}
 
         {/* General Settings Section */}
         <div className="mb-6">
@@ -476,10 +534,90 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                 </div>
               </div>
 
+              {/* Content Width */}
+              <div data-tour="settings-content-width">
+                <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
+                  Ancho del Contenido (en Lector)
+                </label>
+                <div className="grid grid-cols-1 gap-2">
+                  <button
+                    onClick={() => handleAccessibilityChange('contentWidth', 'narrow')}
+                    aria-label="Select narrow content width (45 characters)"
+                    className={`p-3 border-2 rounded-lg transition-all duration-200 text-left ${
+                      accessibility.contentWidth === 'narrow'
+                        ? getActiveAccentClass()
+                        : getAccentClass()
+                    }`}
+                  >
+                    <div className="font-medium">Angosto</div>
+                    <div className="text-xs opacity-75">45 caracteres - Más fácil de leer</div>
+                  </button>
+                  <button
+                    onClick={() => handleAccessibilityChange('contentWidth', 'medium')}
+                    aria-label="Select medium content width (65 characters)"
+                    className={`p-3 border-2 rounded-lg transition-all duration-200 text-left ${
+                      accessibility.contentWidth === 'medium' || !accessibility.contentWidth
+                        ? getActiveAccentClass()
+                        : getAccentClass()
+                    }`}
+                  >
+                    <div className="font-medium">Mediano</div>
+                    <div className="text-xs opacity-75">65 caracteres - Predeterminado</div>
+                  </button>
+                  <button
+                    onClick={() => handleAccessibilityChange('contentWidth', 'wide')}
+                    aria-label="Select wide content width (80 characters)"
+                    className={`p-3 border-2 rounded-lg transition-all duration-200 text-left ${
+                      accessibility.contentWidth === 'wide'
+                        ? getActiveAccentClass()
+                        : getAccentClass()
+                    }`}
+                  >
+                    <div className="font-medium">Ancho</div>
+                    <div className="text-xs opacity-75">80 caracteres - Más contenido visible</div>
+                  </button>
+                  <button
+                    onClick={() => handleAccessibilityChange('contentWidth', 'full')}
+                    aria-label="Select full content width (unlimited)"
+                    className={`p-3 border-2 rounded-lg transition-all duration-200 text-left ${
+                      accessibility.contentWidth === 'full'
+                        ? getActiveAccentClass()
+                        : getAccentClass()
+                    }`}
+                  >
+                    <div className="font-medium">Ancho Completo</div>
+                    <div className="text-xs opacity-75">Ilimitado - Usa toda la pantalla</div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Reading Settings Section (Timer + TTS) */}
+        <div className="mb-6 border-t border-gray-300 dark:border-gray-700 pt-4">
+          <button
+            onClick={() => setExpandedSection(expandedSection === 'reading' ? '' : 'reading')}
+            className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors ${
+              expandedSection === 'reading'
+                ? getHeaderBgClass()
+                : getHoverClass()
+            }`}
+            aria-expanded={expandedSection === 'reading'}
+            aria-label="Reading settings section (timer and text-to-speech)"
+          >
+            <span className="font-semibold">📖 Lectura (Timer & Voz)</span>
+            <svg className={`w-5 h-5 transition-transform ${expandedSection === 'reading' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+          </button>
+
+          {expandedSection === 'reading' && (
+            <div className="mt-4 space-y-6">
               {/* Auto-Advance Timer */}
               <div data-tour="settings-auto-advance">
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
-                  Auto-Advance Timer
+                  ⏱️ Auto-Advance Timer
                 </label>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
@@ -596,60 +734,232 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
                 </div>
               </div>
 
-              {/* Content Width */}
-              <div data-tour="settings-content-width">
+              {/* Text-to-Speech */}
+              <div>
                 <label className={`block text-sm font-medium ${getTextClass()} mb-3`}>
-                  Ancho del Contenido (en Lector)
+                  🔊 Text-to-Speech (Lectura en Voz Alta)
                 </label>
-                <div className="grid grid-cols-1 gap-2">
-                  <button
-                    onClick={() => handleAccessibilityChange('contentWidth', 'narrow')}
-                    aria-label="Select narrow content width (45 characters)"
-                    className={`p-3 border-2 rounded-lg transition-all duration-200 text-left ${
-                      accessibility.contentWidth === 'narrow'
-                        ? getActiveAccentClass()
-                        : getAccentClass()
-                    }`}
-                  >
-                    <div className="font-medium">Angosto</div>
-                    <div className="text-xs opacity-75">45 caracteres - Más fácil de leer</div>
-                  </button>
-                  <button
-                    onClick={() => handleAccessibilityChange('contentWidth', 'medium')}
-                    aria-label="Select medium content width (65 characters)"
-                    className={`p-3 border-2 rounded-lg transition-all duration-200 text-left ${
-                      accessibility.contentWidth === 'medium' || !accessibility.contentWidth
-                        ? getActiveAccentClass()
-                        : getAccentClass()
-                    }`}
-                  >
-                    <div className="font-medium">Mediano</div>
-                    <div className="text-xs opacity-75">65 caracteres - Predeterminado</div>
-                  </button>
-                  <button
-                    onClick={() => handleAccessibilityChange('contentWidth', 'wide')}
-                    aria-label="Select wide content width (80 characters)"
-                    className={`p-3 border-2 rounded-lg transition-all duration-200 text-left ${
-                      accessibility.contentWidth === 'wide'
-                        ? getActiveAccentClass()
-                        : getAccentClass()
-                    }`}
-                  >
-                    <div className="font-medium">Ancho</div>
-                    <div className="text-xs opacity-75">80 caracteres - Más contenido visible</div>
-                  </button>
-                  <button
-                    onClick={() => handleAccessibilityChange('contentWidth', 'full')}
-                    aria-label="Select full content width (unlimited)"
-                    className={`p-3 border-2 rounded-lg transition-all duration-200 text-left ${
-                      accessibility.contentWidth === 'full'
-                        ? getActiveAccentClass()
-                        : getAccentClass()
-                    }`}
-                  >
-                    <div className="font-medium">Ancho Completo</div>
-                    <div className="text-xs opacity-75">Ilimitado - Usa toda la pantalla</div>
-                  </button>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className={`text-sm ${getTextClass()}`}>Activar lectura en voz alta</span>
+                    <button
+                      onClick={() => handleTTSChange('enabled', !tts.enabled)}
+                      className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                        tts.enabled
+                          ? isHighContrast
+                            ? 'bg-white'
+                            : isDetox
+                            ? 'bg-gray-900'
+                            : isDark
+                            ? 'bg-purple-600'
+                            : 'bg-lime-500'
+                          : isHighContrast
+                          ? 'bg-gray-700'
+                          : 'bg-gray-300'
+                      }`}
+                      role="switch"
+                      aria-checked={tts.enabled}
+                      aria-label="Toggle text-to-speech"
+                    >
+                      <span
+                        className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                          tts.enabled ? 'translate-x-7' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  <div>
+                    <label className={`block text-xs font-medium ${getTextClass()} mb-2`}>
+                      Voz predeterminada
+                    </label>
+                    <select
+                      value={tts.voice}
+                      onChange={(e) => handleTTSChange('voice', e.target.value)}
+                      className={`w-full px-3 py-2 rounded-lg border ${
+                        isDark
+                          ? 'bg-gray-800 border-gray-700 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
+                      disabled={!tts.enabled}
+                      aria-label="Select voice for text-to-speech"
+                    >
+                      {availableVoices.length === 0 ? (
+                        <option value="">Cargando voces...</option>
+                      ) : (
+                        <>
+                          {/* Spanish voices */}
+                          {availableVoices.filter(v => v.lang.startsWith('es')).length > 0 && (
+                            <optgroup label="🇪🇸 Español">
+                              {availableVoices
+                                .filter(v => v.lang.startsWith('es'))
+                                .map(voice => (
+                                  <option key={voice.name} value={voice.name}>
+                                    {voice.name} ({voice.lang})
+                                  </option>
+                                ))}
+                            </optgroup>
+                          )}
+                          
+                          {/* English voices */}
+                          {availableVoices.filter(v => v.lang.startsWith('en')).length > 0 && (
+                            <optgroup label="🇬🇧 English">
+                              {availableVoices
+                                .filter(v => v.lang.startsWith('en'))
+                                .map(voice => (
+                                  <option key={voice.name} value={voice.name}>
+                                    {voice.name} ({voice.lang})
+                                  </option>
+                                ))}
+                            </optgroup>
+                          )}
+                          
+                          {/* Other languages */}
+                          {availableVoices.filter(v => !v.lang.startsWith('es') && !v.lang.startsWith('en')).length > 0 && (
+                            <optgroup label="🌍 Otros idiomas">
+                              {availableVoices
+                                .filter(v => !v.lang.startsWith('es') && !v.lang.startsWith('en'))
+                                .map(voice => (
+                                  <option key={voice.name} value={voice.name}>
+                                    {voice.name} ({voice.lang})
+                                  </option>
+                                ))}
+                            </optgroup>
+                          )}
+                        </>
+                      )}
+                    </select>
+                    <p className={`text-xs mt-1 ${getTextClass()} opacity-60`}>
+                      Mostrando solo voces disponibles en tu navegador
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className={`block text-xs font-medium ${getTextClass()} mb-2`}>
+                      Velocidad de voz: {tts.rate.toFixed(2)}x
+                    </label>
+                    <input
+                      type="range"
+                      min={0.5}
+                      max={2.0}
+                      step={0.25}
+                      value={tts.rate}
+                      onChange={(e) => handleTTSChange('rate', Number(e.target.value))}
+                      className="w-full"
+                      disabled={!tts.enabled}
+                      aria-label="Adjust text-to-speech rate"
+                    />
+                    <div className={`flex justify-between text-xs ${getTextClass()} opacity-70 mt-1`}>
+                      <span>Lento (0.5x)</span>
+                      <span>Normal (1.0x)</span>
+                      <span>Rápido (2.0x)</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className={`text-sm ${getTextClass()}`}>Auto-iniciar al abrir lectura</span>
+                    <button
+                      onClick={() => {
+                        if (!tts.enabled) return;
+                        handleTTSChange('autoPlay', !tts.autoPlay);
+                      }}
+                      className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                        tts.autoPlay
+                          ? isHighContrast
+                            ? 'bg-white'
+                            : isDetox
+                            ? 'bg-gray-900'
+                            : isDark
+                            ? 'bg-purple-600'
+                            : 'bg-lime-500'
+                          : isHighContrast
+                          ? 'bg-gray-700'
+                          : 'bg-gray-300'
+                      } ${!tts.enabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      role="switch"
+                      aria-checked={tts.autoPlay}
+                      aria-disabled={!tts.enabled}
+                      aria-label="Toggle auto-play for text-to-speech"
+                    >
+                      <span
+                        className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                          tts.autoPlay ? 'translate-x-7' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className={`text-sm ${getTextClass()}`}>Resaltar texto hablado</span>
+                    <button
+                      onClick={() => {
+                        if (!tts.enabled) return;
+                        handleTTSChange('highlightText', !tts.highlightText);
+                      }}
+                      className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                        tts.highlightText
+                          ? isHighContrast
+                            ? 'bg-white'
+                            : isDetox
+                            ? 'bg-gray-900'
+                            : isDark
+                            ? 'bg-purple-600'
+                            : 'bg-lime-500'
+                          : isHighContrast
+                          ? 'bg-gray-700'
+                          : 'bg-gray-300'
+                      } ${!tts.enabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      role="switch"
+                      aria-checked={tts.highlightText}
+                      aria-disabled={!tts.enabled}
+                      aria-label="Toggle text highlighting during speech"
+                    >
+                      <span
+                        className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                          tts.highlightText ? 'translate-x-7' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className={`text-sm ${getTextClass()}`}>Omitir bloques de código</span>
+                    <button
+                      onClick={() => {
+                        if (!tts.enabled) return;
+                        handleTTSChange('skipCode', !tts.skipCode);
+                      }}
+                      className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                        tts.skipCode
+                          ? isHighContrast
+                            ? 'bg-white'
+                            : isDetox
+                            ? 'bg-gray-900'
+                            : isDark
+                            ? 'bg-purple-600'
+                            : 'bg-lime-500'
+                          : isHighContrast
+                          ? 'bg-gray-700'
+                          : 'bg-gray-300'
+                      } ${!tts.enabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      role="switch"
+                      aria-checked={tts.skipCode}
+                      aria-disabled={!tts.enabled}
+                      aria-label="Toggle skipping code blocks during speech"
+                    >
+                      <span
+                        className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                          tts.skipCode ? 'translate-x-7' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  <div className={`text-xs ${getTextClass()} opacity-75 mt-2 p-3 rounded-lg ${
+                    isDark ? 'bg-gray-800' : 'bg-gray-100'
+                  }`}>
+                    ⌨️ Atajos: Alt+P (reproducir/pausar), Alt+S (detener), Alt+← / Alt+→ (oración anterior/siguiente)
+                  </div>
                 </div>
               </div>
             </div>

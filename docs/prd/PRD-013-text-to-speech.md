@@ -1,12 +1,13 @@
 # PRD-013: Text-to-Speech (TTS)
 
-**Status:** 📝 Draft  
+**Status:** ✅ Completed  
 **Priority:** Medium  
 **Target Release:** v0.6.0  
 **Created:** February 2, 2026  
-**Last Updated:** February 2, 2026  
+**Last Updated:** March 2, 2026  
 **Owner:** Development Team  
 **Related PRDs:** PRD-012 (Auto-Advance Timer), PRD-004 (Accessibility)
+**Related TRD:** [TRD-013: Text-to-Speech Implementation](../trd/TRD-013-text-to-speech.md)
 
 ---
 

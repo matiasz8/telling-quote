@@ -189,6 +189,16 @@ export function processContent(title: string, content: string): ProcessedText[] 
   const processedText: ProcessedText[] = [];
   let globalIndex = 0;
 
+  // Add title as first sentence (ensure it ends with period for TTS parsing)
+  const titleWithPunctuation = /[.!?]$/.test(title.trim()) ? title : title + '.';
+  processedText.push({
+    id: globalIndex++,
+    title: title,
+    subtitle: null,
+    sentence: titleWithPunctuation,
+    isSubtitleIntro: false,
+  });
+
   for (const section of sections) {
     // Add subtitle introduction slide if there's a subtitle
     if (section.subtitle) {
