@@ -2,7 +2,7 @@
 
 **Status:** Completed  
 **Created:** March 2, 2026  
-**Last Updated:** March 2, 2026  
+**Last Updated:** March 4, 2026  
 **Related PRD:** [PRD-013: Text-to-Speech](../prd/PRD-013-text-to-speech.md)
 
 ---
@@ -674,7 +674,45 @@ utterance.onerror = (event) => {
 
 ---
 
-## 15. Related Files
+## 15. March 4, 2026 Enhancements (Post-Release)
+
+### 15.1 Playback & Navigation Coordination
+
+- **TTS is now the source of truth for page progression when enabled** to prevent timer desynchronization.
+- Auto-advance timer remains available as UI control, but does not advance pages while TTS flow is active.
+- Reader shows active mode chip: `Avance: Voz`, `Avance: Timer`, or `Avance: Manual`.
+
+### 15.2 Autoplay Reliability and Browser Policy Handling
+
+- Added explicit handling for browser autoplay policy blocks (`not-allowed`).
+- If autoplay is blocked, player displays a non-intrusive toast and retries on first user interaction (`pointerdown`/`keydown`).
+- Player status now explicitly shows `Bloqueado por navegador`.
+
+### 15.3 Title Parsing and Sentence Chunking
+
+- TTS input now preserves processed reading chunks using newline delimiters.
+- `useTTS` parser prioritizes newline-delimited chunks before punctuation splitting fallback.
+- Fix prevents titles with question marks (e.g., `¿...? ...`) from being split into incorrect chunks.
+
+### 15.4 Stop/Error Behavior
+
+- `utterance.onerror` now treats `interrupted`/`canceled` and manual stop as benign events.
+- This removes noisy console errors when user presses stop.
+
+### 15.5 UI Improvements
+
+- Added visual emphasis for active spoken content when `highlightText` is enabled and TTS is playing.
+- Improved mobile control ergonomics (larger touch targets for previous/next/stop controls).
+- Added explicit playback status states in player UI.
+
+### 15.6 Reading Position Persistence
+
+- Reader now persists and restores TTS/reading position per reading via localStorage key `tts-position:<readingId>`.
+- Position restoration is clamped to current processed length for safety.
+
+---
+
+## 16. Related Files
 
 ### Core Implementation
 - `types/index.ts` - Type definitions
@@ -693,7 +731,7 @@ utterance.onerror = (event) => {
 
 ---
 
-**Document Version:** 1.0  
-**Last Review:** March 2, 2026  
-**Next Review:** April 2, 2026  
+**Document Version:** 1.1  
+**Last Review:** March 4, 2026  
+**Next Review:** April 4, 2026  
 **Implementation Status:** ✅ Completed

@@ -117,22 +117,30 @@ export function useTTS(options: UseTTSOptions) {
     };
   }, [state.isSupported]);
 
-  // Parse text into sentences
+  // Parse text into speakable chunks
   const parseTextIntoSentences = useCallback((text: string): string[] => {
-    // Split by sentence endings, preserving the delimiter
+    // Preferred path: if producer provides newline-delimited chunks, preserve them as-is
+    if (text.includes('\n')) {
+      return text
+        .split(/\n+/)
+        .map((chunk) => chunk.trim())
+        .filter((chunk) => chunk.length > 0);
+    }
+
+    // Fallback: split by sentence endings, preserving the delimiter
     const rawSentences = text.split(/([.!?]+(?:\s+|$))/);
     const sentences: string[] = [];
-    
+
     for (let i = 0; i < rawSentences.length; i += 2) {
       const sentence = rawSentences[i];
       const delimiter = rawSentences[i + 1] || '';
       const combined = (sentence + delimiter).trim();
-      
+
       if (combined.length > 0) {
         sentences.push(combined);
       }
     }
-    
+
     return sentences;
   }, []);
 
@@ -237,11 +245,20 @@ export function useTTS(options: UseTTSOptions) {
     };
 
     utterance.onerror = (event) => {
-      console.error('TTS error:', event);
+      const errorType = event.error || 'unknown';
+      const isBenignStop = isStoppedRef.current || errorType === 'interrupted' || errorType === 'canceled';
+
+      if (isBenignStop) {
+        isStoppedRef.current = false;
+        setState((prev) => ({ ...prev, isPlaying: false, isPaused: false }));
+        return;
+      }
+
+      console.error('TTS error:', errorType, event);
       setState((prev) => ({ ...prev, isPlaying: false, isPaused: false }));
-      
+
       if (onError) {
-        onError(new Error(`Speech synthesis error: ${event.error}`));
+        onError(new Error(`Speech synthesis error: ${errorType}`));
       }
     };
 
@@ -271,17 +288,36 @@ export function useTTS(options: UseTTSOptions) {
 
   // Play from current position
   const play = useCallback(() => {
-    if (!state.isSupported || !settings.enabled) return;
+    console.log('[useTTS] Play called:', {
+      isSupported: state.isSupported,
+      enabled: settings.enabled,
+      isPaused: state.isPaused,
+      currentIndex: state.currentSentenceIndex,
+      totalSentences: sentencesRef.current.length,
+      hasVoice: !!currentVoice,
+    });
+
+    if (!state.isSupported || !settings.enabled) {
+      console.log('[useTTS] Cannot play - not supported or not enabled');
+      return;
+    }
+
+    if (sentencesRef.current.length === 0) {
+      console.log('[useTTS] Cannot play - no sentences loaded yet');
+      return;
+    }
 
     if (state.isPaused) {
       // Resume paused speech
+      console.log('[useTTS] Resuming paused speech');
       window.speechSynthesis.resume();
       setState((prev) => ({ ...prev, isPlaying: true, isPaused: false }));
     } else {
       // Start from current sentence
+      console.log('[useTTS] Starting from sentence:', state.currentSentenceIndex);
       speakSentence(state.currentSentenceIndex);
     }
-  }, [state.isSupported, state.isPaused, state.currentSentenceIndex, settings.enabled, speakSentence]);
+  }, [state.isSupported, state.isPaused, state.currentSentenceIndex, settings.enabled, speakSentence, currentVoice]);
 
   // Pause current speech
   const pause = useCallback(() => {
@@ -341,7 +377,7 @@ export function useTTS(options: UseTTSOptions) {
 
   // Change voice
   const setVoice = useCallback((voiceName: string) => {
-    console.warn('[useTTS] setVoice is deprecated. Please update settings.voice instead.');
+    console.warn('[useTTS] setVoice is deprecated. Please update settings.voice instead. Requested:', voiceName);
     
     // If playing, restart with new voice after settings are updated
     if (state.isPlaying) {

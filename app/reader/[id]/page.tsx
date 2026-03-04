@@ -341,6 +341,7 @@ export default function ReaderPage() {
   const [autoAdvanceElapsed, setAutoAdvanceElapsed] = useState(0);
   const autoAdvanceIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const autoAdvanceStartRef = useRef<number | null>(null);
+  const [isTTSPlaying, setIsTTSPlaying] = useState(false);
 
   const fontFamilyClass = getFontFamilyClass(settings.accessibility?.fontFamily || 'serif');
   const fontSizeClasses = getFontSizeClasses(settings.fontSize);
@@ -349,12 +350,16 @@ export default function ReaderPage() {
   const isDetox = settings.theme === 'detox';
   const isHighContrast = settings.theme === 'high-contrast';
 
-  const autoAdvance = settings.autoAdvance || {
+  const autoAdvance = useMemo(() => settings.autoAdvance || {
     enabled: false,
     wpm: 200,
     autoStart: false,
     showProgress: true,
-  };
+  }, [settings.autoAdvance]);
+  const isTTSFlowEnabled = Boolean(settings.tts?.enabled);
+  const ttsPositionStorageKey = id ? `tts-position:${id}` : '';
+  const isTTSHighlightEnabled = Boolean(settings.tts?.enabled && settings.tts?.highlightText && isTTSPlaying);
+  const activeAdvanceMode = isTTSFlowEnabled ? 'Voz' : isAutoAdvanceActive && !isAutoAdvancePaused ? 'Timer' : 'Manual';
   
   // Get reading transition setting
   const readingTransition = settings.accessibility?.readingTransition || 'fade-theme';
@@ -378,6 +383,14 @@ export default function ReaderPage() {
     return processContent(reading.title, reading.content);
   }, [reading]);
 
+  // Create full text for TTS preserving each processed sentence as one unit
+  const fullTextForTTS = useMemo(() => {
+    return processedText
+      .map((item) => item.sentence.trim())
+      .filter(Boolean)
+      .join('\n');
+  }, [processedText]);
+
   const autoAdvanceDurationMs = useMemo(() => {
     if (processedText.length === 0) return 0;
     const safeIndex = Math.max(0, Math.min(currentIndex, processedText.length - 1));
@@ -386,10 +399,20 @@ export default function ReaderPage() {
 
   // Reset index when reading changes (using derived state pattern)
   if (id !== lastReadingId) {
+    const saved = typeof window !== 'undefined' && id ? localStorage.getItem(`tts-position:${id}`) : null;
+    const parsed = saved ? Number(saved) : 0;
+    const restoredIndex = Number.isFinite(parsed) ? Math.max(0, parsed) : 0;
+
     setLastReadingId(id);
-    setCurrentIndex(0);
-    setAnnouncedIndex(0);
+    setCurrentIndex(restoredIndex);
+    setAnnouncedIndex(restoredIndex);
   }
+
+  // Persist current position for this reading
+  useEffect(() => {
+    if (!id || !ttsPositionStorageKey || processedText.length === 0) return;
+    localStorage.setItem(ttsPositionStorageKey, String(currentIndex));
+  }, [id, currentIndex, processedText.length, ttsPositionStorageKey]);
 
   // Debounce announcements to avoid overwhelming screen readers during rapid navigation
   useEffect(() => {
@@ -480,7 +503,8 @@ export default function ReaderPage() {
   }, [processedText.length, isTransitioning, settings.accessibility?.reduceMotion, readingTransition, isAutoAdvanceActive, isAutoAdvancePaused]);
 
   useEffect(() => {
-    if (!autoAdvance.enabled || !isAutoAdvanceActive || isAutoAdvancePaused || autoAdvanceDurationMs === 0) {
+    // When TTS is enabled, TTS controls sentence/page progression to avoid desync with timer
+    if (!autoAdvance.enabled || !isAutoAdvanceActive || isAutoAdvancePaused || isTTSFlowEnabled || isTTSPlaying || autoAdvanceDurationMs === 0) {
       clearAutoAdvanceTimer();
       return;
     }
@@ -516,10 +540,12 @@ export default function ReaderPage() {
     handleNext,
     isAutoAdvanceActive,
     isAutoAdvancePaused,
+    isTTSFlowEnabled,
+    isTTSPlaying,
     processedText.length,
   ]);
 
-  const handleAutoAdvanceToggle = () => {
+  const handleAutoAdvanceToggle = useCallback(() => {
     if (!isAutoAdvanceActive) {
       setIsAutoAdvanceActive(true);
       setIsAutoAdvancePaused(false);
@@ -531,7 +557,7 @@ export default function ReaderPage() {
     } else {
       setIsAutoAdvancePaused(true);
     }
-  };
+  }, [isAutoAdvanceActive, isAutoAdvancePaused]);
 
   const handlePrevious = useCallback(() => {
     if (isTransitioning) return; // Prevent multiple transitions
@@ -868,9 +894,14 @@ export default function ReaderPage() {
             <Link href="/" className="text-sm text-blue-500 hover:text-blue-600">
               ← Back to Dashboard
             </Link>
-            <span className={`text-sm ${themeClasses.textSecondary}`}>
-              {safeIndex + 1} / {processedText.length}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className={`text-[11px] px-2 py-0.5 rounded-full border ${themeClasses.border} ${themeClasses.textSecondary}`}>
+                Avance: {activeAdvanceMode}
+              </span>
+              <span className={`text-sm ${themeClasses.textSecondary}`}>
+                {safeIndex + 1} / {processedText.length}
+              </span>
+            </div>
           </div>
           <div className={`w-full ${theme.progressBar.background} rounded-full h-2 overflow-hidden`}>
             <div
@@ -909,6 +940,12 @@ export default function ReaderPage() {
               ? 'reading-transition-fade-enter'
               : readingTransition === 'swipe'
               ? 'reading-transition-swipe-enter'
+              : ''
+          } ${
+            isTTSHighlightEnabled
+              ? isDark
+                ? 'ring-2 ring-purple-500/50 rounded-xl px-3 py-2'
+                : 'ring-2 ring-emerald-500/40 rounded-xl px-3 py-2'
               : ''
           }`}
           style={{ 
@@ -1235,13 +1272,23 @@ export default function ReaderPage() {
       {/* Text-to-Speech Player */}
       {settings.tts && settings.tts.enabled && (
         <TTSPlayer
-          text={currentSentence.sentence}
+          text={fullTextForTTS}
           settings={settings.tts}
-          onComplete={() => {
-            // When TTS completes current sentence, move to next
-            if (!isFinished) {
-              handleNext();
+          onSentenceChange={(sentenceIndex) => {
+            // Sync slide with TTS sentence
+            if (sentenceIndex >= 0 && sentenceIndex < processedText.length) {
+              setCurrentIndex(sentenceIndex);
+              // Reset timer when TTS changes sentence to keep them synchronized
+              setAutoAdvanceElapsed(0);
+              autoAdvanceStartRef.current = Date.now();
             }
+          }}
+          onPlayingStateChange={(isPlaying) => {
+            setIsTTSPlaying(isPlaying);
+          }}
+          onComplete={() => {
+            // TTS finished reading all sentences
+            // Do nothing here - index is already at the last sentence
           }}
         />
       )}

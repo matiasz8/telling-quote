@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { TTSSettings } from '@/types';
 import { useTTS } from '@/hooks/useTTS';
 import { cn } from '@/lib/utils';
@@ -10,6 +10,7 @@ type TTSPlayerProps = {
   settings: TTSSettings;
   onSentenceChange?: (index: number) => void;
   onComplete?: () => void;
+  onPlayingStateChange?: (isPlaying: boolean) => void;
   className?: string;
 };
 
@@ -18,19 +19,42 @@ export function TTSPlayer({
   settings,
   onSentenceChange,
   onComplete,
+  onPlayingStateChange,
   className,
 }: TTSPlayerProps) {
+  const [isAutoplayBlocked, setIsAutoplayBlocked] = useState(false);
+
   const { state, actions } = useTTS({
     settings,
     onSentenceChange,
     onComplete,
     onError: (error) => {
+      if (error.message.includes('not-allowed')) {
+        setIsAutoplayBlocked(true);
+        return;
+      }
       console.error('TTS Error:', error);
     },
   });
 
   const hasLoadedRef = useRef(false);
   const prevTextRef = useRef<string>(text);
+  const prevReadingIdRef = useRef<string>('');
+  const autoPlayTriggeredRef = useRef(false);
+
+  // Detect reading changes by checking text content significantly changed
+  const currentReadingId = text.slice(0, 50); // Use first 50 chars as identifier
+  
+  // Reset loaded flag when reading changes
+  useEffect(() => {
+    if (currentReadingId !== prevReadingIdRef.current && prevReadingIdRef.current !== '') {
+      hasLoadedRef.current = false;
+      autoPlayTriggeredRef.current = false; // Reset autoPlay flag for new reading
+      prevReadingIdRef.current = currentReadingId;
+    } else if (prevReadingIdRef.current === '') {
+      prevReadingIdRef.current = currentReadingId;
+    }
+  }, [currentReadingId]);
 
   // Load text when component mounts or text changes
   useEffect(() => {
@@ -38,6 +62,15 @@ export function TTSPlayer({
 
     const isTextChanged = text !== prevTextRef.current;
     const wasPlaying = state.isPlaying;
+
+    console.log('[TTSPlayer] Load effect triggered:', {
+      isTextChanged,
+      wasPlaying,
+      hasLoaded: hasLoadedRef.current,
+      autoPlay: settings.autoPlay,
+      enabled: settings.enabled,
+      textLength: text.length,
+    });
 
     if (isTextChanged) {
       // Text changed, need to reload
@@ -51,15 +84,62 @@ export function TTSPlayer({
       }
     } else if (!hasLoadedRef.current) {
       // Initial load
+      console.log('[TTSPlayer] Initial load - loading text');
       actions.load(text);
       hasLoadedRef.current = true;
-
-      // Auto-play if enabled
-      if (settings.autoPlay && settings.enabled) {
-        setTimeout(() => actions.play(), 300);
-      }
+      // AutoPlay will be handled by separate useEffect when sentences are ready
     }
   }, [text, settings.autoPlay, settings.enabled, actions, state.isPlaying]);
+
+  // Auto-play when text is loaded and ready
+  useEffect(() => {
+    if (
+      settings.autoPlay && 
+      settings.enabled && 
+      state.totalSentences > 0 && 
+      !state.isPlaying && 
+      hasLoadedRef.current &&
+      !autoPlayTriggeredRef.current
+    ) {
+      console.log('[TTSPlayer] Text loaded and ready, triggering auto-play');
+      autoPlayTriggeredRef.current = true; // Mark as triggered
+      
+      // Small delay to ensure everything is ready
+      const timer = setTimeout(() => {
+        console.log('[TTSPlayer] Executing auto-play');
+        actions.play();
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [settings.autoPlay, settings.enabled, state.totalSentences, state.isPlaying, actions]);
+
+  // If browser blocks autoplay, retry once user interacts with the page
+  useEffect(() => {
+    if (!isAutoplayBlocked || !settings.enabled || !settings.autoPlay || state.isPlaying) {
+      return;
+    }
+
+    const retryPlayback = () => {
+      setIsAutoplayBlocked(false);
+      actions.play();
+    };
+
+    window.addEventListener('pointerdown', retryPlayback, { once: true });
+    window.addEventListener('keydown', retryPlayback, { once: true });
+
+    return () => {
+      window.removeEventListener('pointerdown', retryPlayback);
+      window.removeEventListener('keydown', retryPlayback);
+    };
+  }, [isAutoplayBlocked, settings.enabled, settings.autoPlay, state.isPlaying, actions]);
+
+  // Notify parent when playing state changes
+  useEffect(() => {
+    if (onPlayingStateChange) {
+      onPlayingStateChange(state.isPlaying);
+    }
+  }, [state.isPlaying, onPlayingStateChange]);
 
   // Handle keyboard shortcuts
   useEffect(() => {
@@ -103,23 +183,45 @@ export function TTSPlayer({
     ? (state.currentSentenceIndex / state.totalSentences) * 100
     : 0;
 
+  const playbackStatusLabel = isAutoplayBlocked
+    ? 'Bloqueado por navegador'
+    : state.isPlaying
+    ? 'Leyendo'
+    : state.isPaused
+    ? 'Pausado'
+    : 'Listo';
+
+  const handleToggle = () => {
+    setIsAutoplayBlocked(false);
+    actions.toggle();
+  };
+
   return (
-    <div
-      className={cn(
-        'fixed bottom-4 left-1/2 -translate-x-1/2',
-        'bg-white dark:bg-gray-800 rounded-lg shadow-lg',
-        'border border-gray-200 dark:border-gray-700',
-        'px-4 py-3 flex items-center gap-4',
-        'min-w-[320px] max-w-md',
-        'z-40',
-        className
+    <>
+      {isAutoplayBlocked && (
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
+          <div className="rounded-full border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs text-amber-700 shadow-sm dark:border-amber-700 dark:bg-amber-950/80 dark:text-amber-300">
+            Autoplay bloqueado. Toca la pantalla o presiona una tecla.
+          </div>
+        </div>
       )}
-      role="region"
-      aria-label="Text-to-Speech Player"
-    >
+
+      <div
+        className={cn(
+          'fixed bottom-4 left-1/2 -translate-x-1/2',
+          'bg-white dark:bg-gray-800 rounded-lg shadow-lg',
+          'border border-gray-200 dark:border-gray-700',
+          'px-3 sm:px-4 py-2.5 sm:py-3 flex items-center gap-3 sm:gap-4',
+          'min-w-[280px] sm:min-w-[320px] max-w-md',
+          'z-40',
+          className
+        )}
+        role="region"
+        aria-label="Text-to-Speech Player"
+      >
       {/* Play/Pause Button */}
       <button
-        onClick={actions.toggle}
+        onClick={handleToggle}
         className={cn(
           'w-10 h-10 rounded-full flex items-center justify-center',
           'transition-all duration-200',
@@ -156,7 +258,7 @@ export function TTSPlayer({
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between text-sm mb-1">
           <span className="text-gray-700 dark:text-gray-300 font-medium">
-            {state.isPlaying ? 'Leyendo' : state.isPaused ? 'Pausado' : 'Listo'}
+            {playbackStatusLabel}
           </span>
           <span className="text-gray-500 dark:text-gray-400 text-xs">
             {state.currentSentenceIndex + 1} / {state.totalSentences}
@@ -181,7 +283,7 @@ export function TTSPlayer({
         onClick={actions.previousSentence}
         disabled={state.currentSentenceIndex === 0}
         className={cn(
-          'w-8 h-8 rounded flex items-center justify-center',
+          'w-10 h-10 sm:w-8 sm:h-8 rounded flex items-center justify-center',
           'transition-colors duration-200',
           'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
           state.currentSentenceIndex === 0
@@ -206,7 +308,7 @@ export function TTSPlayer({
         onClick={actions.nextSentence}
         disabled={state.currentSentenceIndex >= state.totalSentences - 1}
         className={cn(
-          'w-8 h-8 rounded flex items-center justify-center',
+          'w-10 h-10 sm:w-8 sm:h-8 rounded flex items-center justify-center',
           'transition-colors duration-200',
           'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
           state.currentSentenceIndex >= state.totalSentences - 1
@@ -230,7 +332,7 @@ export function TTSPlayer({
       <button
         onClick={actions.stop}
         className={cn(
-          'w-8 h-8 rounded flex items-center justify-center',
+          'w-10 h-10 sm:w-8 sm:h-8 rounded flex items-center justify-center',
           'text-gray-600 dark:text-gray-400',
           'hover:bg-gray-100 dark:hover:bg-gray-700',
           'transition-colors duration-200',
@@ -257,6 +359,7 @@ export function TTSPlayer({
           ? 'Paused'
           : 'Stopped'}
       </div>
-    </div>
+      </div>
+    </>
   );
 }
