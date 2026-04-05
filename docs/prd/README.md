@@ -1,5 +1,8 @@
 # Product Requirements Documents (PRD)
 
+> Migration note: the official location is now `docs/02-prd/`.
+> Keep this folder read-only during migration and create new PRDs in `docs/02-prd/`.
+
 ## Overview
 
 This directory contains Product Requirements Documents for tellingQuote features. Each PRD defines the "what" and "why" of a feature before implementation.

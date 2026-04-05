@@ -130,6 +130,18 @@ telling-quote/
     └── index.ts              # Type definitions
 ```
 
+## 📚 Documentation Structure
+
+Project documentation follows the standardized layout used by frontend-template:
+
+- `docs/00-roadmap/`
+- `docs/01-governance/`
+- `docs/02-prd/`
+- `docs/03-trd/`
+- `docs/04-ard/`
+
+Start from `docs/README.md` and `docs/01-governance/governance-workflow.md` before opening or implementing a feature.
+
 ## 🎯 Usage
 
 1. **Create a reading**: Click "New Reading" on the dashboard

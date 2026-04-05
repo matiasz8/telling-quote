@@ -1,5 +1,8 @@
 # Technical Requirements Documents (TRD)
 
+> Migration note: the official location is now `docs/03-trd/`.
+> Keep this folder read-only during migration and create new TRDs in `docs/03-trd/`.
+
 ## Overview
 
 This directory contains Technical Requirements Documents for tellingQuote features. Each TRD defines the "how" - the technical implementation details for features defined in PRDs.
