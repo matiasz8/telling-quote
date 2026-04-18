@@ -75,6 +75,7 @@ export function useTTS(options: UseTTSOptions) {
   const sentencesRef = useRef<string[]>([]);
   const isStoppedRef = useRef(false);
   const speakSentenceRef = useRef<((index: number) => void) | null>(null);
+  const voiceLoadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Report error if not supported
   useEffect(() => {
@@ -83,9 +84,16 @@ export function useTTS(options: UseTTSOptions) {
     }
   }, [isSupported, onError]);
 
-  // Load available voices (using useLayoutEffect to load synchronously)
+  // Load available voices with timeout fallback for browsers that delay voice init.
   useLayoutEffect(() => {
     if (!state.isSupported) return;
+
+    const clearVoiceLoadTimeout = () => {
+      if (voiceLoadTimeoutRef.current) {
+        clearTimeout(voiceLoadTimeoutRef.current);
+        voiceLoadTimeoutRef.current = null;
+      }
+    };
 
     const loadVoices = () => {
       const voices = window.speechSynthesis.getVoices();
@@ -96,9 +104,10 @@ export function useTTS(options: UseTTSOptions) {
       }
 
       dlog('[useTTS] Loaded', voices.length, 'voices');
+      clearVoiceLoadTimeout();
       
       // Prefer Neural/Premium voices
-      const sortedVoices = voices.sort((a, b) => {
+      const sortedVoices = [...voices].sort((a, b) => {
         const aIsNeural = a.name.includes('Neural') || a.name.includes('Premium');
         const bIsNeural = b.name.includes('Neural') || b.name.includes('Premium');
         if (aIsNeural && !bIsNeural) return -1;
@@ -112,15 +121,20 @@ export function useTTS(options: UseTTSOptions) {
     // Load voices immediately
     loadVoices();
 
+    voiceLoadTimeoutRef.current = setTimeout(() => {
+      if (window.speechSynthesis.getVoices().length === 0 && onError) {
+        onError(new Error('Speech voices failed to load in time.'));
+      }
+    }, 2500);
+
     // Voices might load asynchronously in some browsers
-    if (window.speechSynthesis.onvoiceschanged !== undefined) {
-      window.speechSynthesis.onvoiceschanged = loadVoices;
-    }
+    window.speechSynthesis.addEventListener('voiceschanged', loadVoices);
 
     return () => {
-      window.speechSynthesis.onvoiceschanged = null;
+      clearVoiceLoadTimeout();
+      window.speechSynthesis.removeEventListener('voiceschanged', loadVoices);
     };
-  }, [state.isSupported]);
+  }, [state.isSupported, onError]);
 
   // Parse text into speakable chunks
   const parseTextIntoSentences = useCallback((text: string): string[] => {
@@ -312,6 +326,13 @@ export function useTTS(options: UseTTSOptions) {
       return;
     }
 
+    if (!currentVoice && state.availableVoices.length === 0) {
+      if (onError) {
+        onError(new Error('No speech voices available.'));
+      }
+      return;
+    }
+
     if (state.isPaused) {
       // Resume paused speech
       dlog('[useTTS] Resuming paused speech');
@@ -322,7 +343,16 @@ export function useTTS(options: UseTTSOptions) {
       dlog('[useTTS] Starting from sentence:', state.currentSentenceIndex);
       speakSentence(state.currentSentenceIndex);
     }
-  }, [state.isSupported, state.isPaused, state.currentSentenceIndex, settings.enabled, speakSentence, currentVoice]);
+  }, [
+    state.isSupported,
+    state.isPaused,
+    state.currentSentenceIndex,
+    state.availableVoices.length,
+    settings.enabled,
+    speakSentence,
+    currentVoice,
+    onError,
+  ]);
 
   // Pause current speech
   const pause = useCallback(() => {
@@ -403,6 +433,9 @@ export function useTTS(options: UseTTSOptions) {
   // Cleanup on unmount
   useEffect(() => {
     return () => {
+      if (voiceLoadTimeoutRef.current) {
+        clearTimeout(voiceLoadTimeoutRef.current);
+      }
       window.speechSynthesis.cancel();
     };
   }, []);

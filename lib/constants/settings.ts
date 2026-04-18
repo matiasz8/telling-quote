@@ -21,7 +21,7 @@ export const THEME_OPTIONS: { value: Theme; label: string }[] = [
   { value: 'light', label: '☀️ Claro' },
   { value: 'dark', label: '🌙 Oscuro' },
   { value: 'detox', label: '🧘 Detox' },
-  { value: 'high-contrast', label: '♿ Alto Contraste' },
+  { value: 'high-contrast', label: '🔳 Contraste Reforzado' },
 ];
 
 export const READING_TRANSITION_OPTIONS: { value: ReadingTransition; label: string; description: string }[] = [

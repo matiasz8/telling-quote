@@ -345,7 +345,15 @@ export default function SettingsModal({ isOpen, onClose, settings, onSave }: Set
             aria-label="Accessibility settings section"
             data-tour="settings-accessibility-header"
           >
-            <span className="font-semibold">Accesibilidad</span>
+            <span className="flex items-center gap-2 font-semibold">
+              <span
+                className={`inline-flex h-6 min-w-6 items-center justify-center rounded-full px-1.5 text-xs font-bold ${getHeaderBgClass()}`}
+                aria-hidden="true"
+              >
+                Aa
+              </span>
+              <span>Accesibilidad</span>
+            </span>
             <svg className={`w-5 h-5 transition-transform ${expandedSection === 'accessibility' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
             </svg>

@@ -11,7 +11,19 @@
     "type-check": "tsc --noEmit",
     "clean": "rm -rf .next out node_modules/.cache",
     "validate": "npm run type-check && npm run lint",
-    "prepare": "husky"
+    "validate:traceability": "node scripts/validate-traceability.mjs",
+    "validate:docs": "node scripts/validate-prd-trd.mjs && npm run validate:traceability",
+    "review:agent": "npm run validate:docs && npm run type-check && npm run lint",
+    "prepare": "husky",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:a11y": "playwright test --project=accessibility",
+    "test:visual": "playwright test --project=visual",
+    "test:report": "playwright show-report",
+    "emulators:start": "firebase emulators:start --only auth,firestore",
+    "emulators:start:seed": "firebase emulators:start --only auth,firestore --import=.firebase/emulator-data --export-on-exit",
+    "emulators:export": "firebase emulators:export .firebase/emulator-data"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
@@ -32,6 +44,8 @@
     "react-dom": "^19.2.3"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.2",
+    "@playwright/test": "^1.59.1",
     "@tailwindcss/postcss": "^4",
     "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^20",
@@ -40,6 +54,7 @@
     "baseline-browser-mapping": "^2.9.11",
     "eslint": "^9",
     "eslint-config-next": "16.0.1",
+    "firebase-tools": "^14.24.2",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
     "tailwindcss": "^4",

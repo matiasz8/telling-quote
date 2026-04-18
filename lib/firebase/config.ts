@@ -1,6 +1,12 @@
 import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
-import { getFirestore, Firestore, enableIndexedDbPersistence } from 'firebase/firestore';
+import {
+  getFirestore,
+  Firestore,
+  connectFirestoreEmulator,
+  enableIndexedDbPersistence,
+} from 'firebase/firestore';
+import { connectAuthEmulator } from 'firebase/auth';
 
 // Firebase configuration
 // TODO: Replace with your actual Firebase config from Firebase Console
@@ -13,6 +19,14 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '',
 };
 
+const useEmulator = process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATOR === 'true';
+const firestoreHost = process.env.NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST || '127.0.0.1';
+const firestorePort = Number(process.env.NEXT_PUBLIC_FIRESTORE_EMULATOR_PORT || '8080');
+const authHost = process.env.NEXT_PUBLIC_FIREBASE_AUTH_EMULATOR_HOST || '127.0.0.1';
+const authPort = Number(process.env.NEXT_PUBLIC_FIREBASE_AUTH_EMULATOR_PORT || '9099');
+
+let emulatorConnected = false;
+
 // Initialize Firebase
 function initializeFirebase() {
   if (typeof window === 'undefined') {
@@ -23,6 +37,15 @@ function initializeFirebase() {
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+
+    // Connect local emulators for deterministic local development and tests.
+    if (useEmulator && !emulatorConnected) {
+      connectAuthEmulator(auth, `http://${authHost}:${authPort}`, {
+        disableWarnings: true,
+      });
+      connectFirestoreEmulator(db, firestoreHost, firestorePort);
+      emulatorConnected = true;
+    }
 
     // Enable offline persistence (will show deprecation warning but it works)
     if (typeof window !== 'undefined') {
@@ -41,6 +64,14 @@ function initializeFirebase() {
   const app = getApps()[0];
   const auth = getAuth(app);
   const db = getFirestore(app);
+
+  if (useEmulator && !emulatorConnected) {
+    connectAuthEmulator(auth, `http://${authHost}:${authPort}`, {
+      disableWarnings: true,
+    });
+    connectFirestoreEmulator(db, firestoreHost, firestorePort);
+    emulatorConnected = true;
+  }
 
   return { app, auth, db };
 }

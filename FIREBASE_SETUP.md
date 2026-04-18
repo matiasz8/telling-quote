@@ -192,3 +192,31 @@ Una vez configurado Firebase:
 - [Firebase Documentation](https://firebase.google.com/docs)
 - [Firestore Security Rules Guide](https://firebase.google.com/docs/firestore/security/get-started)
 - [Firebase Authentication Guide](https://firebase.google.com/docs/auth/web/google-signin)
+
+## Firebase Emulator (Desarrollo Local)
+
+Para desarrollo y validación local sin tocar Firebase cloud:
+
+1. En `.env.local`, activa:
+
+```env
+NEXT_PUBLIC_USE_FIREBASE_EMULATOR=true
+NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST=127.0.0.1
+NEXT_PUBLIC_FIRESTORE_EMULATOR_PORT=8080
+NEXT_PUBLIC_FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1
+NEXT_PUBLIC_FIREBASE_AUTH_EMULATOR_PORT=9099
+```
+
+2. Inicia emuladores:
+
+```bash
+npm run emulators:start
+```
+
+3. (Opcional) Persistir dataset local para pruebas reproducibles:
+
+```bash
+npm run emulators:start:seed
+```
+
+Con esto, Auth y Firestore quedan aislados en local (sin costo y sin riesgo sobre datos reales).

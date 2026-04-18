@@ -102,7 +102,7 @@ export default function AccessibilityStatement() {
                   🎨 Visual Accessibility
                 </h3>
                 <ul className={`${themeClasses.textSecondary} space-y-2 ml-6`}>
-                  <li><strong>Four Theme Options:</strong> Light, Dark, Detox (minimal), and High Contrast (21:1 ratio)</li>
+                  <li><strong>Four Theme Options:</strong> Light, Dark, Detox (minimal), and Contrast Boost (21:1 ratio)</li>
                   <li><strong>Dyslexia-Friendly Fonts:</strong> OpenDyslexic, Comic Sans, Atkinson Hyperlegible</li>
                   <li><strong>Text Spacing Controls:</strong> Adjustable letter, line, and word spacing</li>
                   <li><strong>Font Size Control:</strong> Four adjustable font size options</li>
