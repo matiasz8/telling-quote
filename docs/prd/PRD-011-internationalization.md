@@ -2,7 +2,7 @@
 
 **Status:** Draft  
 **Created:** 2025-06-XX  
-**Last Updated:** 2025-06-XX  
+**Last Updated:** 2026-04-24  
 **Owner:** Product Team  
 **Related:** N/A
 
@@ -197,6 +197,50 @@ function Header() {
 
 **Recommendation:** Use **Approach 1** (React Context) for simplicity, control, and minimal bundle size.
 
+### 3.3 Explicit Functional Requirement Summary
+
+#### FR-1: Runtime Language Switching
+
+- Users must be able to switch between Spanish and English from the Settings modal.
+- The visible interface must update immediately without full page reload.
+
+#### FR-2: Translation Coverage for Core UI
+
+- Shared UI surfaces such as header, settings, modals, dashboard labels, and reader navigation must be translated.
+- Translation coverage must include helper text, button labels, and validation copy.
+
+#### FR-3: Persistent Language Preference
+
+- The selected language must persist across refreshes and sessions via localStorage.
+- Missing preference state must fall back safely to Spanish.
+
+#### FR-4: Tutorial and Accessibility Text Coverage
+
+- Tutorials, keyboard shortcuts, ARIA labels, and screen-reader announcements must follow the active language.
+- The HTML `lang` attribute must stay synchronized with the active locale.
+
+#### FR-5: Fallback and Translation Safety
+
+- Missing translation keys must fall back safely without breaking the interface.
+- Shared translation primitives must be reusable across components, tutorials, and accessibility copy.
+
+### 3.4 Non-Functional Requirements
+
+#### NFR-1: Performance
+
+- Language switching must remain responsive and must not introduce noticeable UI lag.
+- Bundle size impact for two-language support should remain modest.
+
+#### NFR-2: Maintainability
+
+- Translation keys must be organized predictably so future contributors can add copy safely.
+- Missing key handling must fail gracefully without breaking UI rendering.
+
+#### NFR-3: Accessibility
+
+- Screen readers must announce translated labels in the correct language.
+- Internationalization must not regress WCAG behavior already supported by the product.
+
 ---
 
 ## 4. Technical Specifications
@@ -369,39 +413,163 @@ const STORAGE_KEY = 'user-language';
 
 ## 6. Implementation Plan
 
-### Phase 1: Foundation (Week 1)
-- [ ] Create `lib/i18n/` directory structure
-- [ ] Implement `I18nProvider` context and `useTranslation` hook
-- [ ] Create Spanish (`es.ts`) and English (`en.ts`) translation files
-- [ ] Add language selector to SettingsModal
-- [ ] Test language switching mechanism
+### Stage Summary
 
-### Phase 2: Core Components (Week 2)
-- [ ] Translate `Header.tsx`
-- [ ] Translate `SettingsModal.tsx`
-- [ ] Translate `NewReadingModal.tsx`
-- [ ] Translate `KeyboardShortcutsModal.tsx`
-- [ ] Translate `ConfirmDeleteModal.tsx`
-- [ ] Translate `EditTitleModal.tsx`
+| Stage | Goal | Main Output | Estimate |
+|------|------|-------------|----------|
+| 0 | Audit current text surfaces | Inventory of all translatable strings | 1-2 days |
+| 1 | Build i18n foundation | Provider, hook, dictionaries, persistence | 2-3 days |
+| 2 | Translate core settings and global UI | Header, settings, modals, shared labels | 3-4 days |
+| 3 | Translate guided flows and reading surfaces | Tutorials, dashboard, reader, cards | 3-4 days |
+| 4 | Accessibility and regression hardening | ARIA coverage, testing, translation QA | 2-3 days |
+| 5 | Documentation and rollout | TRD-011, contributor guidance, release checklist | 1-2 days |
 
-### Phase 3: Tutorials (Week 3)
-- [ ] Translate `lib/tutorial/steps.ts`
-- [ ] Translate `lib/tutorial/config.ts`
-- [ ] Update tutorial system to use translation hook
-- [ ] Test all three tutorials in both languages
+**Total estimate:** 12-18 working days
 
-### Phase 4: Reader & Dashboard (Week 4)
-- [ ] Translate reader navigation
-- [ ] Translate `ReadingCard.tsx`
-- [ ] Translate dashboard page
-- [ ] Translate accessibility page
+### Stage 0: Text Audit & Scope Freeze
 
-### Phase 5: Testing & Polish (Week 5)
-- [ ] Manual testing of all flows in both languages
-- [ ] Verify accessibility with screen readers in both languages
-- [ ] Check for missing translations
-- [ ] Update documentation
-- [ ] Create TRD-011
+**Objective:** Identify every string that must move out of components before implementation starts.
+
+**Tasks:**
+- [ ] Audit all user-facing strings in `app/`, `components/`, `lib/tutorial/`, and accessibility-only text.
+- [ ] Classify strings by type: visible UI, validation/error copy, ARIA labels, tutorial copy, keyboard help.
+- [ ] Identify strings that must remain user-generated and should not be translated (titles, tags, reading content).
+- [ ] Define translation key naming convention and folder structure.
+- [ ] Confirm MVP scope is Spanish + English only.
+
+**Deliverables:**
+- [ ] String inventory document or checklist.
+- [ ] Final list of MVP files to migrate.
+- [ ] Approved key naming scheme.
+
+**Exit criteria:**
+- [ ] No major UI surface remains unaccounted for.
+- [ ] Product and engineering agree on MVP scope.
+
+### Stage 1: Foundation & Runtime Infrastructure
+
+**Objective:** Build the minimum technical base required for runtime language switching.
+
+**Tasks:**
+- [ ] Create `lib/i18n/` directory structure.
+- [ ] Implement `I18nProvider` context and `useTranslation` hook.
+- [ ] Create Spanish (`es.ts`) and English (`en.ts`) dictionaries.
+- [ ] Persist selected language to localStorage.
+- [ ] Update HTML `lang` attribute when the active language changes.
+- [ ] Add fallback behavior for missing translation keys.
+
+**Deliverables:**
+- [ ] Working provider mounted near app root.
+- [ ] Runtime language switching without page reload.
+- [ ] Baseline dictionary coverage for common/shared labels.
+
+**Exit criteria:**
+- [ ] Language change works globally in a sample component.
+- [ ] Refresh preserves selected language.
+- [ ] Missing keys fail safely without breaking rendering.
+
+### Stage 2: Core UI Migration
+
+**Objective:** Translate the highest-frequency interface surfaces first.
+
+**Scope:**
+- `components/Header.tsx`
+- `components/SettingsModal.tsx`
+- `components/NewReadingModal.tsx`
+- `components/KeyboardShortcutsModal.tsx`
+- `components/ConfirmDeleteModal.tsx`
+- `components/EditTitleModal.tsx`
+
+**Tasks:**
+- [ ] Replace hardcoded strings with translation keys.
+- [ ] Add language selector to Settings modal.
+- [ ] Translate shared actions: save, cancel, close, delete, edit, confirm.
+- [ ] Translate validation and helper copy used in modals.
+- [ ] Verify English text does not break spacing or layout.
+
+**Deliverables:**
+- [ ] Settings-driven language selection fully usable.
+- [ ] Core global actions translated in both languages.
+- [ ] Shared modal flows working in Spanish and English.
+
+**Exit criteria:**
+- [ ] A user can change language from Settings and see immediate effect in core modals.
+- [ ] No hardcoded Spanish remains in core shared components.
+
+### Stage 3: Guided Flows, Dashboard & Reader
+
+**Objective:** Complete the product experience beyond the shared UI shell.
+
+**Scope:**
+- `lib/tutorial/steps.ts`
+- `lib/tutorial/config.ts`
+- `app/page.tsx`
+- `app/reader/[id]/page.tsx`
+- `components/ReadingCard.tsx`
+- `app/accessibility/page.tsx`
+
+**Tasks:**
+- [ ] Translate all tutorial steps, CTA labels, and dismiss actions.
+- [ ] Ensure tutorial restarts or re-renders safely when language changes.
+- [ ] Translate dashboard labels, counters, and empty states.
+- [ ] Translate reader navigation, progress labels, and helper text.
+- [ ] Translate accessibility-specific explanatory content.
+
+**Deliverables:**
+- [ ] Full primary user journey available in both languages.
+- [ ] Tutorial system aligned with active UI language.
+- [ ] Dashboard and reader free of hardcoded Spanish UI strings.
+
+**Exit criteria:**
+- [ ] New user can complete onboarding in Spanish or English.
+- [ ] Reading flow remains consistent when switching language between sessions.
+
+### Stage 4: Accessibility, QA & Content Verification
+
+**Objective:** Ensure the translated product is not only functional but also accessible and maintainable.
+
+**Tasks:**
+- [ ] Translate all ARIA labels, titles, and screen-reader-only copy.
+- [ ] Verify screen readers announce content in the correct language.
+- [ ] Run manual regression checks in both languages across settings, tutorial, dashboard, and reader.
+- [ ] Check missing-key fallbacks and untranslated strings.
+- [ ] Validate no layout overflow or truncation in English.
+
+**Deliverables:**
+- [ ] Bilingual QA checklist completed.
+- [ ] Accessibility sign-off for both languages.
+- [ ] List of deferred enhancements (pluralization, locale formatting, browser detection).
+
+**Exit criteria:**
+- [ ] No critical untranslated strings remain in MVP surfaces.
+- [ ] Accessibility behavior is preserved after translation.
+
+### Stage 5: Documentation, Handoff & Rollout
+
+**Objective:** Close the workstream with technical design, contributor guidance, and release readiness.
+
+**Tasks:**
+- [ ] Create `TRD-011` with technical architecture and file-level implementation plan.
+- [ ] Update contributor docs if translation workflow introduces new conventions.
+- [ ] Document how to add new translation keys and new languages.
+- [ ] Define release checklist for bilingual verification.
+- [ ] Record post-launch metrics to track adoption and missing translations.
+
+**Deliverables:**
+- [ ] TRD-011 completed and linked.
+- [ ] Translation maintenance instructions documented.
+- [ ] Rollout checklist ready for release.
+
+**Exit criteria:**
+- [ ] Feature is implementable and reviewable end-to-end.
+- [ ] Future contributors can extend translations without re-deriving conventions.
+
+### Recommended Delivery Order
+
+1. Ship Stage 0 + Stage 1 together so the repo gets one stable i18n foundation early.
+2. Ship Stage 2 next because it unlocks visible language switching for users.
+3. Ship Stage 3 after the base is proven stable.
+4. Reserve Stage 4 and Stage 5 as release gates, not optional cleanup.
 
 ---
 
@@ -495,6 +663,17 @@ useEffect(() => {
 - [ ] AI-powered translation of reading content
 - [ ] Language tags for readings (EN, ES, FR, etc.)
 - [ ] Filter readings by language
+
+---
+
+## Dependencies
+
+- **Blocks:** None
+- **Blocked by:** None
+- **Requires:**
+  - Settings infrastructure for preference persistence
+  - Tutorial copy centralization for bilingual support
+  - Accessibility review to validate translated ARIA and live-region content
 
 ---
 

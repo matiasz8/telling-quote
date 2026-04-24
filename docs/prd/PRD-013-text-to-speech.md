@@ -626,6 +626,17 @@ function estimateSpeechDuration(text: string, rate: number): number {
 
 ---
 
+## Open Questions (Resolved)
+
+1. Should offline voice packs be required for the first release?
+  - Decision: No. Browser-provided voices are sufficient for the initial version.
+2. Should pitch and volume customization be part of MVP?
+  - Decision: No. MVP focuses on voice selection, rate, and playback control.
+3. Should TTS continue when the tab is no longer active?
+  - Decision: No for MVP. Background playback remains a future enhancement.
+
+---
+
 ## 10. Testing Checklist
 
 ### Functionality
@@ -702,6 +713,18 @@ function estimateSpeechDuration(text: string, rate: number): number {
 
 ---
 
+## Dependencies
+
+- **Blocks:** None
+- **Blocked by:** None
+- **Requires:**
+  - Reader navigation and content parsing already available
+  - Accessibility groundwork from [PRD-004](./PRD-004-accessibility.md)
+  - Spotlight/reading flow compatibility from [PRD-009](./PRD-009-spotlight-mode.md)
+  - Optional integration path with [PRD-012](./PRD-012-auto-advance-timer.md)
+
+---
+
 ## 12. Risks & Mitigations
 
 ### Risk 1: Browser Voice Availability
@@ -745,7 +768,7 @@ function estimateSpeechDuration(text: string, rate: number): number {
 
 ---
 
-**Document Version:** 1.0  
-**Status:** Draft (Not Implemented)  
+**Document Version:** 1.1  
+**Status:** ✔️ Completed (Implemented)  
 **Last Review:** February 2, 2026  
 **Next Review:** March 2, 2026

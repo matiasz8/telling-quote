@@ -8,7 +8,7 @@ This directory contains Technical Requirements Documents for tellingQuote featur
 
 ## Active TRDs
 
-### All TRDs (11 Total - 11 COMPLETED ✅)
+### All TRDs (12 Total - 12 COMPLETED ✅)
 
 | TRD | Feature | PRD | Status | Priority |
 |-----|---------|-----|--------|----------|
@@ -18,6 +18,7 @@ This directory contains Technical Requirements Documents for tellingQuote featur
 | [TRD-003](./TRD-003-detox-theme.md) | Detox Theme Implementation | [PRD-003](../prd/PRD-003-detox-theme.md) | ✔️ Completed | Medium |
 | [TRD-004](./TRD-004-accessibility.md) | Accessibility Implementation | [PRD-004](../prd/PRD-004-accessibility.md) | ✔️ Completed | High |
 | [TRD-005](./TRD-005-firebase-auth.md) | Firebase Auth & Sync | [PRD-005](../prd/PRD-005-firebase-auth.md) | ✔️ Completed | Medium |
+| [TRD-007](./TRD-007-automated-accessibility-testing.md) | Automated Accessibility Testing & Validation | [PRD-007](../prd/PRD-007-automated-accessibility-testing.md) | ✔️ Completed | High |
 | [TRD-009](./TRD-009-spotlight-mode.md) | Spotlight Mode Implementation | [PRD-009](../prd/PRD-009-spotlight-mode.md) | ✔️ Completed | High |
 | [TRD-010](./TRD-010-onboarding-tutorial.md) | Onboarding Tutorial Implementation | [PRD-010](../prd/PRD-010-onboarding-tutorial.md) | ✔️ Completed | High |
 | [TRD-012](./TRD-012-auto-advance-timer.md) | Auto-Advance Timer Implementation | [PRD-012](../prd/PRD-012-auto-advance-timer.md) | ✔️ Completed | Medium |

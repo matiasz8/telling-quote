@@ -405,6 +405,17 @@ function useAutoAdvance(settings: Settings, currentSlide: number) {
 
 ---
 
+## Open Questions (Resolved)
+
+1. Should auto-advance start automatically for every reading?
+  - Decision: No. It remains controlled by user settings.
+2. Should timer progress sync across devices?
+  - Decision: No for MVP. Timer state is local to the active session.
+3. Should users be able to override duration manually per slide?
+  - Decision: No for MVP. Timing remains derived from content and configured WPM.
+
+---
+
 ## 9. Testing Checklist
 
 ### Functionality
@@ -465,6 +476,17 @@ function useAutoAdvance(settings: Settings, currentSlide: number) {
 - [ ] User testing
 
 **Total: 12 days**
+
+---
+
+## Dependencies
+
+- **Blocks:** None
+- **Blocked by:** None
+- **Requires:**
+  - Reader navigation flow already implemented
+  - Accessibility settings from [PRD-004](./PRD-004-accessibility.md)
+  - Optional future coordination with [PRD-013](./PRD-013-text-to-speech.md)
 
 ---
 

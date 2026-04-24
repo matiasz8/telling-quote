@@ -18,13 +18,13 @@ This directory contains Product Requirements Documents for tellingQuote features
 | [PRD-003](./PRD-003-detox-theme.md) | Detox Theme Mode | ✔️ Completed | Medium |
 | [PRD-004](./PRD-004-accessibility.md) | Accessibility Features | ✔️ Completed | High |
 
-### Phase 2 - Enhanced Features (7/12 COMPLETED ✅)
+### Phase 2 - Enhanced Features (8/12 COMPLETED ✅)
 
 | PRD | Feature | Status | Priority |
 |-----|---------|--------|----------|
 | [PRD-005](./PRD-005-firebase-auth.md) | Firebase Authentication & Cloud Sync | ✔️ Completed | Medium |
 | [PRD-006](./PRD-006-enhanced-tag-management.md) | Enhanced Tag Management & Filtering | 📝 Draft | High |
-| [PRD-007](./PRD-007-automated-accessibility-testing.md) | Automated Accessibility Testing & Validation | 📝 Draft | High |
+| [PRD-007](./PRD-007-automated-accessibility-testing.md) | Automated Accessibility Testing & Validation | ✔️ Completed | High |
 | [PRD-008](./PRD-008-advanced-accessibility-blind-users.md) | Advanced Accessibility for Blind Users (Voice + TTS) | 📝 Draft | Critical |
 | [PRD-009](./PRD-009-spotlight-mode.md) | Spotlight Reading Mode | ✔️ Completed | High |
 | [PRD-010](./PRD-010-onboarding-tutorial.md) | Interactive Onboarding Tutorial | ✔️ Completed | High |

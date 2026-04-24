@@ -703,6 +703,15 @@ EXPERIENCE: Structured, efficient, note-taking integrated
 
 ---
 
+## Open Questions
+
+1. Should MVP prioritize text-to-speech first and defer full voice command coverage to a later sub-phase?
+2. Which browser/device combination is the primary target for launch validation: desktop Chrome, desktop Safari, or both equally?
+3. Do we want a purely browser-native implementation first, or is a cloud speech provider acceptable for higher voice quality?
+4. How much offline capability is mandatory for the first release versus a future enhancement?
+
+---
+
 ## Success Criteria
 
 ### MVP (v2.1)

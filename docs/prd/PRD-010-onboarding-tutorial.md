@@ -76,6 +76,50 @@ New users report confusion about how to use the application. There's no guided i
 - [ ] High-contrast compatible
 - [ ] Screen reader friendly (ARIA labels)
 
+## Functional Requirements
+
+### FR-1: Automatic First-Time Onboarding
+
+- The tutorial should launch automatically for first-time users.
+- The launch must remain skippable and must not block core app usage.
+
+### FR-2: Replayable Tutorial Access
+
+- Users must be able to restart the tutorial from Settings at any time.
+- Restarting should reset tutorial progress and begin from the first step.
+
+### FR-3: Guided Core Feature Coverage
+
+- The tutorial must cover settings, reading creation, reading cards, reader navigation, and keyboard shortcuts.
+- The flow should adapt safely if a target element is missing or conditional.
+
+### FR-4: Safe Dismissal and Completion Tracking
+
+- Skipping or completing the tutorial must persist the correct localStorage state.
+- The tutorial should not reappear unexpectedly after an explicit dismissal choice.
+
+### FR-5: Resilient Step Targeting
+
+- Tutorial steps must degrade gracefully if a target element is conditionally absent.
+- The walkthrough must support resume or restart behavior after interruption, navigation, or refresh.
+
+## Non-Functional Requirements
+
+### NFR-1: Accessibility
+
+- Tutorial overlays and popovers must remain keyboard accessible.
+- Reduce motion preferences and high-contrast compatibility must be respected.
+
+### NFR-2: Performance
+
+- Tutorial initialization should not noticeably delay page load.
+- Step transitions should feel immediate on normal desktop/mobile devices.
+
+### NFR-3: Maintainability
+
+- Step definitions should remain centralized and easy to update.
+- Tutorial copy and configuration should be separable from rendering logic.
+
 ## Detailed Requirements
 
 ### Tutorial Steps
