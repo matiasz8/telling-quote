@@ -391,6 +391,15 @@ Tag added to reading
 
 ---
 
+## Open Questions
+
+1. Should the default multi-tag mode be `AND`, `OR`, or remember the user's last choice?
+2. Should global tag rename preserve original casing or always normalize to a canonical format?
+3. Should Tag Manager live only inside Settings or also be reachable from the dashboard directly?
+4. When a tag merge creates duplicates on the same reading, should the system silently deduplicate them?
+
+---
+
 ## Success Criteria
 
 ### MVP (v2.0)

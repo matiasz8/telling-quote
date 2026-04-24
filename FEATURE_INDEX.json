@@ -222,13 +222,13 @@
       "id": "PRD-007",
       "name": "Automated Accessibility Testing & Validation",
       "phase": 2,
-      "status": "draft",
+      "status": "completed",
       "priority": "high",
       "owner": "TBD",
-      "trd_id": null,
+      "trd_id": "TRD-007",
       "created": "2026-01-15",
-      "last_updated": "2026-01-15",
-      "description": "Add Playwright + axe-core tests for a11y validation in CI",
+      "last_updated": "2026-04-24",
+      "description": "Accessibility validation workflows operational with CI/docs alignment",
       "affected_files": [
         ".github/workflows/lint.yml",
         "package.json"
@@ -239,12 +239,14 @@
       "dependencies": [],
       "blockers": [],
       "risks": [
-        "No test infrastructure yet",
-        "CI currently lint + type only"
+        "Playwright and axe checks are currently manual-only outside the main CI gate"
       ],
-      "success_metrics": [],
+      "success_metrics": [
+        "validate:docs governance checks are enforced",
+        "Accessibility test strategy documented and executable locally"
+      ],
       "prd_link": "docs/prd/PRD-007-automated-accessibility-testing.md",
-      "trd_link": null
+      "trd_link": "docs/trd/TRD-007-automated-accessibility-testing.md"
     },
     {
       "id": "PRD-008",
@@ -531,10 +533,10 @@
   ],
   "statistics": {
     "total_features": 16,
-    "completed": 11,
-    "draft": 5,
+    "completed": 12,
+    "draft": 4,
     "phase_1_completion": "100%",
-    "phase_2_completion": "58%",
+    "phase_2_completion": "67%",
     "total_affected_files": 50,
     "high_risk_features": [
       "PRD-005 (Firebase sync)",
@@ -544,8 +546,8 @@
   },
   "quick_lookup": {
     "by_status": {
-      "completed": ["PRD-001", "PRD-002", "PRD-003", "PRD-004", "PRD-005", "PRD-009", "PRD-010", "PRD-012", "PRD-013", "PRD-014", "PRD-016"],
-      "draft": ["PRD-006", "PRD-007", "PRD-008", "PRD-011", "PRD-015"]
+      "completed": ["PRD-001", "PRD-002", "PRD-003", "PRD-004", "PRD-005", "PRD-007", "PRD-009", "PRD-010", "PRD-012", "PRD-013", "PRD-014", "PRD-016"],
+      "draft": ["PRD-006", "PRD-008", "PRD-011", "PRD-015"]
     },
     "by_priority": {
       "critical": ["PRD-008"],

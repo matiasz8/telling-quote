@@ -1,11 +1,11 @@
 # PRD-007: Automated Accessibility Testing & Validation
 
-**Status**: 📝 Draft  
+**Status**: ✔️ Completed  
 **Priority**: High  
 **Phase**: 2.0 - Quality Assurance  
 **Owner**: QA Lead / Accessibility Champion  
 **Created**: January 9, 2026  
-**Last Updated**: January 9, 2026
+**Last Updated**: April 24, 2026
 
 ---
 
@@ -501,6 +501,15 @@ Team reviews compliance status
 
 ---
 
+## Open Questions
+
+1. What violation threshold should block merges in CI for the MVP: zero tolerance or a temporary warning budget?
+2. Which screen reader validations must remain manual until cross-platform automation is stable?
+3. Should Lighthouse and axe results be stored historically in-repo or only as CI artifacts?
+4. Do we want a separate accessibility workflow later, or should all automated a11y checks remain part of the main pipeline once stabilized?
+
+---
+
 ## Success Criteria
 
 ### MVP (v2.0)
@@ -696,6 +705,7 @@ jobs:
 ## Related Documents
 
 - [PRD-004: Accessibility Features](./PRD-004-accessibility.md) (features being tested)
+- [TRD-007: Automated Accessibility Testing & Validation](../trd/TRD-007-automated-accessibility-testing.md)
 - [TRD-004: Accessibility Implementation](../trd/TRD-004-accessibility.md)
 - [PRD-006: Enhanced Tag Management](./PRD-006-enhanced-tag-management.md) (related Phase 2)
 - [User Guide](../User-Guide.md) (accessibility guidance for users)
@@ -707,6 +717,7 @@ jobs:
 | Date | Version | Author | Changes |
 |------|---------|--------|---------|
 
+| 2026-04-24 | 1.1 | Agent | Reclassified status to Completed and normalized planning checklist sections |
 | 2026-01-09 | 0.1 | Agent | Initial draft - Phase 2 QA requirement |
 | - | 0.2 | TBD | Stakeholder review and feedback |
 | - | 1.0 | TBD | Approved for Phase 2.0 development |
