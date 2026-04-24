@@ -18,6 +18,12 @@ import {
   EXAMPLE_READING,
   EXAMPLE_READING_ID,
 } from "@/lib/constants/exampleReading";
+import {
+  getDashboardReadings,
+  mergeCloudAndLocalReadings,
+  shouldInitializeExampleReading,
+  shouldPromptMigration,
+} from "@/lib/dashboard/homeLogic";
 
 const isDev = process.env.NODE_ENV === "development";
 const dlog = (...args: unknown[]) => {
@@ -79,14 +85,19 @@ export default function Home() {
   // Check for migration on first user sign-in
   useEffect(() => {
     dlog('[Migration check effect] mounted:', mounted, 'user:', !!user, 'hasSyncedFromCloud:', hasSyncedFromCloud.current);
-    if (!mounted || !user || hasSyncedFromCloud.current) return;
-
-    const hasLocalReadings = readings.length > 0;
     const hasMigrated = localStorage.getItem('hasMigratedToCloud') === 'true';
-    dlog('[Migration check effect] hasLocalReadings:', hasLocalReadings, 'readings.length:', readings.length);
+    const shouldMigrate = shouldPromptMigration({
+      mounted,
+      hasUser: Boolean(user),
+      hasSyncedFromCloud: hasSyncedFromCloud.current,
+      readingsLength: readings.length,
+      hasMigratedToCloud: hasMigrated,
+    });
+
+    dlog('[Migration check effect] shouldMigrate:', shouldMigrate, 'readings.length:', readings.length);
     dlog('[Migration check effect] hasMigrated:', hasMigrated);
 
-    if (hasLocalReadings && !hasMigrated) {
+    if (shouldMigrate) {
       // Save local readings before they get overwritten
       localReadingsToMigrate.current = [...readings];
       dlog('[Migration check effect] Saved', readings.length, 'readings to migrate');
@@ -110,16 +121,11 @@ export default function Home() {
     if (hasInitializedExample.current) return;
 
     // Check if readings is empty and example hasn't been dismissed
-    const hasReadings = readings.length > 0;
     const exampleDismissed =
       localStorage.getItem(STORAGE_KEYS.EXAMPLE_DISMISSED) === "true";
 
-    if (!hasReadings && !exampleDismissed) {
-      // Check if example already exists (shouldn't happen, but safety check)
-      const exampleExists = readings.some((r) => r.id === EXAMPLE_READING_ID);
-      if (!exampleExists) {
-        setReadings([EXAMPLE_READING]);
-      }
+    if (shouldInitializeExampleReading({ readings, exampleDismissed })) {
+      setReadings([EXAMPLE_READING]);
     }
 
     hasInitializedExample.current = true;
@@ -176,16 +182,10 @@ export default function Home() {
       
       dlog('[Firestore sync effect] Merging cloudReadings with local state');
       setReadings((currentLocal) => {
-        // Merge strategy: keep cloud readings + any local-only readings not yet synced
-        const cloudIds = new Set(cloudReadings.map(r => r.id));
-        const localOnly = currentLocal.filter(r => !cloudIds.has(r.id));
+        const merged = mergeCloudAndLocalReadings(cloudReadings, currentLocal);
         
         dlog('[Firestore sync effect] Cloud readings:', cloudReadings.length);
-        dlog('[Firestore sync effect] Local-only readings:', localOnly.length);
-        
-        // If there are local-only readings, they're likely being synced right now
-        // Keep them in the list temporarily
-        const merged = [...cloudReadings, ...localOnly];
+        dlog('[Firestore sync effect] Local-only readings:', merged.length - cloudReadings.length);
         dlog('[Firestore sync effect] Merged total:', merged.length);
         
         return merged;
@@ -242,14 +242,12 @@ export default function Home() {
   };
 
   // Filter readings based on active tab
-  const activeReadings = readings.filter(
-    (r) => !completedReadings.includes(r.id)
-  );
-  const completedReadingsList = readings.filter((r) =>
-    completedReadings.includes(r.id)
-  );
-  const displayedReadings =
-    activeTab === "active" ? activeReadings : completedReadingsList;
+  const { activeReadings, completedReadingsList, displayedReadings } =
+    getDashboardReadings({
+      readings,
+      completedReadingIds: completedReadings,
+      activeTab,
+    });
 
   const handleSave = async (reading: Reading) => {
     dlog(`[page.tsx handleSave] CALLED with reading:`, reading.id, reading.title);

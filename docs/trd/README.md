@@ -8,7 +8,7 @@ This directory contains Technical Requirements Documents for tellingQuote featur
 
 ## Active TRDs
 
-### All TRDs (9 Total - 9 COMPLETED ✅)
+### All TRDs (10 Total - 10 COMPLETED ✅)
 
 | TRD | Feature | PRD | Status | Priority |
 |-----|---------|-----|--------|----------|
@@ -22,6 +22,7 @@ This directory contains Technical Requirements Documents for tellingQuote featur
 | [TRD-010](./TRD-010-onboarding-tutorial.md) | Onboarding Tutorial Implementation | [PRD-010](../prd/PRD-010-onboarding-tutorial.md) | ✔️ Completed | High |
 | [TRD-012](./TRD-012-auto-advance-timer.md) | Auto-Advance Timer Implementation | [PRD-012](../prd/PRD-012-auto-advance-timer.md) | ✔️ Completed | Medium |
 | [TRD-014](./TRD-014-reading-reactivation.md) | Reading Reactivation Implementation | [PRD-014](../prd/PRD-014-reading-reactivation.md) | ✔️ Completed | Low |
+| [TRD-016](./TRD-016-delivery-reliability-doc-governance.md) | Delivery Reliability & Documentation Governance | [PRD-016](../prd/PRD-016-delivery-reliability-doc-governance.md) | ✔️ Completed | High |
 
 ---
 

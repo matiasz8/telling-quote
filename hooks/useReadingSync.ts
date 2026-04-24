@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { Reading } from '@/types';
 import { useAuth } from './useAuth';
 import {
@@ -18,6 +18,61 @@ export const useReadingSync = () => {
   const { user } = useAuth();
   const [syncStatus, setSyncStatus] = useState<SyncStatus>('idle');
   const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);
+  const statusResetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearStatusResetTimeout = useCallback(() => {
+    if (statusResetTimeoutRef.current) {
+      clearTimeout(statusResetTimeoutRef.current);
+      statusResetTimeoutRef.current = null;
+    }
+  }, []);
+
+  const scheduleIdleReset = useCallback(() => {
+    clearStatusResetTimeout();
+    statusResetTimeoutRef.current = setTimeout(() => setSyncStatus('idle'), 2000);
+  }, [clearStatusResetTimeout]);
+
+  const isOffline = useCallback(() => {
+    if (typeof navigator === 'undefined') return false;
+    return navigator.onLine === false;
+  }, []);
+
+  const isRetryableSyncError = (error: unknown) => {
+    const message = String(error).toLowerCase();
+    return (
+      message.includes('unavailable') ||
+      message.includes('deadline-exceeded') ||
+      message.includes('network') ||
+      message.includes('timeout')
+    );
+  };
+
+  const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  const runWithRetry = useCallback(async <T,>(operation: () => Promise<T>): Promise<T> => {
+    const maxAttempts = 3;
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        return await operation();
+      } catch (error) {
+        const canRetry = attempt < maxAttempts && isRetryableSyncError(error) && !isOffline();
+        if (!canRetry) {
+          throw error;
+        }
+
+        await wait(250 * attempt);
+      }
+    }
+
+    throw new Error('Unexpected retry state in sync operation.');
+  }, [isOffline]);
+
+  useEffect(() => {
+    return () => {
+      clearStatusResetTimeout();
+    };
+  }, [clearStatusResetTimeout]);
 
   /**
    * Sync a reading to Firestore if user is signed in
@@ -25,22 +80,24 @@ export const useReadingSync = () => {
   const syncReading = useCallback(
     async (reading: Reading): Promise<void> => {
       if (!user) return;
+      if (isOffline()) {
+        setSyncStatus('offline');
+        return;
+      }
 
       try {
         setSyncStatus('syncing');
-        await saveReading(user.uid, reading);
+        await runWithRetry(() => saveReading(user.uid, reading));
         setSyncStatus('synced');
         setLastSyncTime(new Date());
-
-        // Reset to idle after 2 seconds
-        setTimeout(() => setSyncStatus('idle'), 2000);
+        scheduleIdleReset();
       } catch (error) {
         console.error('Error syncing reading:', error);
-        setSyncStatus('error');
+        setSyncStatus(isOffline() ? 'offline' : 'error');
         throw error;
       }
     },
-    [user]
+    [user, isOffline, runWithRetry, scheduleIdleReset]
   );
 
   /**
@@ -49,21 +106,24 @@ export const useReadingSync = () => {
   const syncUpdateReading = useCallback(
     async (readingId: string, updates: Partial<Reading>): Promise<void> => {
       if (!user) return;
+      if (isOffline()) {
+        setSyncStatus('offline');
+        return;
+      }
 
       try {
         setSyncStatus('syncing');
-        await updateReading(user.uid, readingId, updates);
+        await runWithRetry(() => updateReading(user.uid, readingId, updates));
         setSyncStatus('synced');
         setLastSyncTime(new Date());
-
-        setTimeout(() => setSyncStatus('idle'), 2000);
+        scheduleIdleReset();
       } catch (error) {
         console.error('Error updating reading:', error);
-        setSyncStatus('error');
+        setSyncStatus(isOffline() ? 'offline' : 'error');
         throw error;
       }
     },
-    [user]
+    [user, isOffline, runWithRetry, scheduleIdleReset]
   );
 
   /**
@@ -72,21 +132,24 @@ export const useReadingSync = () => {
   const syncDeleteReading = useCallback(
     async (readingId: string): Promise<void> => {
       if (!user) return;
+      if (isOffline()) {
+        setSyncStatus('offline');
+        return;
+      }
 
       try {
         setSyncStatus('syncing');
-        await deleteReading(user.uid, readingId);
+        await runWithRetry(() => deleteReading(user.uid, readingId));
         setSyncStatus('synced');
         setLastSyncTime(new Date());
-
-        setTimeout(() => setSyncStatus('idle'), 2000);
+        scheduleIdleReset();
       } catch (error) {
         console.error('Error deleting reading:', error);
-        setSyncStatus('error');
+        setSyncStatus(isOffline() ? 'offline' : 'error');
         throw error;
       }
     },
-    [user]
+    [user, isOffline, runWithRetry, scheduleIdleReset]
   );
 
   /**
@@ -94,21 +157,24 @@ export const useReadingSync = () => {
    */
   const fetchReadings = useCallback(async (): Promise<Reading[]> => {
     if (!user) return [];
+    if (isOffline()) {
+      setSyncStatus('offline');
+      return [];
+    }
 
     try {
       setSyncStatus('syncing');
-      const readings = await getReadings(user.uid);
+      const readings = await runWithRetry(() => getReadings(user.uid));
       setSyncStatus('synced');
       setLastSyncTime(new Date());
-
-      setTimeout(() => setSyncStatus('idle'), 2000);
+      scheduleIdleReset();
       return readings;
     } catch (error) {
       console.error('Error fetching readings:', error);
-      setSyncStatus('error');
+      setSyncStatus(isOffline() ? 'offline' : 'error');
       return [];
     }
-  }, [user]);
+  }, [user, isOffline, runWithRetry, scheduleIdleReset]);
 
   /**
    * Subscribe to real-time reading updates

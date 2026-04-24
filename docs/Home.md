@@ -4,6 +4,12 @@ Welcome to the **tellingQuote** documentation! This wiki contains comprehensive 
 
 ## 📚 Table of Contents
 
+### Understanding Features
+
+- [Feature Matrix](Feature-Matrix.md) - Quick reference table of all features & what problems they solve
+- [Use Cases](use-cases/README.md) - Detailed step-by-step workflows (+ composite scenarios)
+- [User Guide](User-Guide) - Complete guide for end users (markdown syntax & navigation)
+
 ### Getting Started
 
 - [Installation Guide](Installation-Guide) - Set up the project locally
@@ -44,14 +50,38 @@ tellingQuote is an interactive reading application that transforms markdown cont
 - 🎓 **Learning** - Progressive disclosure for better retention
 - 📊 **Presentations** - Quick markdown to slides conversion
 
+### Getting Started with Features
+
+- **New User?** Start with the [Feature Matrix](Feature-Matrix.md) to see all available features at a glance
+- **Want to understand workflows?** Read [Use Cases](Use-Cases.md) for detailed step-by-step guides
+- **Need syntax reference?** See [User Guide](User-Guide) for markdown formatting and keyboard shortcuts
+
 ## ✨ Key Features
 
+Browse all features in the [Feature Matrix](Feature-Matrix.md) or see detailed workflows in [Use Cases](Use-Cases.md).
+
+**Core Capabilities**:
 - **Markdown Processing**: Automatic conversion to slides
-- **Customization**: 4 fonts × 4 sizes × 2 themes = 32 combinations
+- **Customization**: 4 fonts × 4 sizes × 4 themes = many combinations
 - **Code Blocks**: Professional rendering with copy functionality
 - **Smart Lists**: Context-aware bulleted and numbered lists
 - **Mobile First**: Touch gestures for navigation
-- **Persistent Storage**: All data stored locally in browser
+- **Persistent Storage**: All data stored locally in browser or synced to cloud
+
+**Learning & Focus**:
+- **Spotlight Mode**: Reduce cognitive overload with sentence-by-sentence focus
+- **Auto-Advance Timer**: Practice reading at controlled pace
+- **Interactive Tutorial**: Learn shortcuts and features on first visit
+
+**Accessibility**:
+- **Accessibility Suite**: Dyslexia-friendly fonts, letter/line spacing, high contrast, keyboard navigation
+- **Text-to-Speech**: Audio alternative in multiple languages
+- **Theme System**: Light, Dark, Detox (blue light reduction), and High-Contrast modes
+
+**Organization & Collaboration**:
+- **Tags System**: Organize readings by topic
+- **Firebase Auth**: Sign in to sync readings across devices
+- **Reactivation**: Undo accidental reading completion
 
 ## 🛠️ Tech Stack
 
@@ -74,4 +104,4 @@ Use the sidebar to navigate through the wiki pages, or start with the [Installat
 
 ---
 
-**Last Updated**: November 2025
+**Last Updated**: April 2026

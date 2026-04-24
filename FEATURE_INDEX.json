@@ -1,0 +1,561 @@
+{
+  "version": "1.0",
+  "last_generated": "2026-04-17T00:00:00Z",
+  "purpose": "Compact feature metadata for efficient agent context loading. Use this instead of re-reading full PRD/TRD docs.",
+  "features": [
+    {
+      "id": "PRD-001",
+      "name": "Example Document on First Load",
+      "phase": 1,
+      "status": "completed",
+      "priority": "high",
+      "owner": "TBD",
+      "trd_id": "TRD-001",
+      "created": "2025-11-20",
+      "last_updated": "2026-02-20",
+      "description": "Auto-create example reading on first load to demonstrate markdown features",
+      "affected_files": [
+        "lib/constants/exampleReading.ts",
+        "EXAMPLE_MARKDOWN.md",
+        "app/page.tsx"
+      ],
+      "affected_components": [
+        "Dashboard",
+        "ReadingCard"
+      ],
+      "dependencies": [],
+      "blockers": [],
+      "risks": [
+        "Content in Spanish, needs English translation for i18n readiness"
+      ],
+      "success_metrics": [
+        "Example visible on first load",
+        "Can be dismissed by user",
+        "Demonstrates all markdown formats"
+      ],
+      "prd_link": "docs/prd/PRD-001-example-document.md",
+      "trd_link": "docs/trd/TRD-001-example-document.md"
+    },
+    {
+      "id": "PRD-002",
+      "name": "Tags System",
+      "phase": 1,
+      "status": "completed",
+      "priority": "high",
+      "owner": "TBD",
+      "trd_id": "TRD-002",
+      "created": "2025-11-20",
+      "last_updated": "2026-02-20",
+      "description": "Add tagging system to organize readings by topics/categories/projects",
+      "affected_files": [
+        "types/index.ts",
+        "lib/utils/tagHelpers.ts",
+        "components/NewReadingModal.tsx",
+        "components/EditTitleModal.tsx",
+        "components/ReadingCard.tsx"
+      ],
+      "affected_components": [
+        "NewReadingModal",
+        "EditTitleModal",
+        "ReadingCard",
+        "Dashboard"
+      ],
+      "dependencies": [],
+      "blockers": [],
+      "risks": [
+        "No filtering UI yet (v2 feature)",
+        "Migration needed for existing localStorage data"
+      ],
+      "success_metrics": [
+        "60%+ users add tags",
+        "1-3 tags per reading average"
+      ],
+      "prd_link": "docs/prd/PRD-002-tags-system.md",
+      "trd_link": "docs/trd/TRD-002-tags-system.md"
+    },
+    {
+      "id": "PRD-003",
+      "name": "Detox Theme Mode",
+      "phase": 1,
+      "status": "completed",
+      "priority": "medium",
+      "owner": "TBD",
+      "trd_id": "TRD-003",
+      "created": "2025-11-20",
+      "last_updated": "2026-02-20",
+      "description": "Add Detox theme with minimal, monochrome color palette",
+      "affected_files": [
+        "app/globals.css",
+        "config/theme.ts",
+        "types/index.ts",
+        "components/SettingsModal.tsx",
+        "components/*.tsx"
+      ],
+      "affected_components": [
+        "All UI components",
+        "SettingsModal"
+      ],
+      "dependencies": [],
+      "blockers": [],
+      "risks": [],
+      "success_metrics": [
+        "Detox theme selectable in settings",
+        "All components render correctly in Detox mode"
+      ],
+      "prd_link": "docs/prd/PRD-003-detox-theme.md",
+      "trd_link": "docs/trd/TRD-003-detox-theme.md"
+    },
+    {
+      "id": "PRD-004",
+      "name": "Accessibility Features",
+      "phase": 1,
+      "status": "completed",
+      "priority": "high",
+      "owner": "TBD",
+      "trd_id": "TRD-004",
+      "created": "2025-11-20",
+      "last_updated": "2026-02-20",
+      "description": "Multiple font families, sizes, line height, letter spacing options for accessible reading",
+      "affected_files": [
+        "types/index.ts",
+        "hooks/useApplyAccessibilitySettings.ts",
+        "components/SettingsModal.tsx",
+        "config/theme.ts",
+        "app/reader/[id]/page.tsx"
+      ],
+      "affected_components": [
+        "SettingsModal",
+        "Reader",
+        "Dashboard"
+      ],
+      "dependencies": [],
+      "blockers": [],
+      "risks": [
+        "Font loading async, needs timeout handling",
+        "Accessibility settings application in DOM needs cleanup verification"
+      ],
+      "success_metrics": [
+        "All font options load correctly",
+        "Settings persist across sessions",
+        "WCAG AA compliance verified"
+      ],
+      "prd_link": "docs/prd/PRD-004-accessibility.md",
+      "trd_link": "docs/trd/TRD-004-accessibility.md"
+    },
+    {
+      "id": "PRD-005",
+      "name": "Firebase Authentication & Cloud Sync",
+      "phase": 2,
+      "status": "completed",
+      "priority": "medium",
+      "owner": "TBD",
+      "trd_id": "TRD-005",
+      "created": "2025-11-20",
+      "last_updated": "2026-02-20",
+      "description": "Optional Google auth for cross-device sync while maintaining anonymous/offline-first mode",
+      "affected_files": [
+        "lib/firebase/auth.ts",
+        "lib/firebase/firestore.ts",
+        "hooks/useAuth.ts",
+        "hooks/useReadingSync.ts",
+        "components/SignInModal.tsx",
+        "components/MigrationModal.tsx",
+        "app/page.tsx",
+        "types/index.ts"
+      ],
+      "affected_components": [
+        "Dashboard (migration)",
+        "Header (sign-in)",
+        "All reading operations"
+      ],
+      "dependencies": [],
+      "blockers": [
+        "Firebase console setup required"
+      ],
+      "risks": [
+        "Migration modal shows but may have race conditions",
+        "Sync retry logic minimal - network failures cascade",
+        "Merge strategy too simple - duplicates possible",
+        "No rollback if Firestore sync fails mid-migration"
+      ],
+      "success_metrics": [
+        "30-40% sign-up rate",
+        "70%+ multi-device users",
+        "<2s sync time",
+        "0 data loss incidents"
+      ],
+      "prd_link": "docs/prd/PRD-005-firebase-auth.md",
+      "trd_link": "docs/trd/TRD-005-firebase-auth.md"
+    },
+    {
+      "id": "PRD-006",
+      "name": "Enhanced Tag Management & Filtering",
+      "phase": 2,
+      "status": "draft",
+      "priority": "high",
+      "owner": "TBD",
+      "trd_id": null,
+      "created": "2026-01-15",
+      "last_updated": "2026-01-15",
+      "description": "Add tag-based filtering and search to dashboard",
+      "affected_files": [
+        "app/page.tsx",
+        "components/Header.tsx"
+      ],
+      "affected_components": [
+        "Dashboard",
+        "Header"
+      ],
+      "dependencies": [
+        "PRD-002"
+      ],
+      "blockers": [],
+      "risks": [
+        "Performance impact with large reading count",
+        "No TRD yet - planning phase"
+      ],
+      "success_metrics": [],
+      "prd_link": "docs/prd/PRD-006-enhanced-tag-management.md",
+      "trd_link": null
+    },
+    {
+      "id": "PRD-007",
+      "name": "Automated Accessibility Testing & Validation",
+      "phase": 2,
+      "status": "draft",
+      "priority": "high",
+      "owner": "TBD",
+      "trd_id": null,
+      "created": "2026-01-15",
+      "last_updated": "2026-01-15",
+      "description": "Add Playwright + axe-core tests for a11y validation in CI",
+      "affected_files": [
+        ".github/workflows/lint.yml",
+        "package.json"
+      ],
+      "affected_components": [
+        "CI/CD"
+      ],
+      "dependencies": [],
+      "blockers": [],
+      "risks": [
+        "No test infrastructure yet",
+        "CI currently lint + type only"
+      ],
+      "success_metrics": [],
+      "prd_link": "docs/prd/PRD-007-automated-accessibility-testing.md",
+      "trd_link": null
+    },
+    {
+      "id": "PRD-008",
+      "name": "Advanced Accessibility for Blind Users (Voice + TTS)",
+      "phase": 2,
+      "status": "draft",
+      "priority": "critical",
+      "owner": "TBD",
+      "trd_id": null,
+      "created": "2026-01-15",
+      "last_updated": "2026-01-15",
+      "description": "Text-to-Speech integration for screen reader users",
+      "affected_files": [],
+      "affected_components": [],
+      "dependencies": [],
+      "blockers": [],
+      "risks": [
+        "Voice loading async and unreliable",
+        "No timeout handling",
+        "Complex state machine in useTTS"
+      ],
+      "success_metrics": [],
+      "prd_link": "docs/prd/PRD-008-advanced-accessibility-blind-users.md",
+      "trd_link": null
+    },
+    {
+      "id": "PRD-009",
+      "name": "Spotlight Reading Mode",
+      "phase": 2,
+      "status": "completed",
+      "priority": "high",
+      "owner": "TBD",
+      "trd_id": "TRD-009",
+      "created": "2025-12-10",
+      "last_updated": "2026-02-20",
+      "description": "Highlight current line during reading to reduce visual load",
+      "affected_files": [
+        "app/reader/[id]/page.tsx",
+        "components/TTSPlayer.tsx"
+      ],
+      "affected_components": [
+        "Reader"
+      ],
+      "dependencies": [],
+      "blockers": [],
+      "risks": [],
+      "success_metrics": [
+        "Line highlighting during read activates",
+        "Works with TTS player"
+      ],
+      "prd_link": "docs/prd/PRD-009-spotlight-mode.md",
+      "trd_link": "docs/trd/TRD-009-spotlight-mode.md"
+    },
+    {
+      "id": "PRD-010",
+      "name": "Interactive Onboarding Tutorial",
+      "phase": 2,
+      "status": "completed",
+      "priority": "high",
+      "owner": "TBD",
+      "trd_id": "TRD-010",
+      "created": "2025-12-15",
+      "last_updated": "2026-02-20",
+      "description": "driver.js based interactive tutorial for first-time users",
+      "affected_files": [
+        "lib/tutorial/",
+        "app/tutorial-provider.tsx",
+        "app/layout.tsx"
+      ],
+      "affected_components": [
+        "Layout",
+        "All pages"
+      ],
+      "dependencies": [],
+      "blockers": [],
+      "risks": [],
+      "success_metrics": [
+        "Tutorial auto-starts for first-time users",
+        "Can be dismissed and restarted"
+      ],
+      "prd_link": "docs/prd/PRD-010-onboarding-tutorial.md",
+      "trd_link": "docs/trd/TRD-010-onboarding-tutorial.md"
+    },
+    {
+      "id": "PRD-011",
+      "name": "Internationalization (i18n)",
+      "phase": 2,
+      "status": "draft",
+      "priority": "medium",
+      "owner": "TBD",
+      "trd_id": null,
+      "created": "2026-01-20",
+      "last_updated": "2026-01-20",
+      "description": "Multi-language support (Spanish, Portuguese, French at minimum)",
+      "affected_files": [
+        "app/",
+        "components/",
+        "lib/"
+      ],
+      "affected_components": [
+        "All"
+      ],
+      "dependencies": [],
+      "blockers": [],
+      "risks": [
+        "Example document currently Spanish, needs extraction",
+        "No i18n library selected"
+      ],
+      "success_metrics": [],
+      "prd_link": "docs/prd/PRD-011-internationalization.md",
+      "trd_link": null
+    },
+    {
+      "id": "PRD-012",
+      "name": "Auto-Advance Timer",
+      "phase": 2,
+      "status": "completed",
+      "priority": "medium",
+      "owner": "TBD",
+      "trd_id": "TRD-012",
+      "created": "2025-12-20",
+      "last_updated": "2026-02-20",
+      "description": "Auto-advance to next slide based on reading speed (WPM)",
+      "affected_files": [
+        "types/index.ts",
+        "hooks/useApplyAccessibilitySettings.ts",
+        "components/SettingsModal.tsx",
+        "app/reader/[id]/page.tsx"
+      ],
+      "affected_components": [
+        "Reader",
+        "SettingsModal"
+      ],
+      "dependencies": [],
+      "blockers": [],
+      "risks": [],
+      "success_metrics": [
+        "Timer settings persist",
+        "Auto-advance activates on schedule"
+      ],
+      "prd_link": "docs/prd/PRD-012-auto-advance-timer.md",
+      "trd_link": "docs/trd/TRD-012-auto-advance-timer.md"
+    },
+    {
+      "id": "PRD-013",
+      "name": "Text-to-Speech (TTS)",
+      "phase": 2,
+      "status": "draft",
+      "priority": "medium",
+      "owner": "TBD",
+      "trd_id": null,
+      "created": "2026-01-25",
+      "last_updated": "2026-01-25",
+      "description": "Native Web Speech API integration for reading aloud",
+      "affected_files": [
+        "hooks/useTTS.ts",
+        "components/TTSPlayer.tsx",
+        "types/index.ts",
+        "components/SettingsModal.tsx"
+      ],
+      "affected_components": [
+        "Reader",
+        "SettingsModal"
+      ],
+      "dependencies": [
+        "PRD-009"
+      ],
+      "blockers": [],
+      "risks": [
+        "Complex state machine with async voice loading",
+        "Sentence parsing has 2 strategies (newline vs regex)",
+        "onvoiceschanged handler duplicated in useTTS and SettingsModal",
+        "No timeout handling for voice load failures"
+      ],
+      "success_metrics": [],
+      "prd_link": "docs/prd/PRD-013-text-to-speech.md",
+      "trd_link": null
+    },
+    {
+      "id": "PRD-014",
+      "name": "Reading Reactivation",
+      "phase": 2,
+      "status": "completed",
+      "priority": "low",
+      "owner": "TBD",
+      "trd_id": "TRD-014",
+      "created": "2026-01-01",
+      "last_updated": "2026-02-20",
+      "description": "Allow users to move readings back from Completed to Active tab",
+      "affected_files": [
+        "app/page.tsx",
+        "components/ConfirmReactivateModal.tsx",
+        "components/ReadingCard.tsx"
+      ],
+      "affected_components": [
+        "Dashboard",
+        "ReadingCard"
+      ],
+      "dependencies": [],
+      "blockers": [],
+      "risks": [],
+      "success_metrics": [
+        "Completed readings can be reactivated",
+        "Action works in both Cloud and localStorage modes"
+      ],
+      "prd_link": "docs/prd/PRD-014-reading-reactivation.md",
+      "trd_link": "docs/trd/TRD-014-reading-reactivation.md"
+    },
+    {
+      "id": "PRD-015",
+      "name": "Visual Regression Testing with Playwright",
+      "phase": 2,
+      "status": "draft",
+      "priority": "medium",
+      "owner": "TBD",
+      "trd_id": null,
+      "created": "2026-02-01",
+      "last_updated": "2026-02-01",
+      "description": "Visual snapshot tests for all themes and pages",
+      "affected_files": [
+        ".github/workflows/lint.yml",
+        "package.json",
+        "playwright.config.ts"
+      ],
+      "affected_components": [
+        "CI/CD"
+      ],
+      "dependencies": [],
+      "blockers": [],
+      "risks": [
+        "No Playwright setup yet",
+        "CI currently lint + type only"
+      ],
+      "success_metrics": [],
+      "prd_link": "docs/prd/PRD-015-visual-testing-playwright.md",
+      "trd_link": null
+    },
+    {
+      "id": "PRD-016",
+      "name": "Delivery Reliability & Documentation Governance",
+      "phase": 2,
+      "status": "completed",
+      "priority": "high",
+      "owner": "TBD",
+      "trd_id": "TRD-016",
+      "created": "2026-04-17",
+      "last_updated": "2026-04-17",
+      "description": "Firebase emulator baseline, docs validation agent/contracts, and sync resiliency hardening",
+      "affected_files": [
+        "firebase.json",
+        ".firebaserc",
+        "package.json",
+        ".env.local.example",
+        "lib/firebase/config.ts",
+        "scripts/validate-prd-trd.mjs",
+        "scripts/validate-traceability.mjs",
+        "docs/agents/DOCUMENTATION_VALIDATION_AGENT.md",
+        "docs/AGENTS.md",
+        "hooks/useReadingSync.ts",
+        "FIREBASE_SETUP.md"
+      ],
+      "affected_components": [
+        "CI/CD",
+        "Documentation",
+        "Firebase Runtime",
+        "Sync Layer"
+      ],
+      "dependencies": [
+        "PRD-005"
+      ],
+      "blockers": [],
+      "risks": [
+        "TTS hardening still pending in dedicated workstream",
+        "validate:docs not yet enforced as mandatory CI gate"
+      ],
+      "success_metrics": [
+        "validate:docs command available and passing",
+        "Local Firebase emulator setup documented and runnable",
+        "Sync hook handles retryable failures and offline status"
+      ],
+      "prd_link": "docs/prd/PRD-016-delivery-reliability-doc-governance.md",
+      "trd_link": "docs/trd/TRD-016-delivery-reliability-doc-governance.md"
+    }
+  ],
+  "statistics": {
+    "total_features": 16,
+    "completed": 10,
+    "draft": 6,
+    "phase_1_completion": "100%",
+    "phase_2_completion": "50%",
+    "total_affected_files": 50,
+    "high_risk_features": [
+      "PRD-005 (Firebase sync)",
+      "PRD-008 (TTS)",
+      "PRD-013 (TTS draft)"
+    ]
+  },
+  "quick_lookup": {
+    "by_status": {
+      "completed": ["PRD-001", "PRD-002", "PRD-003", "PRD-004", "PRD-005", "PRD-009", "PRD-010", "PRD-012", "PRD-014", "PRD-016"],
+      "draft": ["PRD-006", "PRD-007", "PRD-008", "PRD-011", "PRD-013", "PRD-015"]
+    },
+    "by_priority": {
+      "critical": ["PRD-008"],
+      "high": ["PRD-001", "PRD-002", "PRD-004", "PRD-006", "PRD-007", "PRD-009", "PRD-010", "PRD-016"],
+      "medium": ["PRD-003", "PRD-005", "PRD-011", "PRD-012", "PRD-013", "PRD-015"],
+      "low": ["PRD-014"]
+    },
+    "by_phase": {
+      "1": ["PRD-001", "PRD-002", "PRD-003", "PRD-004"],
+      "2": ["PRD-005", "PRD-006", "PRD-007", "PRD-008", "PRD-009", "PRD-010", "PRD-011", "PRD-012", "PRD-013", "PRD-014", "PRD-015", "PRD-016"]
+    }
+  }
+}

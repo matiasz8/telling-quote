@@ -139,7 +139,7 @@ export const settingsTutorialSteps: DriveStep[] = [
     popover: {
       title: '🌈 Temas Visuales',
       description:
-        '☀️ Claro (brillante y enérgico), 🌙 Oscuro (perfecto para la noche), 🧘 Detox (minimalista sin distracciones), ♿ Alto Contraste (máxima legibilidad para baja visión). Cada tema cambia colores, fondos y estilos completamente.',
+        '☀️ Claro (brillante y enérgico), 🌙 Oscuro (perfecto para la noche), 🧘 Detox (minimalista sin distracciones), 🔳 Contraste Reforzado (máxima nitidez visual). Cada tema cambia colores, fondos y estilos completamente.',
       side: 'left',
       align: 'start',
     },
@@ -187,7 +187,7 @@ export const settingsTutorialSteps: DriveStep[] = [
   {
     element: '[data-tour="settings-accessibility-header"]',
     popover: {
-      title: '♿ Ajustes de Accesibilidad',
+      title: 'Aa Ajustes de Accesibilidad',
       description:
         'Ahora pasamos a accesibilidad: espaciados, enfoque, ancho de contenido y más opciones para lectura cómoda.',
       side: 'bottom',
