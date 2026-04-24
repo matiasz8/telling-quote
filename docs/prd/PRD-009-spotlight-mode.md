@@ -414,6 +414,17 @@ html.reduce-motion .spotlight-mode::before {
 
 ---
 
+## Open Questions (Resolved)
+
+1. Should spotlight be the default transition mode?
+  - Decision: No. It remains an opt-in reading preference.
+2. Should the effect support per-theme customization beyond the predefined variants?
+  - Decision: No for the shipped version; theme-specific defaults are sufficient.
+3. Should spotlight follow the cursor or current sentence dynamically?
+  - Decision: No. The shipped experience uses a fixed centered focus area.
+
+---
+
 ## 11. Implementation Checklist
 
 ### Phase 1: CSS Variables (✅ Completed)
@@ -450,6 +461,17 @@ html.reduce-motion .spotlight-mode::before {
 - [x] Write TRD-009
 - [x] Update README
 - [x] Update CHANGELOG
+
+---
+
+## Dependencies
+
+- **Blocks:** None
+- **Blocked by:** None
+- **Requires:**
+  - Theme infrastructure from [PRD-003](./PRD-003-detox-theme.md)
+  - Accessibility groundwork from [PRD-004](./PRD-004-accessibility.md)
+  - Reader rendering and transition hooks already present in the app
 
 ---
 

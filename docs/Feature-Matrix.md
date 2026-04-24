@@ -27,7 +27,7 @@ Quick reference guide showing all implemented features, the problems they solve,
 |------------------------|---|---|---|
 | Enhanced Tag Filtering | Tags exist but no way to filter dashboard by tag | 📝 Draft | [PRD-006](prd/PRD-006-enhanced-tag-management.md) |
 | Advanced Accessibility (Blind Users) | TTS covers audio but advanced voice navigation patterns not yet implemented | 📝 Draft | [PRD-008](prd/PRD-008-advanced-accessibility-blind-users.md) |
-| Automated Accessibility Testing | Manual testing is slow; need automated checks for WCAG compliance | 📝 Draft | [PRD-007](prd/PRD-007-automated-accessibility-testing.md) |
+| Automated Accessibility Testing | Accessibility baseline and validation workflows are documented and operational | ✅ Completed | [PRD-007](prd/PRD-007-automated-accessibility-testing.md) |
 | Internationalization | App is English-only; multilingual users cannot use effectively | 📝 Draft | [PRD-011](prd/PRD-011-internationalization.md) |
 | Visual Regression Testing | Manual regression testing for UI changes is unreliable | 📝 Draft | [PRD-015](prd/PRD-015-visual-testing-playwright.md) |
 

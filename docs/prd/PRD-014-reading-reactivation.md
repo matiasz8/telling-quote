@@ -157,6 +157,33 @@ function handleReactivateConfirm(readingId: string) {
 - No changes to `readings` array (reading data intact)
 - Dashboard automatically re-renders with reading in Active tab
 
+### FR-4: Sync Mode Compatibility
+
+- Reactivation must behave consistently in local-only and cloud-synced usage modes.
+- The action must not corrupt migration or sync state when a completed reading becomes active again.
+
+### FR-5: UI Feedback and Discoverability
+
+- Completed readings must expose a clearly labeled reactivation affordance.
+- Confirmation feedback must make the state transition obvious to the user.
+
+## 4.1 Non-Functional Requirements
+
+### NFR-1: Data Integrity
+
+- Reactivation must preserve all reading data except completion state.
+- No duplicate reading records should be created during reactivation.
+
+### NFR-2: Accessibility
+
+- The modal and button flow must remain fully keyboard accessible.
+- Screen readers must announce the action and confirmation flow clearly.
+
+### NFR-3: Usability
+
+- Reactivation should require minimal clicks and provide clear confirmation.
+- The action should feel reversible and safe for accidental completion recovery.
+
 ---
 
 ## 5. Technical Specifications
@@ -336,6 +363,17 @@ completedReadings: ["reading-2"]
 
 ---
 
+## Open Questions (Resolved)
+
+1. Should reactivation restore the previous completion timestamp for analytics?
+  - Decision: No. Once reactivated, the reading is treated as active again.
+2. Should users be able to reactivate multiple completed readings in bulk?
+  - Decision: No for MVP. Reactivation remains a per-reading action.
+3. Should reactivation be available outside the Completed tab?
+  - Decision: No. The action is scoped to completed reading cards only.
+
+---
+
 ## 8. Implementation Summary
 
 ### Phase 1: Core Functionality (Completed ✔️)
@@ -400,6 +438,17 @@ completedReadings: ["reading-2"]
 - [ ] Smart reactivation suggestions (based on tags, time since completion)
 - [ ] Scheduled reactivation (spaced repetition for learning)
 - [ ] Reactivation with notes ("Why am I re-reading this?")
+
+---
+
+## Dependencies
+
+- **Blocks:** None
+- **Blocked by:** None
+- **Requires:**
+  - Reading card actions already implemented in dashboard UI
+  - Completed-state persistence already available in storage logic
+  - Compatibility with local/cloud reading sync behavior
 
 ---
 
