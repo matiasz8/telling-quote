@@ -392,12 +392,12 @@
       "id": "PRD-013",
       "name": "Text-to-Speech (TTS)",
       "phase": 2,
-      "status": "draft",
+      "status": "completed",
       "priority": "medium",
       "owner": "TBD",
-      "trd_id": null,
+      "trd_id": "TRD-013",
       "created": "2026-01-25",
-      "last_updated": "2026-01-25",
+      "last_updated": "2026-03-04",
       "description": "Native Web Speech API integration for reading aloud",
       "affected_files": [
         "hooks/useTTS.ts",
@@ -421,7 +421,7 @@
       ],
       "success_metrics": [],
       "prd_link": "docs/prd/PRD-013-text-to-speech.md",
-      "trd_link": null
+      "trd_link": "docs/trd/TRD-013-text-to-speech.md"
     },
     {
       "id": "PRD-014",
@@ -518,7 +518,7 @@
       "blockers": [],
       "risks": [
         "TTS hardening still pending in dedicated workstream",
-        "validate:docs not yet enforced as mandatory CI gate"
+        "Playwright-based E2E and accessibility checks are currently manual-only outside the main CI gate"
       ],
       "success_metrics": [
         "validate:docs command available and passing",
@@ -531,21 +531,21 @@
   ],
   "statistics": {
     "total_features": 16,
-    "completed": 10,
-    "draft": 6,
+    "completed": 11,
+    "draft": 5,
     "phase_1_completion": "100%",
-    "phase_2_completion": "50%",
+    "phase_2_completion": "58%",
     "total_affected_files": 50,
     "high_risk_features": [
       "PRD-005 (Firebase sync)",
       "PRD-008 (TTS)",
-      "PRD-013 (TTS draft)"
+      "PRD-013 (TTS)"
     ]
   },
   "quick_lookup": {
     "by_status": {
-      "completed": ["PRD-001", "PRD-002", "PRD-003", "PRD-004", "PRD-005", "PRD-009", "PRD-010", "PRD-012", "PRD-014", "PRD-016"],
-      "draft": ["PRD-006", "PRD-007", "PRD-008", "PRD-011", "PRD-013", "PRD-015"]
+      "completed": ["PRD-001", "PRD-002", "PRD-003", "PRD-004", "PRD-005", "PRD-009", "PRD-010", "PRD-012", "PRD-013", "PRD-014", "PRD-016"],
+      "draft": ["PRD-006", "PRD-007", "PRD-008", "PRD-011", "PRD-015"]
     },
     "by_priority": {
       "critical": ["PRD-008"],

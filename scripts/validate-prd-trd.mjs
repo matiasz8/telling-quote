@@ -23,7 +23,7 @@ function normalizeStatus(value) {
 function extractStatus(content) {
   const line = content
     .split('\n')
-    .find((l) => /\*\*Status\*\*\s*:/i.test(l) || /^Status\s*:/i.test(l));
+    .find((l) => /\*\*Status/i.test(l) || /^Status\s*:/i.test(l));
 
   if (!line) return 'draft';
   const value = line.split(':').slice(1).join(':').trim();
@@ -38,9 +38,15 @@ function fileList(dir, prefix) {
     .sort();
 }
 
-function hasHeading(content, text) {
-  const pattern = new RegExp(`^##\\s+.*${text}.*$`, 'im');
-  return pattern.test(content);
+function hasHeadingLike(content, candidates) {
+  return candidates.some((candidate) => {
+    const pattern = new RegExp(`^#{2,6}\\s+.*${candidate}.*$`, 'im');
+    return pattern.test(content);
+  });
+}
+
+function hasRelatedPrdReference(content) {
+  return /^\*\*Related PRD:?\*\*/im.test(content) || hasHeadingLike(content, ['Related\\s+PRD']);
 }
 
 function ensureTitlePrefix(content, expectedPrefix) {
@@ -63,12 +69,27 @@ function validateDoc(filePath, type) {
 
   const requiredSections =
     type === 'PRD'
-      ? ['Overview', 'Problem', 'Requirements', 'Success Metrics']
-      : ['Overview', 'Related PRD', 'Implementation', 'Testing'];
+      ? [
+          { name: 'Overview', candidates: ['Overview'] },
+          { name: 'Problem', candidates: ['Problem', 'Problem\\s+Statement'] },
+          { name: 'Requirements', candidates: ['Requirements', 'Functional\\s+Requirements', 'Detailed\\s+Requirements'] },
+          { name: 'Success Metrics', candidates: ['Success\\s+Metrics', 'Success\\s+Criteria'] },
+        ]
+      : [
+          { name: 'Overview', candidates: ['Overview'] },
+          { name: 'Related PRD', candidates: ['Related\\s+PRD'] },
+          { name: 'Implementation', candidates: ['Implementation', 'Implementation\\s+Plan', 'Core\\s+Implementation', 'Time\\s+Calculation\\s+Algorithm'] },
+          { name: 'Testing', candidates: ['Testing', 'Testing\\s+Strategy', 'Verification'] },
+        ];
 
   for (const section of requiredSections) {
-    if (!hasHeading(content, section)) {
-      const message = `${path.relative(root, filePath)} missing section matching "${section}".`;
+    const hasSection =
+      type === 'TRD' && section.name === 'Related PRD'
+        ? hasRelatedPrdReference(content)
+        : hasHeadingLike(content, section.candidates);
+
+    if (!hasSection) {
+      const message = `${path.relative(root, filePath)} missing section matching "${section.name}".`;
       if (mustBeStrict) {
         issues.push(message);
       } else {

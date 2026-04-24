@@ -31,6 +31,14 @@ Currently, the platform is fully implemented in Spanish. To expand accessibility
 
 ---
 
+## Problem Statement
+
+The current interface is Spanish-only, which creates adoption barriers for non-Spanish speakers and limits accessibility goals for a broader audience.
+
+Without a structured i18n layer, translating UI text is error-prone, hard to maintain, and difficult to validate across features such as settings, onboarding, and modals.
+
+---
+
 ## 2. User Stories
 
 ### As a Spanish-speaking user (current state)

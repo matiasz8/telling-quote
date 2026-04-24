@@ -80,7 +80,7 @@ If implementing PRD-XXX/TRD-XXX:
 ### Merge Safety
 - [ ] I have verified there are no merge conflicts
 - [ ] I have rebased on latest main
-- [ ] All CI checks pass (lint, type-check, build)
+- [ ] All CI checks pass (docs validation, lint, type-check, build)
 
 ## 🔍 Additional Notes
 

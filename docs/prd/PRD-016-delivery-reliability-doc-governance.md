@@ -1,10 +1,10 @@
 # PRD-016: Delivery Reliability & Documentation Governance
 
-**Status:** 🚧 In Progress  
+**Status:** ✔️ Completed  
 **Priority:** High  
 **Target Release:** v0.4.x  
 **Created:** April 17, 2026  
-**Last Updated:** April 17, 2026  
+**Last Updated:** April 24, 2026  
 **Owner:** Engineering Team  
 **Related PRDs:** PRD-005 (Firebase Sync), PRD-007 (Automated Validation), PRD-013 (TTS)
 
@@ -105,6 +105,6 @@ Validation scripts must be readable, fast, and executable in CI/local environmen
 
 ## 8. Open Questions
 
-1. Should `validate:docs` be a required CI check for all PRs or only docs/config PRs?
-2. Should the documentation validation agent be migrated into organization-level shared skills later?
-3. Do we want additional schema validation for FEATURE_INDEX (JSON schema) in the same gate?
+1. Should the documentation validation agent be migrated into organization-level shared skills later?
+2. Do we want additional schema validation for FEATURE_INDEX (JSON schema) in the same gate?
+3. Should Playwright-based E2E/a11y checks remain manual-only until the suite is stabilized for CI?
