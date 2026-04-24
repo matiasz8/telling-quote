@@ -8,6 +8,10 @@
 **Related Issues:** TBD  
 **Related PRDs:** PRD-004 (Accessibility)
 
+## Overview
+
+Define an interactive onboarding flow that guides first-time users through the core product actions (create reading, navigate content, and configure settings) without blocking normal usage.
+
 ## Problem Statement
 
 New users report confusion about how to use the application. There's no guided introduction to core features like creating readings, navigating content, or accessing settings. This leads to increased friction and potential abandonment.
