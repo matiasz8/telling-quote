@@ -1,6 +1,6 @@
 # PRD-007: Automated Accessibility Testing & Validation
 
-**Status**: ✔️ Completed  
+**Status:** ✔️ Completed  
 **Priority**: High  
 **Phase**: 2.0 - Quality Assurance  
 **Owner**: QA Lead / Accessibility Champion  

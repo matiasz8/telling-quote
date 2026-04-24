@@ -1,6 +1,6 @@
 # TRD-003: Detox Theme Implementation
 
-**Status**: ✔️ Completed  
+**Status:** ✔️ Completed  
 **Priority**: Medium  
 **Related PRD**: [PRD-003: Detox Theme Mode](../prd/PRD-003-detox-theme.md)  
 **Created**: January 5, 2026  

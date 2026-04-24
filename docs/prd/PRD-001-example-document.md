@@ -1,6 +1,6 @@
 # PRD-001: Example Document on First Load
 
-**Status**: ✔️ Completed  
+**Status:** ✔️ Completed  
 **Priority**: High  
 **Owner**: TBD  
 **Created**: November 20, 2025  

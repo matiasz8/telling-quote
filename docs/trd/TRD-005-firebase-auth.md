@@ -1,6 +1,6 @@
 # TRD-005: Firebase Authentication & Cloud Sync Implementation
 
-**Status**: ✔️ Completed  
+**Status:** ✔️ Completed  
 **Priority**: Medium  
 **Related PRD**: [PRD-005: Firebase Authentication & Cloud Sync](../prd/PRD-005-firebase-auth.md)  
 **Created**: January 5, 2026  

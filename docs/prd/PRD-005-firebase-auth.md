@@ -1,6 +1,6 @@
 # PRD-005: Firebase Authentication & Cloud Sync
 
-**Status**: ✔️ Completed  
+**Status:** ✔️ Completed  
 **Priority**: Medium  
 **Owner**: TBD  
 **Created**: November 20, 2025  

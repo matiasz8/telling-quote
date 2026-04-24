@@ -1,6 +1,6 @@
 # PRD-011: Internationalization System (English/Spanish)
 
-**Status:** Draft  
+**Status:** 📝 Draft  
 **Created:** 2025-06-XX  
 **Last Updated:** 2026-04-24  
 **Owner:** Product Team  

@@ -1,6 +1,6 @@
 # PRD-004: Accessibility Features
 
-**Status**: ✔️ Completed  
+**Status:** ✔️ Completed  
 **Priority**: High  
 **Owner**: TBD  
 **Created**: November 20, 2025  
