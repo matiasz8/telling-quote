@@ -1,6 +1,6 @@
 # PRD-013: Text-to-Speech (TTS)
 
-**Status:** ✅ Completed  
+**Status:** ✔️ Completed  
 **Priority:** Medium  
 **Target Release:** v0.6.0  
 **Created:** February 2, 2026  

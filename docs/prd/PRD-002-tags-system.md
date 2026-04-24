@@ -1,6 +1,6 @@
 # PRD-002: Tags System
 
-**Status**: ✔️ Completed  
+**Status:** ✔️ Completed  
 **Priority**: High  
 **Owner**: TBD  
 **Created**: November 20, 2025  

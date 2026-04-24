@@ -1,6 +1,6 @@
 # PRD-008: Advanced Accessibility for Blind & Low Vision Users (Voice Control & Text-to-Speech)
 
-**Status**: 📝 Draft  
+**Status:** 📝 Draft  
 **Priority**: Critical  
 **Phase**: 2.1 - Inclusive Design  
 **Owner**: Accessibility Lead  

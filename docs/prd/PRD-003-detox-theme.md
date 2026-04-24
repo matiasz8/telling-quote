@@ -1,6 +1,6 @@
 # PRD-003: Detox Theme Mode
 
-**Status**: ✔️ Completed  
+**Status:** ✔️ Completed  
 **Priority**: Medium  
 **Owner**: TBD  
 **Created**: November 20, 2025  

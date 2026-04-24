@@ -1,6 +1,6 @@
 # PRD-006: Enhanced Tag Management & Filtering
 
-**Status**: 📝 Draft  
+**Status:** 📝 Draft  
 **Priority**: High  
 **Phase**: 2.0  
 **Owner**: TBD  

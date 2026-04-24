@@ -1,6 +1,6 @@
 # TRD-001: Example Document Implementation
 
-**Status**: ✔️ Completed  
+**Status:** ✔️ Completed  
 **Priority**: High  
 **Related PRD**: [PRD-001: Example Document on First Load](../prd/PRD-001-example-document.md)  
 **Created**: November 20, 2025  
