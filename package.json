@@ -3,15 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --webpack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
-    "lint:md": "markdownlint '**/*.md'",
-    "lint:md:fix:md032": "markdownlint --fix --enable MD032 --ignore node_modules --ignore .next -- '**/*.md'",
-    "lint:md:fix:structure": "node scripts/fix-markdown-structure.mjs",
-    "lint:md:fix": "markdownlint '**/*.md' --fix",
     "type-check": "tsc --noEmit",
     "clean": "rm -rf .next out node_modules/.cache",
     "validate": "npm run type-check && npm run lint",
@@ -30,9 +26,6 @@
     "emulators:export": "firebase emulators:export .firebase/emulator-data"
   },
   "lint-staged": {
-    "*.md": [
-      "markdownlint --fix --enable MD032 --"
-    ],
     "*.{js,jsx,ts,tsx}": [
       "eslint --fix"
     ],
@@ -64,7 +57,6 @@
     "firebase-tools": "^14.24.2",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
-    "markdownlint-cli": "^0.45.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

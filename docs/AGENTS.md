@@ -478,7 +478,6 @@ Re-review after changes made.
 ## Usage & Workflow
 
 ### Step 1: PRD Planning
-
 ```bash
 # User: "Plan PRD-006 for implementation"
 # Agent: Planning Agent runs, outputs planning checklist
@@ -487,7 +486,6 @@ Re-review after changes made.
 ```
 
 ### Step 2: Branch & TRD
-
 ```bash
 # Developer: Creates branch `feat/PRD-006-tag-filtering`
 # Developer: Writes TRD-006, marks "Approved for Implementation"
@@ -495,7 +493,6 @@ Re-review after changes made.
 ```
 
 ### Step 3: Development
-
 ```bash
 # Developer: Implements TRD-006, fills in Delivery Report
 # Developer: Runs Delivery Agent check locally, fixes issues
@@ -503,7 +500,6 @@ Re-review after changes made.
 ```
 
 ### Step 4: Code Review
-
 ```bash
 # Reviewer: Receives PR, Review Agent runs automatically
 # Reviewer: Uses Review output to validate traceability & risks
@@ -512,7 +508,6 @@ Re-review after changes made.
 ```
 
 ### Step 5: Post-Merge
-
 ```bash
 # Update: FEATURE_INDEX.json status → "completed", last_updated
 # Update: docs/prd/README.md, docs/trd/README.md status
@@ -520,7 +515,6 @@ Re-review after changes made.
 ```
 
 ### Documentation Gate (Mandatory)
-
 ```bash
 # Run before opening PR for documentation-heavy changes
 npm run validate:docs
@@ -551,7 +545,6 @@ docs/agents/DOCUMENTATION_VALIDATION_AGENT.md
 **Future** (Phase 3): Promote stable agents to shared organizational skills in `~/.local/share/nanlabs/skills/`.
 
 **Feedback Loop**: After 5 PRs using these agents, assess:
-
 - Which checklists are most valuable?
 - Which outputs are ignored or misunderstood?
 - What information is missing?

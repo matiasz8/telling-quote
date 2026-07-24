@@ -56,23 +56,19 @@ Impact:
 ### 5.1 Functional Requirements
 
 #### FR-1: Firebase Emulator Support
-
 - Add repo-level emulator config for Auth and Firestore.
 - Add npm scripts to start/export emulators.
 - Add environment flags to switch between cloud and emulator.
 
 #### FR-2: Documentation Validation Agent
-
 - Define repository contract for a documentation validation agent.
 - Add script to validate PRD/TRD structure.
 - Add script gate to validate FEATURE_INDEX link consistency.
 
 #### FR-3: Validation Command
-
 - Add one command (`validate:docs`) that runs both document-structure checks and traceability checks.
 
 #### FR-4: Sync Hardening
-
 - Add retry policy for transient sync failures.
 - Distinguish offline from generic sync errors.
 - Prevent stale sync-status timers from causing inconsistent UI states.
@@ -80,15 +76,12 @@ Impact:
 ### 5.2 Non-Functional Requirements
 
 #### NFR-1: Determinism
-
 Local emulator setup must run with a single command and no manual CLI flags.
 
 #### NFR-2: Safety
-
 No production Firebase writes should occur when emulator mode is enabled.
 
 #### NFR-3: Maintainability
-
 Validation scripts must be readable, fast, and executable in CI/local environments.
 
 ---

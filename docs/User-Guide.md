@@ -32,7 +32,6 @@ Navigate to the dashboard where you'll see a "New Reading" button.
 Inline code: `` `code` `` → `code`
 
 **Blockquotes**:
-
 ```markdown
 > This is a quote
 > — Author
@@ -41,48 +40,38 @@ Inline code: `` `code` `` → `code`
 ### Rich Media (Phase 2)
 
 **Images**:
-
 ```markdown
 ![Alt text](https://example.com/image.jpg)
 ```
-
 Images are displayed centered and optimized for readability.
 
 **Text Highlighting**:
-
 ```markdown
 ==highlighted text==
 ```
-
 Creates theme-aware background highlighting.
 
 ### Structured Content (Phase 3)
 
 **Tables**:
-
 ```markdown
 | Header 1 | Header 2 | Header 3 |
 |----------|----------|----------|
 | Cell 1   | Cell 2   | Cell 3   |
 | Cell 4   | Cell 5   | Cell 6   |
 ```
-
 Features:
-
 - Gradient headers (theme-aware)
 - Hover effects on rows
 - Supports inline markdown in cells
 - Responsive design
 
 **Task Lists**:
-
 ```markdown
 - [ ] Pending task
 - [x] Completed task
 ```
-
 Features:
-
 - Custom checkboxes with SVG icons
 - Theme-aware colors (purple/lime)
 - Line-through for completed tasks
@@ -90,15 +79,12 @@ Features:
 ### Academic Content (Phase 4)
 
 **Footnotes**:
-
 ```markdown
 This text has a reference[^1].
 
 [^1]: This is the footnote text.
 ```
-
 Features:
-
 - Superscript references
 - Styled footnote boxes
 - Named footnotes support (e.g., `[^name]`)
@@ -107,15 +93,12 @@ Features:
 
 Inline math: `$E = mc^2$`
 Block math:
-
 ```markdown
 $$
 \int_{a}^{b} f(x)dx = F(b) - F(a)
 $$
 ```
-
 Features:
-
 - Professional KaTeX rendering
 - Full LaTeX notation support
 - Matrices, integrals, summations
@@ -141,7 +124,6 @@ Each `##` heading creates a new section.
 ### Lists
 
 **Bulleted Lists:**
-
 ```markdown
 - First item
 - Second item
@@ -150,7 +132,6 @@ Each `##` heading creates a new section.
 ```
 
 **Numbered Lists:**
-
 ```markdown
 1. First step
 2. Second step
@@ -173,7 +154,7 @@ Use triple backticks with optional language:
 function hello() {
   console.log("Hello, world!");
 }
-```text
+```
 ````
 
 ### Links
@@ -191,7 +172,6 @@ Click the **⚙️ Settings** icon in the top-right corner.
 ### Font Family Options
 
 Choose from:
-
 - **Serif**: Traditional, readable
 - **Sans Serif**: Modern, clean
 - **Monospace**: Code-like appearance
@@ -239,21 +219,18 @@ All settings are automatically saved in your browser.
 tellingQuote organizes your readings into two tabs:
 
 **📚 Active Tab**:
-
 - Shows readings you haven't completed yet
 - Each card displays a colored dot (🟢 green / 🟣 purple) indicating it's pending
 - Counter badge shows number of active readings
 - Default view when opening the dashboard
 
 **✓ Completed Tab**:
-
 - Shows readings you've finished
 - No dot indicator (clean, completed status)
 - Counter badge shows number of completed readings
 - Automatically populated when you finish a reading
 
 **Tab Features**:
-
 - Theme-aware colors (purple for dark, lime for light)
 - Persistent: Remembers which tab you were viewing
 - Counters update automatically
@@ -353,7 +330,6 @@ Currently, there's no export feature. To back up:
 4. Save to a text file
 
 To restore:
-
 1. Open DevTools
 2. Paste the value back into localStorage
 3. Refresh the page

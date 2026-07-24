@@ -172,15 +172,15 @@ User can delete or keep example
 
    - Proposal: No, let user delete manually
 
-1. **Should example reading count towards "Active" tab?**
+2. **Should example reading count towards "Active" tab?**
 
    - Proposal: Yes, treat it like normal reading
 
-1. **Should we track analytics on example usage?**
+3. **Should we track analytics on example usage?**
 
    - Proposal: Track in localStorage only (privacy-first)
 
-1. **Should example be marked as "completed" by default?**
+4. **Should example be marked as "completed" by default?**
    - Proposal: No, start as pending/active
 
 ---

@@ -232,11 +232,11 @@ isExample?: boolean;
    - Create `EXAMPLE_READING` object
    - Export `isExampleReading()` helper
 
-1. ✅ Update `lib/constants/storage.ts`
+2. ✅ Update `lib/constants/storage.ts`
 
    - Add `EXAMPLE_DISMISSED` to `STORAGE_KEYS`
 
-1. ✅ Update `lib/constants/index.ts`
+3. ✅ Update `lib/constants/index.ts`
    - Export example reading module
 
 ### Phase 2: Auto-Creation Logic ✅
@@ -263,7 +263,7 @@ isExample?: boolean;
    - Check if deleted reading is example
    - Set `exampleDismissed` flag in localStorage
 
-1. ✅ Pass `isExample` prop in dashboard
+2. ✅ Pass `isExample` prop in dashboard
    - Map over readings and pass prop conditionally
 
 ---
@@ -464,13 +464,13 @@ test("example reading flow", async ({ page }) => {
    - Feature branch: `feature/prd-001-example-document`
    - Target: `main`
 
-1. **Build Verification**
+2. **Build Verification**
 
    - Run `npm run build`
    - Verify no build errors
    - Check bundle size impact
 
-1. **Deploy to Production**
+3. **Deploy to Production**
    - Standard deployment process
    - No database migrations needed
    - No environment variables needed
@@ -483,7 +483,7 @@ test("example reading flow", async ({ page }) => {
    - Verify example appears for new users
    - Monitor localStorage usage
 
-1. **User Feedback**
+2. **User Feedback**
    - Track if users view the example
    - Track if users create readings after viewing example
    - Monitor support questions about markdown support

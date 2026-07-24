@@ -329,7 +329,7 @@ const EXAMPLE_READING: Reading = {
   title: 'Welcome to tellingQuote',
   content: EXAMPLE_MARKDOWN
 }
-```text
+```
 
 ## Implementation
 

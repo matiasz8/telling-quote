@@ -55,7 +55,7 @@ flowchart TD
 
 ### Component Architecture
 
-```text
+```
 types/index.ts (UPDATED)
     ├── User type
     ├── SyncStatus type

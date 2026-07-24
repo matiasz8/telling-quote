@@ -12,7 +12,6 @@
 Technical implementation details for the interactive onboarding tutorial system using driver.js. The system provides guided tours for first-time users across Dashboard, Reader, and Settings screens.
 
 ### Key Components
-
 - `lib/tutorial/index.ts` - Core tutorial logic and initialization
 - `lib/tutorial/config.ts` - driver.js configuration
 - `lib/tutorial/steps.ts` - Tour step definitions (3 tours)
@@ -23,8 +22,7 @@ Technical implementation details for the interactive onboarding tutorial system 
 ## 2. Architecture
 
 ### Component Hierarchy
-
-```text
+```
 Tutorial System
 ├── Tutorial Controller (index.ts)
 │   ├── initTutorial() - Auto-launch on first visit
@@ -38,10 +36,9 @@ Tutorial System
     └── settingsTutorialSteps - Settings tour (5 steps)
 ```
 
-#### State Management
+### State Management
 
-##### localStorage Keys
-
+**localStorage Keys:**
 ```typescript
 {
   "tutorial-completed": "true" | "false",    // User finished tour
@@ -50,15 +47,13 @@ Tutorial System
 }
 ```
 
-###### Session State
-
+**Session State:**
 ```typescript
 let driverInstance: ReturnType<typeof driver> | null = null;
 ```
 
-###### Data Flow
-
-```text
+### Data Flow
+```
 Page Load
   ↓
 initTutorial() checks localStorage
@@ -86,9 +81,7 @@ User completes/skips → localStorage updated
 
 **File:** `lib/tutorial/index.ts`  
 **Lines:** 195 total  
-
-#### Responsibilities
-
+**Responsibilities:**
 - Auto-launch tutorial on first visit
 - Manual tutorial launch
 - Theme detection
@@ -96,10 +89,9 @@ User completes/skips → localStorage updated
 - Step filtering (only visible elements)
 - localStorage state management
 
-##### Key Functions
+#### Key Functions
 
-###### initTutorial()
-
+**initTutorial()**
 ```typescript
 export function initTutorial() {
   // Check if tutorial should run
@@ -122,8 +114,7 @@ export function initTutorial() {
 }
 ```
 
-###### startTutorial(customSteps?)
-
+**startTutorial(customSteps?)**
 ```typescript
 export function startTutorial(customSteps?: DriveStep[]) {
   // 1. Detect theme from body classes
@@ -201,8 +192,7 @@ export function startTutorial(customSteps?: DriveStep[]) {
 }
 ```
 
-###### Manual Launch Functions
-
+**Manual Launch Functions:**
 ```typescript
 // From Settings Modal
 export function startWelcomeTour() {
@@ -222,20 +212,17 @@ export function startSettingsTour() {
 
 ---
 
-###### 3.2 Configuration (lib/tutorial/config.ts)
+### 3.2 Configuration (lib/tutorial/config.ts)
 
 **File:** `lib/tutorial/config.ts`  
 **Lines:** ~50 total  
-
-###### Responsibilities
-
+**Responsibilities:**
 - driver.js configuration
 - Theme-specific styling
 - Accessibility settings (reduce motion)
 - Localization (Spanish text)
 
-###### Configuration Interface
-
+#### Configuration Interface
 ```typescript
 export interface TutorialConfig extends Partial<Config> {
   theme?: 'light' | 'dark' | 'detox' | 'high-contrast';
@@ -243,8 +230,7 @@ export interface TutorialConfig extends Partial<Config> {
 }
 ```
 
-###### getTutorialConfig()
-
+#### getTutorialConfig()
 ```typescript
 export function getTutorialConfig(options: TutorialConfig = {}): Config {
   const { theme = 'light', reduceMotion = false } = options;
@@ -288,19 +274,16 @@ export function getTutorialConfig(options: TutorialConfig = {}): Config {
 
 ---
 
-###### 3.3 Tour Definitions (lib/tutorial/steps.ts)
+### 3.3 Tour Definitions (lib/tutorial/steps.ts)
 
 **File:** `lib/tutorial/steps.ts`  
 **Lines:** 208 total  
-
-###### Responsibilities
-
+**Responsibilities:**
 - Define tour steps for 3 different tours
 - Spanish content
 - Target elements via `data-tour` attributes
 
-###### Tour 1: Welcome Tour (tutorialSteps)
-
+#### Tour 1: Welcome Tour (tutorialSteps)
 ```typescript
 export const tutorialSteps: DriveStep[] = [
   {
@@ -356,8 +339,7 @@ export const tutorialSteps: DriveStep[] = [
 ];
 ```
 
-###### Tour 2: New Reading Tour (newReadingTutorialSteps)
-
+#### Tour 2: New Reading Tour (newReadingTutorialSteps)
 ```typescript
 export const newReadingTutorialSteps: DriveStep[] = [
   {
@@ -403,8 +385,7 @@ export const newReadingTutorialSteps: DriveStep[] = [
 ];
 ```
 
-###### Tour 3: Settings Tour (settingsTutorialSteps)
-
+#### Tour 3: Settings Tour (settingsTutorialSteps)
 ```typescript
 export const settingsTutorialSteps: DriveStep[] = [
   {
@@ -450,9 +431,9 @@ export const settingsTutorialSteps: DriveStep[] = [
 
 ---
 
-###### 3.4 Data-Tour Attributes (Element Targeting)
+### 3.4 Data-Tour Attributes (Element Targeting)
 
-###### Target Elements
+**Target Elements:**
 
 | Element | data-tour Attribute | Component File |
 |---------|---------------------|----------------|
@@ -476,8 +457,7 @@ export const settingsTutorialSteps: DriveStep[] = [
 | Content Width | `settings-content-width` | `components/SettingsModal.tsx` |
 | Tutorial Button | `settings-tutorial-button` | `components/SettingsModal.tsx` |
 
-###### Adding New Tour Targets
-
+**Adding New Tour Targets:**
 ```tsx
 // In any component
 <button data-tour="unique-element-id">
@@ -486,7 +466,6 @@ export const settingsTutorialSteps: DriveStep[] = [
 ```
 
 Then reference in `steps.ts`:
-
 ```typescript
 {
   element: '[data-tour="unique-element-id"]',
@@ -508,7 +487,6 @@ Then reference in `steps.ts`:
 **Location:** After main theme definitions
 
 #### Light Theme
-
 ```css
 .driverjs-theme-light {
   --driver-bg: white;
@@ -541,8 +519,7 @@ Then reference in `steps.ts`:
 }
 ```
 
-##### Dark Theme
-
+#### Dark Theme
 ```css
 .driverjs-theme-dark {
   --driver-bg: #1f2937;
@@ -554,8 +531,7 @@ Then reference in `steps.ts`:
 }
 ```
 
-###### Detox Theme (Grayscale)
-
+#### Detox Theme (Grayscale)
 ```css
 .driverjs-theme-detox {
   --driver-bg: white;
@@ -567,8 +543,7 @@ Then reference in `steps.ts`:
 }
 ```
 
-###### High-Contrast Theme
-
+#### High-Contrast Theme
 ```css
 .driverjs-theme-high-contrast {
   --driver-bg: black;
@@ -590,7 +565,6 @@ Then reference in `steps.ts`:
 ## 5. Integration Points
 
 ### 5.1 Dashboard (app/page.tsx)
-
 ```typescript
 import { useEffect } from 'react';
 import { initTutorial } from '@/lib/tutorial';
@@ -606,8 +580,7 @@ export default function Dashboard() {
 }
 ```
 
-#### 5.2 Settings Modal
-
+### 5.2 Settings Modal
 ```tsx
 import { startWelcomeTour, startSettingsTour } from '@/lib/tutorial';
 
@@ -625,8 +598,7 @@ import { startWelcomeTour, startSettingsTour } from '@/lib/tutorial';
 </button>
 ```
 
-##### 5.3 New Reading Modal
-
+### 5.3 New Reading Modal
 ```tsx
 import { startNewReadingTour } from '@/lib/tutorial';
 
@@ -643,8 +615,7 @@ import { startNewReadingTour } from '@/lib/tutorial';
 ## 6. User Flows
 
 ### Flow 1: First-Time User
-
-```text
+```
 1. User visits app for first time
 2. initTutorial() checks localStorage
 3. No "tutorial-completed" found → Launch tour
@@ -658,9 +629,8 @@ import { startNewReadingTour } from '@/lib/tutorial';
 11. Tour closes
 ```
 
-#### Flow 2: Returning User (Manual Launch)
-
-```text
+### Flow 2: Returning User (Manual Launch)
+```
 1. User opens Settings Modal
 2. Clicks "🎓 Tutorial Principal"
 3. startWelcomeTour() called
@@ -669,9 +639,8 @@ import { startNewReadingTour } from '@/lib/tutorial';
 6. localStorage: tutorial-completed = true
 ```
 
-##### Flow 3: Skip Tour
-
-```text
+### Flow 3: Skip Tour
+```
 1. Tour launches automatically
 2. User clicks X button (close)
 3. driver.js fires onDestroyed callback
@@ -686,21 +655,18 @@ import { startNewReadingTour } from '@/lib/tutorial';
 
 ### WCAG 2.1 Compliance
 
-#### Level A
-
+**Level A:**
 - ✅ Keyboard navigation (Tab, Enter, Esc)
 - ✅ Focus visible on popover
 - ✅ ARIA labels on buttons
 
-##### Level AA
-
+**Level AA:**
 - ✅ Color contrast (all themes meet 4.5:1 minimum)
 - ✅ High-contrast theme: 21:1 contrast
 - ✅ Respects prefers-reduced-motion
 - ✅ Text resizable up to 200%
 
-###### Reduce Motion Support
-
+### Reduce Motion Support
 ```typescript
 const reduceMotion =
   window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
@@ -710,13 +676,12 @@ const config = getTutorialConfig({ theme, reduceMotion });
 // → animate: false, smoothScroll: false
 ```
 
-###### Effect
-
+**Effect:**
 - No fade-in animations
 - Instant scroll to elements
 - No transition effects
 
-###### Keyboard Navigation
+### Keyboard Navigation
 
 | Key | Action |
 |-----|--------|
@@ -732,8 +697,7 @@ const config = getTutorialConfig({ theme, reduceMotion });
 
 ### Manual Testing Checklist
 
-#### Functionality
-
+**Functionality:**
 - [ ] Tour auto-launches on first visit
 - [ ] Tour doesn't launch if completed
 - [ ] Tour doesn't launch if skipped
@@ -746,8 +710,7 @@ const config = getTutorialConfig({ theme, reduceMotion });
 - [ ] "No volver a mostrar" checkbox works
 - [ ] localStorage persists correctly
 
-##### Visual (All Themes)
-
+**Visual (All Themes):**
 - [ ] Light: Blue buttons, white popover
 - [ ] Dark: Purple buttons, dark gray popover
 - [ ] Detox: Gray buttons, white popover
@@ -756,8 +719,7 @@ const config = getTutorialConfig({ theme, reduceMotion });
 - [ ] Popovers positioned correctly (no overlap)
 - [ ] Progress text visible ("1 de 5")
 
-###### Accessibility
-
+**Accessibility:**
 - [ ] Keyboard navigation works
 - [ ] Reduce motion disables animations
 - [ ] High-contrast mode: 21:1 contrast
@@ -765,8 +727,7 @@ const config = getTutorialConfig({ theme, reduceMotion });
 - [ ] Focus visible on buttons
 - [ ] ARIA labels present
 
-###### Edge Cases
-
+**Edge Cases:**
 - [ ] Tour works with missing elements (filters steps)
 - [ ] Tour works on mobile (touch-friendly)
 - [ ] Tour works with screen readers
@@ -778,17 +739,13 @@ const config = getTutorialConfig({ theme, reduceMotion });
 ## 9. Troubleshooting
 
 ### Issue 1: Tour Doesn't Auto-Launch
-
 **Symptom:** First-time user doesn't see tour  
-
-#### Causes
-
+**Causes:**
 - localStorage already has tutorial flags
 - JavaScript error preventing initialization
 - Element not found (step filtering)
 
-##### Solution
-
+**Solution:**
 ```typescript
 // Clear localStorage
 localStorage.removeItem('tutorial-completed');
@@ -801,18 +758,14 @@ window.location.reload();
 
 ---
 
-###### Issue 2: Popover Not Visible
-
+### Issue 2: Popover Not Visible
 **Symptom:** Tour starts but popover is invisible  
-
-###### Causes
-
+**Causes:**
 - CSS not loaded (driver.js/dist/driver.css)
 - Theme class not applied
 - Z-index conflict
 
-###### Solution
-
+**Solution:**
 ```typescript
 // Verify CSS import in index.ts
 import 'driver.js/dist/driver.css';
@@ -827,18 +780,14 @@ console.log(document.querySelector('.driver-popover')?.className);
 
 ---
 
-###### Issue 3: Step Skipped (Element Not Found)
-
+### Issue 3: Step Skipped (Element Not Found)
 **Symptom:** Tour jumps over a step  
-
-###### Causes
-
+**Causes:**
 - Element with `data-tour` attribute doesn't exist
 - Element hidden (display: none)
 - Selector typo
 
-###### Solution
-
+**Solution:**
 ```typescript
 // Verify element exists in DOM
 const element = document.querySelector('[data-tour="settings-button"]');
@@ -858,18 +807,14 @@ const visibleSteps = steps.filter((step) => {
 
 ---
 
-###### Issue 4: Theme Styling Not Applied
-
+### Issue 4: Theme Styling Not Applied
 **Symptom:** Popover has default driver.js styling (blue)  
-
-###### Causes
-
+**Causes:**
 - Theme detection failed
 - CSS theme classes not defined in globals.css
 - Theme class not passed to driver.js config
 
-###### Solution
-
+**Solution:**
 ```typescript
 // Debug theme detection
 const bodyClasses = document.body.classList;
@@ -888,18 +833,14 @@ console.log('Popover class:', config.popoverClass);
 
 ---
 
-###### Issue 5: "Never Show Again" Doesn't Work
-
+### Issue 5: "Never Show Again" Doesn't Work
 **Symptom:** Tour keeps auto-launching despite checking box  
-
-###### Causes
-
+**Causes:**
 - Checkbox not properly connected to localStorage
 - onNextClick callback not firing
 - localStorage not persisting
 
-###### Solution
-
+**Solution:**
 ```typescript
 // Verify checkbox ID matches
 const checkbox = document.getElementById('tutorial-no-show-again') as HTMLInputElement;
@@ -926,20 +867,18 @@ if (neverShow) return; // Should exit early
 ## 10. Performance Considerations
 
 ### Bundle Size
-
 - **driver.js**: ~12KB gzipped
 - **Custom styles**: ~5KB (included in globals.css)
 - **Tour definitions**: ~3KB
 - **Total**: ~20KB
 
-#### Optimizations
-
+### Optimizations
 1. **Lazy Loading**: driver.js only loaded when tutorial starts
 2. **Step Filtering**: Only visible elements included (reduces DOM queries)
 3. **Delayed Launch**: 1-second delay after page load (smooth UX)
 4. **Single Instance**: Only one driverInstance at a time
 
-##### Performance Metrics
+### Performance Metrics
 
 | Metric | Target | Actual |
 |--------|--------|--------|
@@ -966,7 +905,6 @@ if (neverShow) return; // Should exit early
 ## 12. Future Enhancements
 
 ### Planned Features
-
 1. **Multi-Language Support**: English translations for steps
 2. **Video Tutorials**: Embed short video clips
 3. **Interactive Playground**: Let users try features during tour
@@ -974,8 +912,7 @@ if (neverShow) return; // Should exit early
 5. **Contextual Tours**: Trigger tours based on user behavior
 6. **Custom Tour Builder**: Let users create custom tours
 
-#### Potential Improvements
-
+### Potential Improvements
 - A/B test different tour lengths (3 steps vs 7 steps)
 - Add progress bar at top of popover
 - Show estimated time remaining ("2 minutos restantes")
@@ -987,21 +924,18 @@ if (neverShow) return; // Should exit early
 ## 13. Related Files
 
 ### Core Implementation
-
 - `lib/tutorial/index.ts` (195 lines)
 - `lib/tutorial/config.ts` (50 lines)
 - `lib/tutorial/steps.ts` (208 lines)
 - `app/globals.css` (driver.js styling)
 
-#### Integration Points
-
+### Integration Points
 - `app/page.tsx` (initTutorial call)
 - `components/Header.tsx` (tutorial buttons)
 - `components/SettingsModal.tsx` (manual launch)
 - `components/NewReadingModal.tsx` (new reading tour)
 
-##### Dependencies
-
+### Dependencies
 - `driver.js` v1.3.1 (external NPM package)
 - `driver.js/dist/driver.css` (external styles)
 

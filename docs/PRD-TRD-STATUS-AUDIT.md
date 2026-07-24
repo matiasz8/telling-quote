@@ -10,7 +10,6 @@
 ## 📊 Resumen Ejecutivo
 
 ### Estado General
-
 - **PRDs Totales**: 15
 - **PRDs Completados**: 9/15 (60%)
 - **PRDs en Draft**: 6/15 (40%)
@@ -32,7 +31,6 @@
 | 004 | PRD-004 | Accessibility Features | ✅ | ✅ TRD-004 actualizado |
 
 **Evidencia en Código**:
-
 - ✅ Tags implementados en `types/index.ts`, `lib/utils/tagHelpers.ts`
 - ✅ Detox theme en `config/theme.ts`, `lib/constants/settings.ts`
 - ✅ Accessibility en `hooks/useApplyAccessibilitySettings.ts`, `lib/utils/accessibility.ts`
@@ -49,23 +47,22 @@
 | 014 | PRD-014 | Reading Reactivation | ✅ | ✅ TRD-014 OK |
 
 **Evidencia en Código**:
-
 - ✅ Firebase en `lib/firebase/auth.ts`, `lib/firebase/firestore.ts`, `hooks/useAuth.ts`
 - ✅ Spotlight en `app/globals.css` (líneas 507+), `types/index.ts` (ReadingTransition)
 - ✅ Tutorial en `lib/tutorial/index.ts`, `lib/tutorial/steps.ts`, `lib/tutorial/config.ts`
 - ✅ Auto-Advance en `app/reader/[id]/page.tsx` (timer logic + keyboard shortcuts)
 - ✅ Reactivation en `components/ConfirmReactivateModal.tsx`, `components/ReadingCard.tsx`
 
-## 📝 PRDs EN DRAFT (6/15)
+---6/15)
 
 | # | PRD | Título | Fase | Prioridad | Tiene TRD |
 |---|-----|--------|------|-----------|-----------|
 | 006 | PRD-006 | Enhanced Tag Management | 2.0 | High | ❌ No |
 | 007 | PRD-007 | Automated Accessibility Testing | 2.0 QA | High | ❌ No |
 | 008 | PRD-008 | Advanced Accessibility (Blind Users) | 2.1 | Critical | ❌ No |
+| 011 | PRD-011 | Internationalization (i18n) | Futurond Users) | 2.1 | Critical | ❌ No |
 | 011 | PRD-011 | Internationalization (i18n) | Futuro | Medium | ❌ No |
-| 013 | PRD-013 | Text-to-Speech | v0.6.0 | Medium | ❌ No |
-| 015 | PRD-015 | Visual Testing Playwright | v0.4.0 | Medium | ❌ No |
+| 012 | PRD-012 | Auto-Advance Timer | v0.5.0 | Medium | ❌ No |
 | 013 | PRD-013 | Text-to-Speech | v0.6.0 | Medium | ❌ No |
 | 015 | PRD-015 | Visual Testing Playwright | v0.4.0 | Medium | ❌ No |
 
@@ -126,12 +123,12 @@
 
 ### Actualizaciones de README
 
-1. **docs/prd/README.md**
+12. **docs/prd/README.md**
     - Actualizado estado de PRD-005 a Completed
     - Actualizado estado de PRD-012 a Completed
     - Cambiado título de sección Phase 2 a "9/11 COMPLETED ✅"
 
-2. **docs/trd/README.md**
+13. **docs/trd/README.md**
     - Actualizado todos los TRDs (002, 003, 004, 005) a Completed
     - Agregado TRD-012 como Completed
     - Cambiado título a "All TRDs (9 Total - 9 COMPLETED ✅)"
@@ -141,7 +138,6 @@
 ## 📋 Verificación de Implementación
 
 ### ✅ PRD-001: Example Document
-
 ```typescript
 // lib/constants/exampleReading.ts
 export const EXAMPLE_READING_ID = "example-reading-v1";
@@ -150,7 +146,6 @@ export function isExampleReading(reading: Reading): boolean
 ```
 
 ### ✅ PRD-002: Tags System
-
 ```typescript
 // types/index.ts
 export type Reading = {
@@ -163,7 +158,6 @@ export function getTagColor(tagName: string, isDark: boolean): string
 ```
 
 ### ✅ PRD-003: Detox Theme
-
 ```typescript
 // config/theme.ts
 export const detoxTheme = { /* monochromatic colors */ }
@@ -173,7 +167,6 @@ export const detoxTheme = { /* monochromatic colors */ }
 ```
 
 ### ✅ PRD-004: Accessibility
-
 ```typescript
 // types/index.ts
 export type AccessibilitySettings = {
@@ -190,7 +183,6 @@ export type AccessibilitySettings = {
 ```
 
 ### ✅ PRD-005: Firebase Auth
-
 ```typescript
 // lib/firebase/auth.ts
 export const signInWithGoogle = async (): Promise<User>
@@ -202,7 +194,6 @@ const { user, loading, signIn, signOut } = useAuth();
 ```
 
 ### ✅ PRD-009: Spotlight Mode
-
 ```css
 /* app/globals.css */
 .spotlight-mode::before { /* radial gradient overlay */ }
@@ -215,7 +206,6 @@ export type ReadingTransition = 'none' | 'fade-theme' | 'swipe' | 'line-focus' |
 ```
 
 ### ✅ PRD-010: Onboarding Tutorial
-
 ```typescript
 // lib/tutorial/index.ts
 export function initTutorial()
@@ -247,7 +237,6 @@ const [autoAdvanceElapsed, setAutoAdvanceElapsed] = useState(0);
 ```
 
 ### ✅ PRD-014: Reading Reactivation
-
 ```typescript
 // components/ConfirmReactivateModal.tsx
 export default function ConfirmReactivateModal({ /* ... */ })
@@ -261,16 +250,13 @@ onReactivate?: (reading: Reading) => void
 ## 🎯 Conclusiones
 
 ### ✅ Fortalezas
-
 1. **Implementación completa**: 8 PRDs totalmente implementados con código de calidad
 2. **Coherencia alta**: El código coincide con las especificaciones de los PRDs
 3. **Documentación TRD**: Todos los PRDs implementados tienen su correspondiente TRD
 4. **Fase 1 completa**: L5/11 ✅ 45%
-
 - **Total**: 9/15 ✅ 60%
 
 ### Tipo de Funcionalidad
-
 - **Core Features** (Tags, Theme, Example): 3/3 ✅ 100%
 - **Accessibility**: 1/2 ✅ 50% (básica completa, avanzada pendiente)
 - **Auth & Sync**: 1/1 ✅ 100%
@@ -279,20 +265,17 @@ onReactivate?: (reading: Reading) => void
 - **Advanced Features** (i18n, TTS): 0/2 ❌ 0%
 
 ### Prioridad
-
 - **High/Critical Priority**: 5/7 ✅ 71%
 - **Medium Priority**: 4/8 ✅ 50
 
 ## 📊 Métricas de Progreso
 
 ### Completitud por Fase
-
 - **Fase 1 (Foundation)**: 4/4 ✅ 100%
 - **Fase 2 (Enhanced)**: 4/11 ✅ 36%
 - **Total**: 8/15 ✅ 53%
 
 ### Tipo de Funcionalidad
-
 - **Core Features** (Tags, Theme, Example): 3/3 ✅ 100%
 - **Accessibility**: 1/2 ✅ 50% (básica completa, avanzada pendiente)
 - **Auth & Sync**: 1/1 ✅ 100%
@@ -301,7 +284,6 @@ onReactivate?: (reading: Reading) => void
 - **Advanced Features** (i18n, TTS, Auto-Advance): 0/3 ❌ 0%
 
 ### Prioridad
-
 - **High/Critical Priority**: 5/7 ✅ 71%
 - **Medium Priority**: 3/8 ✅ 37%
 

@@ -84,13 +84,9 @@ export function useTTS(options: UseTTSOptions) {
     }
   }, [isSupported, onError]);
 
-  // Load available voices with retry logic for browsers that delay voice init.
+  // Load available voices with timeout fallback for browsers that delay voice init.
   useLayoutEffect(() => {
     if (!state.isSupported) return;
-
-    let retryCount = 0;
-    const MAX_RETRIES = 3;
-    const RETRY_DELAY = 1000;
 
     const clearVoiceLoadTimeout = () => {
       if (voiceLoadTimeoutRef.current) {
@@ -103,13 +99,12 @@ export function useTTS(options: UseTTSOptions) {
       const voices = window.speechSynthesis.getVoices();
       
       if (voices.length === 0) {
-        dlog('[useTTS] No voices loaded yet, will retry');
-        return false;
+        dlog('[useTTS] No voices loaded yet');
+        return;
       }
 
       dlog('[useTTS] Loaded', voices.length, 'voices');
       clearVoiceLoadTimeout();
-      retryCount = MAX_RETRIES; // Stop retries once voices load
       
       // Prefer Neural/Premium voices
       const sortedVoices = [...voices].sort((a, b) => {
@@ -121,50 +116,23 @@ export function useTTS(options: UseTTSOptions) {
       });
 
       setState((prev) => ({ ...prev, availableVoices: sortedVoices }));
-      return true;
     };
 
     // Load voices immediately
-    const voicesLoaded = loadVoices();
+    loadVoices();
 
-    // Set up retry with exponential backoff if voices aren't ready yet
-    const scheduleRetry = () => {
-      if (retryCount < MAX_RETRIES) {
-        retryCount++;
-        voiceLoadTimeoutRef.current = setTimeout(() => {
-          dlog(`[useTTS] Retry ${retryCount}/${MAX_RETRIES} to load voices`);
-          const loaded = loadVoices();
-          if (!loaded) {
-            scheduleRetry();
-          }
-        }, RETRY_DELAY * retryCount);
-      } else if (!voicesLoaded) {
-        // Final failure after retries
-        console.error('[useTTS] Failed to load speech voices after retries');
-        if (onError) {
-          onError(new Error('Speech voices failed to load. Please check browser settings.'));
-        }
+    voiceLoadTimeoutRef.current = setTimeout(() => {
+      if (window.speechSynthesis.getVoices().length === 0 && onError) {
+        onError(new Error('Speech voices failed to load in time.'));
       }
-    };
-
-    if (!voicesLoaded) {
-      scheduleRetry();
-    }
+    }, 2500);
 
     // Voices might load asynchronously in some browsers
-    const handleVoicesChanged = () => {
-      dlog('[useTTS] voiceschanged event fired');
-      const loaded = loadVoices();
-      if (loaded) {
-        retryCount = MAX_RETRIES; // Stop other retries
-      }
-    };
-
-    window.speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged);
+    window.speechSynthesis.addEventListener('voiceschanged', loadVoices);
 
     return () => {
       clearVoiceLoadTimeout();
-      window.speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged);
+      window.speechSynthesis.removeEventListener('voiceschanged', loadVoices);
     };
   }, [state.isSupported, onError]);
 
@@ -231,12 +199,7 @@ export function useTTS(options: UseTTSOptions) {
     }
     
     if (!voice) {
-      const errorMsg = '[useTTS] No voice available - voices may not have loaded yet';
-      console.error(errorMsg);
-      setState((prev) => ({ ...prev, isPlaying: false, isPaused: false }));
-      if (onError) {
-        onError(new Error('Speech voice not available. Please ensure browser supports speech synthesis.'));
-      }
+      console.error('[useTTS] No voice available at all');
       return;
     }
 

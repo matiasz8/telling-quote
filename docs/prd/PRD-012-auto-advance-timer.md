@@ -13,26 +13,21 @@
 ## 1. Overview
 
 ### Purpose
-
 Implement an automatic timer that advances slides based on the amount of text content, allowing hands-free reading with configurable reading speed.
 
-#### Background
-
+### Background
 Users want a "presentation mode" where the app automatically advances through slides at a comfortable reading pace, eliminating the need for manual navigation. This is especially useful for:
-
 - Hands-free reading (while exercising, cooking, etc.)
 - Consistent pacing for study/memorization
 - Accessibility (motor impairments)
 - Passive learning/review sessions
 
-##### User Feedback
-
+**User Feedback:**
 - "Can the app auto-advance like PowerPoint?"
 - "I want to read while doing yoga - can it move automatically?"
 - "Auto-scroll based on text length would be amazing"
 
-###### Goals
-
+### Goals
 1. Calculate optimal reading time per slide based on text length
 2. Provide configurable reading speed (WPM)
 3. Allow pause/resume functionality
@@ -56,19 +51,16 @@ Users want a "presentation mode" where the app automatically advances through sl
 ## 3. User Stories
 
 ### As a Student
-
 - I want auto-advance so I can review flashcards hands-free
 - I want adjustable speed so I can match my reading pace
 - I want to pause when needed so I can think about complex content
 
-#### As a User with Motor Impairments
-
+### As a User with Motor Impairments
 - I want automatic navigation so I don't need to click/tap
 - I want visual feedback so I know when it will advance
 - I want easy pause controls so I can stop when tired
 
-##### As a Casual Reader
-
+### As a Casual Reader
 - I want to read while cooking so I don't need to touch my device
 - I want consistent pacing so I maintain focus
 - I want to resume easily after interruptions
@@ -80,7 +72,6 @@ Users want a "presentation mode" where the app automatically advances through sl
 ### 4.1 Functional Requirements
 
 #### FR-1: Time Calculation Algorithm
-
 - Calculate reading time based on text word count
 - Formula: `time = (wordCount / WPM) * 60 seconds`
 - Default WPM: 200 (average reading speed)
@@ -94,8 +85,7 @@ Users want a "presentation mode" where the app automatically advances through sl
   - Tables: 0.7x speed (slower)
   - Images: Fixed 5-10 seconds
 
-##### FR-2: Timer Controls
-
+#### FR-2: Timer Controls
 - **Start/Play Button:** Begin auto-advance from current slide
 - **Pause Button:** Stop timer, stay on current slide
 - **Resume:** Continue from where paused
@@ -106,8 +96,7 @@ Users want a "presentation mode" where the app automatically advances through sl
   - `+/-`: Increase/decrease speed
   - `Esc`: Stop auto-advance
 
-###### FR-3: Visual Progress Indicator
-
+#### FR-3: Visual Progress Indicator
 - Circular progress ring around timer button
 - Shows time remaining for current slide
 - Smooth animation (1-second ticks)
@@ -119,8 +108,7 @@ Users want a "presentation mode" where the app automatically advances through sl
 - Visible but not distracting
 - Optional: progress bar at bottom of screen
 
-###### FR-4: Settings Integration
-
+#### FR-4: Settings Integration
 - Enable/disable auto-advance in Settings
 - WPM speed selector (slider or input)
 - Auto-start preference (on/off)
@@ -128,8 +116,7 @@ Users want a "presentation mode" where the app automatically advances through sl
 - Sound notification on advance (optional)
 - Persist all preferences in localStorage
 
-###### FR-5: Integration with Reading Transitions
-
+#### FR-5: Integration with Reading Transitions
 - Works with all transition modes:
   - None
   - Fade to theme
@@ -139,8 +126,7 @@ Users want a "presentation mode" where the app automatically advances through sl
 - Timer triggers transition animation
 - Seamless visual flow
 
-###### FR-6: Edge Cases
-
+#### FR-6: Edge Cases
 - **Last Slide:** Timer stops, show "Finished" message
 - **Pause During Advance:** Interrupt transition, stay on current
 - **Manual Navigation:** Pause auto-advance, allow resume
@@ -148,25 +134,22 @@ Users want a "presentation mode" where the app automatically advances through sl
 - **Empty Slide:** Minimum 3 seconds
 - **Focus Loss:** Pause when tab loses focus (optional)
 
-###### 4.2 Non-Functional Requirements
+### 4.2 Non-Functional Requirements
 
-###### NFR-1: Performance
-
+#### NFR-1: Performance
 - Minimal CPU usage (timer only, no heavy calculations)
 - No lag during transitions
 - Accurate timing (±100ms tolerance)
 - Battery efficient (use `requestAnimationFrame` wisely)
 
-###### NFR-2: Accessibility
-
+#### NFR-2: Accessibility
 - ARIA labels for timer controls
 - Keyboard accessible
 - Screen reader announces timer state
 - High-contrast compatible
 - Respects reduce motion (instant transitions)
 
-###### NFR-3: Usability
-
+#### NFR-3: Usability
 - Intuitive controls (standard play/pause icons)
 - Clear visual feedback
 - Easy to discover (onboarding tooltip)
@@ -178,15 +161,13 @@ Users want a "presentation mode" where the app automatically advances through sl
 
 ### 5.1 Architecture
 
-#### Components
-
+**Components:**
 - `AutoAdvanceTimer` - Main timer component
 - `TimerProgressRing` - Circular progress indicator
 - `TimerControls` - Play/pause/speed buttons
 - `useAutoAdvance` - Custom React hook for timer logic
 
-##### State Management
-
+**State Management:**
 ```typescript
 interface AutoAdvanceState {
   isActive: boolean;       // Timer running
@@ -199,7 +180,7 @@ interface AutoAdvanceState {
 }
 ```
 
-###### 5.2 Time Calculation
+### 5.2 Time Calculation
 
 ```typescript
 function calculateSlideTime(
@@ -225,7 +206,7 @@ function calculateSlideTime(
 }
 ```
 
-###### 5.3 Timer Hook
+### 5.3 Timer Hook
 
 ```typescript
 function useAutoAdvance(settings: Settings, currentSlide: number) {
@@ -270,10 +251,9 @@ function useAutoAdvance(settings: Settings, currentSlide: number) {
 }
 ```
 
-###### 5.4 UI Components
+### 5.4 UI Components
 
-###### Timer Button with Progress Ring
-
+**Timer Button with Progress Ring:**
 ```typescript
 <div className="relative inline-flex items-center">
   {/* Progress ring (SVG) */}
@@ -305,7 +285,7 @@ function useAutoAdvance(settings: Settings, currentSlide: number) {
 </div>
 ```
 
-###### 5.5 Settings UI
+### 5.5 Settings UI
 
 ```typescript
 <div className="space-y-4">
@@ -366,7 +346,6 @@ function useAutoAdvance(settings: Settings, currentSlide: number) {
 ## 6. User Experience
 
 ### 6.1 First-Time Use
-
 1. User opens reading
 2. Tooltip appears: "Try Auto-Advance! Hands-free reading at your pace"
 3. User clicks play button
@@ -374,8 +353,7 @@ function useAutoAdvance(settings: Settings, currentSlide: number) {
 5. Slide advances automatically
 6. User adjusts speed if needed
 
-#### 6.2 Typical Workflow
-
+### 6.2 Typical Workflow
 1. User opens reading
 2. Clicks auto-advance button (or auto-starts if enabled)
 3. Reads current slide
@@ -384,8 +362,7 @@ function useAutoAdvance(settings: Settings, currentSlide: number) {
 6. Resumes when ready
 7. Timer stops on last slide
 
-##### 6.3 Visual Feedback
-
+### 6.3 Visual Feedback
 - **Starting:** Play button → Pause button, ring starts filling
 - **Running:** Ring progresses smoothly, time remaining visible
 - **Pausing:** Ring freezes, button changes back to play
@@ -397,14 +374,12 @@ function useAutoAdvance(settings: Settings, currentSlide: number) {
 ## 7. Success Metrics
 
 ### Primary Metrics
-
 - **Adoption:** 20-30% of users try auto-advance
 - **Retention:** 15% use it regularly
 - **Satisfaction:** 4.2/5 average rating
 - **Completion rate:** 10% increase in finished readings
 
-#### Secondary Metrics
-
+### Secondary Metrics
 - **Speed distribution:** Most users at 180-220 WPM
 - **Pause frequency:** Average 2-3 pauses per reading
 - **Session length:** 20% longer with auto-advance
@@ -415,7 +390,6 @@ function useAutoAdvance(settings: Settings, currentSlide: number) {
 ## 8. Out of Scope
 
 ### Not Included
-
 - **Voice control:** "Alexa, next slide" (future)
 - **Sync across devices:** Timer state not synced
 - **Smart speed:** AI-adjusting WPM based on comprehension
@@ -423,8 +397,7 @@ function useAutoAdvance(settings: Settings, currentSlide: number) {
 - **Multiple timers:** Only one timer at a time
 - **Custom time overrides:** Can't set time per specific slide
 
-#### Future Enhancements
-
+### Future Enhancements
 - Integration with PRD-013 (TTS)
 - Analytics dashboard (reading patterns)
 - Speed presets (study mode, review mode, speed reading)
@@ -435,23 +408,17 @@ function useAutoAdvance(settings: Settings, currentSlide: number) {
 ## Open Questions (Resolved)
 
 1. Should auto-advance start automatically for every reading?
-
-- Decision: No. It remains controlled by user settings.
-
-1. Should timer progress sync across devices?
-
-- Decision: No for MVP. Timer state is local to the active session.
-
-1. Should users be able to override duration manually per slide?
-
-- Decision: No for MVP. Timing remains derived from content and configured WPM.
+  - Decision: No. It remains controlled by user settings.
+2. Should timer progress sync across devices?
+  - Decision: No for MVP. Timer state is local to the active session.
+3. Should users be able to override duration manually per slide?
+  - Decision: No for MVP. Timing remains derived from content and configured WPM.
 
 ---
 
 ## 9. Testing Checklist
 
 ### Functionality
-
 - [ ] Timer calculates correct time for various text lengths
 - [ ] Timer advances slides automatically
 - [ ] Pause/resume works correctly
@@ -460,24 +427,21 @@ function useAutoAdvance(settings: Settings, currentSlide: number) {
 - [ ] Last slide stops timer
 - [ ] Manual navigation pauses timer
 
-#### Visual
-
+### Visual
 - [ ] Progress ring animates smoothly
 - [ ] Colors match all 4 themes
 - [ ] Button states clear (play/pause)
 - [ ] Speed indicator visible
 - [ ] Works on mobile (touch-friendly)
 
-##### Accessibility
-
+### Accessibility
 - [ ] Keyboard navigation works
 - [ ] Screen reader announces timer state
 - [ ] ARIA labels present
 - [ ] High-contrast compatible
 - [ ] Reduce motion respected
 
-###### Performance
-
+### Performance
 - [ ] No lag during transitions
 - [ ] Accurate timing (±100ms)
 - [ ] Low CPU usage (<3%)
@@ -488,34 +452,30 @@ function useAutoAdvance(settings: Settings, currentSlide: number) {
 ## 10. Implementation Plan
 
 ### Phase 1: Core Timer (5 days)
-
 - [ ] Create `useAutoAdvance` hook
 - [ ] Implement time calculation algorithm
 - [ ] Add play/pause functionality
 - [ ] Test accuracy
 
-#### Phase 2: UI Components (3 days)
-
+### Phase 2: UI Components (3 days)
 - [ ] Build timer button component
 - [ ] Create progress ring (SVG)
 - [ ] Add speed controls
 - [ ] Style for all themes
 
-##### Phase 3: Settings Integration (2 days)
-
+### Phase 3: Settings Integration (2 days)
 - [ ] Add settings UI
 - [ ] Persist preferences
 - [ ] Add keyboard shortcuts
 - [ ] Test settings sync
 
-###### Phase 4: Polish & Testing (2 days)
-
+### Phase 4: Polish & Testing (2 days)
 - [ ] Animations and transitions
 - [ ] Accessibility testing
 - [ ] Performance optimization
 - [ ] User testing
 
-###### Total: 12 days
+**Total: 12 days**
 
 ---
 
@@ -548,7 +508,6 @@ function useAutoAdvance(settings: Settings, currentSlide: number) {
 ## Implementation Summary
 
 ### Completed Features ✅
-
 - ✅ Time calculation algorithm based on word count and content type
 - ✅ Configurable WPM speed (100-400)
 - ✅ Play/Pause/Resume controls
@@ -564,15 +523,13 @@ function useAutoAdvance(settings: Settings, currentSlide: number) {
 - ✅ Automatic stop on last slide
 - ✅ Auto-start option when opening reading
 
-#### Implementation Files
-
+### Implementation Files
 - `app/reader/[id]/page.tsx` - Main auto-advance logic and keyboard shortcuts
 - `components/SettingsModal.tsx` - Settings UI controls
 - `types/index.ts` - AutoAdvanceSettings type definition
 - `lib/constants/settings.ts` - Default settings
 
-##### Technical Details
-
+### Technical Details
 - Timer precision: 100ms intervals
 - Min slide duration: 3 seconds
 - Max slide duration: 60 seconds
@@ -582,7 +539,6 @@ function useAutoAdvance(settings: Settings, currentSlide: number) {
   - Images: Fixed 5 seconds
   - Subtitle intros: Minimum 8 words
 
-###### Not Implemented (Optional)
-
+### Not Implemented (Optional)
 - ❌ Audio notification on advance (marked as optional in PRD)
 - ❌ Pause on tab focus loss (marked as optional in PRD)

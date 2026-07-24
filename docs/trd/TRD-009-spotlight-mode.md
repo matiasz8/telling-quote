@@ -17,7 +17,7 @@ This Technical Reference Document provides implementation details for the Spotli
 
 ### Component Hierarchy
 
-```text
+```
 app/reader/[id]/page.tsx
 ├── Container div (.spotlight-mode)
 │   └── ::before pseudo-element (radial gradient overlay)
@@ -32,7 +32,7 @@ app/reader/[id]/page.tsx
 
 ### CSS Layer Stack (Z-Index)
 
-```text
+```
 z-index: 10  → .spotlight-content (current reading)
 z-index: 5   → .spotlight-mode::before (overlay)
 z-index: 1   → .progress-bar, .header
@@ -339,7 +339,6 @@ export const DEFAULT_SETTINGS: Settings = {
 ### GPU Acceleration
 
 All effects use GPU-accelerated properties:
-
 - `transform` (for positioning)
 - `opacity` (for fading)
 - `filter` (for brightness/blur)
@@ -379,7 +378,7 @@ High-Contrast Theme:
 
 ### Overlay Opacity Ranges
 
-```text
+```
 Light/Detox:
   Center: 0.05 (95% transparent)
   Mid: 0.3 (70% transparent)
@@ -398,7 +397,6 @@ Dark/High-Contrast:
 ### Manual Testing Checklist
 
 **Visual:**
-
 - [ ] Overlay appears smoothly
 - [ ] Glow matches theme color
 - [ ] Gradient has no banding
@@ -407,7 +405,6 @@ Dark/High-Contrast:
 - [ ] Buttons appear on finish
 
 **Interaction:**
-
 - [ ] Keyboard navigation works
 - [ ] Click navigation works
 - [ ] Settings toggle instant
@@ -415,14 +412,12 @@ Dark/High-Contrast:
 - [ ] Exits cleanly
 
 **Accessibility:**
-
 - [ ] Reduce motion disables effect
 - [ ] High-contrast maintains 21:1
 - [ ] Screen readers work
 - [ ] Focus indicators visible
 
 **Performance:**
-
 - [ ] 60fps animations
 - [ ] No jank on scroll
 - [ ] Low CPU usage
@@ -445,7 +440,7 @@ Samsung Internet 14+ ✅
 
 ### Performance Benchmarks
 
-```text
+```
 Target Metrics:
 - FPS: 60fps constant
 - CPU: <5% during transition
@@ -461,13 +456,11 @@ Target Metrics:
 
 **Symptoms:** Text shadow doesn't show  
 **Causes:**
-
 - CSS variable not defined
 - Wrong color format (needs RGB not hex)
 - Filter conflicts
 
 **Solution:**
-
 ```css
 /* Check CSS variable */
 --spotlight-glow-color: 250, 204, 21; /* RGB, not #FAC415 */
@@ -480,12 +473,10 @@ text-shadow: 0 0 20px rgba(var(--spotlight-glow-color), 0.6);
 
 **Symptoms:** Can't see content or overlay not visible  
 **Causes:**
-
 - Wrong opacity values
 - Theme variable not applied
 
 **Solution:**
-
 ```css
 /* Adjust opacity in theme variables */
 --spotlight-overlay-center: rgba(0, 0, 0, 0.8); /* Increase 0.8 to 0.9 */
@@ -495,13 +486,11 @@ text-shadow: 0 0 20px rgba(var(--spotlight-glow-color), 0.6);
 
 **Symptoms:** Janky animations, low FPS  
 **Causes:**
-
 - Too many elements
 - Non-GPU accelerated properties
 - JavaScript running per frame
 
 **Solution:**
-
 - Use `transform` instead of `left/top`
 - Use `opacity` instead of `visibility`
 - Remove any JavaScript animation loops
@@ -510,12 +499,10 @@ text-shadow: 0 0 20px rgba(var(--spotlight-glow-color), 0.6);
 
 **Symptoms:** No blur effect on overlay  
 **Causes:**
-
 - Browser doesn't support `backdrop-filter`
 - GPU acceleration disabled
 
 **Solution:**
-
 ```css
 /* Feature detection */
 @supports (backdrop-filter: blur(2px)) {
@@ -536,12 +523,10 @@ text-shadow: 0 0 20px rgba(var(--spotlight-glow-color), 0.6);
 
 **Symptoms:** Navigation buttons visible during reading  
 **Causes:**
-
 - CSS specificity issue
 - Class not applied
 
 **Solution:**
-
 ```css
 /* Increase specificity */
 .spotlight-content .spotlight-actions {
@@ -600,7 +585,6 @@ document.documentElement.className = 'dark-theme';
 ## Future Enhancements
 
 ### Planned Features
-
 - [ ] Custom spotlight size (user adjustable)
 - [ ] Spotlight follows scroll position
 - [ ] Multiple spotlight zones
@@ -609,7 +593,6 @@ document.documentElement.className = 'dark-theme';
 - [ ] Spotlight intensity slider
 
 ### Technical Debt
-
 - [ ] Optimize gradient performance further
 - [ ] Add more granular theme controls
 - [ ] Create reusable spotlight component
@@ -620,20 +603,16 @@ document.documentElement.className = 'dark-theme';
 ## Related Files
 
 **CSS:**
-
 - `app/globals.css` - Main styles (lines 504-920)
 
 **Components:**
-
 - `app/reader/[id]/page.tsx` - Reader integration (lines 677-920)
 - `components/SettingsModal.tsx` - Settings UI (lines 120-150)
 
 **Config:**
-
 - `lib/constants/settings.ts` - Default settings (line 8)
 
 **Types:**
-
 - `types/index.ts` - Settings type (line 45)
 
 ---

@@ -43,7 +43,7 @@ flowchart TD
 
 ### Component Architecture
 
-```text
+```
 config/theme.ts (UPDATED)
     ├── lightTheme object
     ├── darkTheme object
