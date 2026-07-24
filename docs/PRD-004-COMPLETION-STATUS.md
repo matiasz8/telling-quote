@@ -19,6 +19,7 @@
 - [x] All fonts working in reader and dashboard
 
 **Files**:
+
 - `app/layout.tsx` - Font imports via `<link>`
 - `lib/constants/settings.ts` - FONT_FAMILY_OPTIONS
 - `components/SettingsModal.tsx` - Font selector UI
@@ -41,6 +42,7 @@
 - [x] Works globally across app
 
 **Files**:
+
 - `lib/utils/accessibility.ts` - Spacing utility functions
 - `hooks/useApplyAccessibilitySettings.ts` - Apply settings hook
 - `components/SettingsModal.tsx` - Spacing controls UI
@@ -64,6 +66,7 @@
 - [x] Works on Header, Dashboard, Reader, Modals
 
 **Files**:
+
 - `config/theme.ts` - High contrast theme configuration
 - `lib/utils/styleHelpers.ts` - getThemeClasses function
 - All component files - Theme-aware styling
@@ -77,6 +80,7 @@
 **Status**: COMPLETE
 
 **ARIA Labels** - All interactive elements:
+
 - [x] Buttons have `aria-label` attributes
 - [x] Navigation has `aria-label="Main navigation"`
 - [x] Modals have `role="dialog"`, `aria-modal="true"`
@@ -84,11 +88,13 @@
 - [x] Progress indicators for reader slides
 
 **Live Regions**:
+
 - [x] `aria-live="polite"` for slide announcements
 - [x] Debounced announcements (400ms) to prevent overwhelming
 - [x] Status updates announced to screen readers
 
 **Semantic HTML**:
+
 - [x] `<article>` for reading cards
 - [x] Proper heading hierarchy (h1 → h2 → h3)
 - [x] `<nav>` for navigation
@@ -96,11 +102,13 @@
 - [x] `<header>` with `role="banner"`
 
 **Skip Links**:
+
 - [x] Skip to main content link implemented
 - [x] Accessible on Tab focus
 - [x] Present on reader and accessibility pages
 
 **Files**:
+
 - `app/reader/[id]/page.tsx` - Live regions, skip links
 - `components/Header.tsx` - Semantic nav, ARIA labels
 - `components/*Modal.tsx` - All modals have proper ARIA attributes
@@ -115,12 +123,14 @@
 **Status**: COMPLETE
 
 **Basic Navigation**:
+
 - [x] `Tab` / `Shift+Tab` - Focus navigation (with focus trap in modals)
 - [x] `Enter` - Activate buttons
 - [x] `Space` - Activate buttons / Next slide in reader
 - [x] `Esc` - Close modals
 
 **Enhanced Navigation**:
+
 - [x] `?` - Show keyboard shortcut help (global handler)
 - [x] `Space` - Next slide in reader
 - [x] `Shift+Space` - Previous slide in reader
@@ -131,6 +141,7 @@
 - [x] Arrow keys (`←`, `→`, `↑`, `↓`) - Navigate slides
 
 **Focus Management**:
+
 - [x] **useFocusTrap hook** - Prevents tab escaping from modals
 - [x] Auto-focus on first element when modals open
 - [x] Auto-focus on dangerous actions (delete button)
@@ -138,11 +149,13 @@
 - [x] Visible on all focusable elements
 
 **Visual Focus Indicators**:
+
 - [x] Clear outline on focused elements
 - [x] High contrast colors
 - [x] Works in all themes (light, dark, detox, high-contrast)
 
 **Files**:
+
 - `hooks/useFocusTrap.ts` - **NEW** - Focus trap implementation
 - `components/Header.tsx` - Global `?` key handler
 - `components/*Modal.tsx` - All modals use useFocusTrap
@@ -150,7 +163,8 @@
 - `app/reader/[id]/page.tsx` - Complete reader keyboard navigation
 - `lib/constants/navigation.ts` - NAVIGATION_KEYS constants
 
-**Evidence**: 
+**Evidence**:
+
 - Press `?` anywhere to see KeyboardShortcutsModal
 - All shortcuts documented work as expected
 - Tab within modals cycles focus without escape
@@ -171,6 +185,7 @@
 - [x] Applied via `useApplyAccessibilitySettings` hook
 
 **Files**:
+
 - `app/globals.css` - `@media (prefers-reduced-motion: reduce)` CSS
 - `hooks/useApplyAccessibilitySettings.ts` - Applies reduce-motion class
 - `components/SettingsModal.tsx` - Toggle switch UI
@@ -192,11 +207,13 @@
 - [x] Tested with color blindness simulators
 
 **Visual Patterns**:
+
 - [x] Icons used in addition to colors
 - [x] Text labels on all important UI elements
 - [x] High contrast between elements
 
 **Files**:
+
 - `components/ReadingCard.tsx` - Status indicators with icons
 - All components use semantic meaning beyond color
 
@@ -217,6 +234,7 @@
 - [x] Persists across sessions
 
 **Files**:
+
 - `hooks/useApplyAccessibilitySettings.ts` - Applies max-width to reader
 - `components/SettingsModal.tsx` - Content Width selector
 - `types/index.ts` - ContentWidth type
@@ -238,6 +256,7 @@
 - [x] Toggleable in real-time
 
 **Files**:
+
 - `app/globals.css` - `.focus-mode` CSS class
 - `hooks/useApplyAccessibilitySettings.ts` - Applies focus-mode class
 - `components/SettingsModal.tsx` - Focus Mode toggle
@@ -253,6 +272,7 @@
 **Status**: COMPLETE
 
 **WCAG Guidelines Met**:
+
 - [x] **1.4.3 Contrast (Minimum)** - 4.5:1 for normal text, 3:1 for large text
 - [x] **1.4.6 Contrast (Enhanced)** - High contrast mode: 21:1 ratio
 - [x] **1.4.8 Visual Presentation** - Adjustable line height, letter spacing, word spacing
@@ -264,6 +284,7 @@
 - [x] **4.1.2 Name, Role, Value** - ARIA labels on all controls
 
 **Testing**:
+
 - [ ] ⏳ Automated testing with axe DevTools (manual)
 - [ ] ⏳ Manual testing with NVDA screen reader (pending)
 - [ ] ⏳ Manual testing with JAWS screen reader (pending)
@@ -294,6 +315,7 @@
 **Status**: COMPLETE
 
 **Accessibility Statement Page** (`/accessibility`):
+
 - [x] Documents all accessibility features
 - [x] Lists keyboard shortcuts (now complete with Space, Home, End, F, Backspace)
 - [x] Provides contact for accessibility issues
@@ -302,6 +324,7 @@
 - [x] Theme-aware styling
 
 **In-App Documentation**:
+
 - [x] Keyboard Shortcuts Modal (`?` key) - **ENHANCED with 4 categories**
   - General Navigation
   - Reading Mode (now complete)
@@ -311,12 +334,14 @@
 - [x] Tooltips on important UI elements
 
 **Technical Documentation**:
+
 - [x] PRD-004 - Complete requirements document
 - [x] TRD-004 - Technical implementation guide
 - [x] Code comments in accessibility utilities
 - [x] README updates (if applicable)
 
 **Files**:
+
 - `app/accessibility/page.tsx` - **UPDATED** - Complete accessibility statement
 - `components/KeyboardShortcutsModal.tsx` - **ENHANCED** - All shortcuts documented
 - `docs/prd/PRD-004-accessibility.md` - Requirements doc

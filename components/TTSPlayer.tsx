@@ -28,16 +28,29 @@ export function TTSPlayer({
   className,
 }: TTSPlayerProps) {
   const [isAutoplayBlocked, setIsAutoplayBlocked] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const { state, actions } = useTTS({
     settings,
     onSentenceChange,
     onComplete,
     onError: (error) => {
-      if (error.message.includes('not-allowed')) {
+      const errorMsg = error.message;
+      dlog('[TTSPlayer] TTS Error:', errorMsg);
+      
+      if (errorMsg.includes('not-allowed')) {
         setIsAutoplayBlocked(true);
+        setError(null);
         return;
       }
+      
+      // Set error message for user
+      if (errorMsg.includes('voices') || errorMsg.includes('synthesis')) {
+        setError('Las voces de síntesis de voz no están disponibles. Intenta recargando la página.');
+      } else {
+        setError(`Error en lectura: ${errorMsg}`);
+      }
+      
       console.error('TTS Error:', error);
     },
   });
@@ -182,6 +195,33 @@ export function TTSPlayer({
 
   if (!settings.enabled || !state.isSupported) {
     return null;
+  }
+
+  // Show error state if voices failed to load
+  if (error) {
+    return (
+      <div
+        className={cn(
+          'fixed bottom-4 left-1/2 -translate-x-1/2',
+          'bg-red-50 dark:bg-red-950/30 rounded-lg shadow-lg',
+          'border border-red-200 dark:border-red-800',
+          'px-4 py-3 flex items-center gap-3',
+          'max-w-md z-40',
+          className
+        )}
+        role="alert"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0"
+        >
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+        </svg>
+        <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+      </div>
+    );
   }
 
   const progressPercentage = state.totalSentences > 0

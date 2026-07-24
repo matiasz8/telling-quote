@@ -43,9 +43,9 @@ To mention commands or inline code, use `backticks`. For example: run `npm insta
 
 > "Education is the most powerful weapon which you can use to change the world."
 > — Nelson Mandela
-
+>
 > This is an important quote that contains **bold text**, *italics*, and even `inline code`.
-
+>
 > Blockquotes are perfect for highlighting key concepts or memorable phrases.
 
 ---
@@ -106,7 +106,7 @@ Learn more about [Markdown](https://www.markdownguide.org/) and its capabilities
 
 Horizontal separators help divide thematic sections:
 
-***
+---
 
 ## Images and Highlights (Phase 2)
 
@@ -127,8 +127,6 @@ You can ==highlight important text== using highlighting syntax.
 This format is perfect for ==highlighting key concepts== or ==important terms== that you want readers to remember.
 
 You can also combine: **bold with ==highlight==** or *italics with ==highlighting==*.
-
-
 
 ---
 

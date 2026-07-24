@@ -25,7 +25,7 @@ This document provides technical implementation details for the Text-to-Speech (
 
 ### 2.1 Component Structure
 
-```
+```text
 ┌─────────────────────────────────────────┐
 │          ReaderPage.tsx                 │
 │  ┌───────────────────────────────────┐  │
@@ -47,7 +47,7 @@ This document provides technical implementation details for the Text-to-Speech (
 
 ### 2.2 Data Flow
 
-```
+```text
 User Action
     ↓
 TTSPlayer UI (Play/Pause/Stop buttons)
@@ -148,6 +148,7 @@ export type TTSState = {
 ### 4.3 Key Methods
 
 #### load(text: string)
+
 Parses content into sentences and prepares for playback:
 
 ```typescript
@@ -165,6 +166,7 @@ const load = useCallback((text: string) => {
 ```
 
 #### play()
+
 Starts or resumes speech synthesis:
 
 ```typescript
@@ -180,6 +182,7 @@ const play = useCallback(() => {
 ```
 
 #### speakSentence(index: number)
+
 Core speech synthesis method:
 
 ```typescript
@@ -219,6 +222,7 @@ const speakSentence = useCallback((index: number) => {
 ### 4.4 Text Parsing
 
 #### Sentence Splitting
+
 Splits text by sentence delimiters while preserving structure:
 
 ```typescript
@@ -240,6 +244,7 @@ const parseTextIntoSentences = (text: string): string[] => {
 ```
 
 #### Code Block Filtering
+
 Removes code blocks when `skipCode` is enabled:
 
 ```typescript
@@ -307,7 +312,7 @@ type TTSPlayerProps = {
 
 ### 5.2 UI Structure
 
-```
+```text
 ┌───────────────────────────────────────────────────┐
 │  TTSPlayer (fixed bottom center)                  │
 │  ┌────┬──────────────────┬──────┬──────┬───────┐ │
@@ -464,16 +469,19 @@ useEffect(() => {
 ### 8.3 Voice Availability
 
 **Chrome/Edge (Best):**
+
 - Neural voices (Microsoft, Google)
 - Spanish: `es-MX-DaliaNeural`, `es-ES-AlvaroNeural`
 - English: `en-US-AriaNeural`, `en-GB-SoniaNeural`
 
 **Firefox/Safari (Good):**
+
 - Basic system voices
 - Spanish: Standard system voices
 - English: Standard system voices
 
 **Fallback Strategy:**
+
 ```typescript
 const selectedVoice = sortedVoices.find(v => v.name === settings.voice)
   || sortedVoices.find(v => v.lang.startsWith('es')) // Spanish fallback
@@ -506,6 +514,7 @@ const selectedVoice = sortedVoices.find(v => v.name === settings.voice)
 ### 9.2 Keyboard Navigation
 
 All controls are keyboard accessible:
+
 - `Tab`: Navigate between controls
 - `Space`: Activate focused button
 - `Alt + P/S/←/→`: Global shortcuts (work anywhere on page)
@@ -550,6 +559,7 @@ useEffect(() => {
 ## 11. Testing Checklist
 
 ### Functionality
+
 - [x] TTS speaks all sentences correctly
 - [x] Play/pause/stop buttons work
 - [x] Speed adjustment (0.5x - 2.0x) affects playback
@@ -560,6 +570,7 @@ useEffect(() => {
 - [x] Code blocks are skipped when enabled
 
 ### Browser Testing
+
 - [x] Chrome/Edge (Neural voices)
 - [x] Firefox (basic voices)
 - [x] Safari macOS
@@ -567,6 +578,7 @@ useEffect(() => {
 - [ ] Chrome Android (pending mobile testing)
 
 ### Accessibility
+
 - [x] Keyboard navigation complete
 - [x] Screen reader compatibility
 - [x] ARIA labels present
@@ -575,6 +587,7 @@ useEffect(() => {
 - [x] Reduce motion respected (no animations in player)
 
 ### Edge Cases
+
 - [x] Empty text handled gracefully
 - [x] Long sentences don't timeout
 - [x] Multiple rapid clicks handled correctly
@@ -608,6 +621,7 @@ useEffect(() => {
 ## 13. Future Enhancements
 
 ### Phase 2 (Potential)
+
 - **Sentence Highlighting:** Visual feedback in reader (highlight spoken sentence)
 - **Pause on Questions:** Detect questions and pause longer (NLP)
 - **Export Audio:** Download MP3 of reading (using MediaRecorder API)
@@ -615,6 +629,7 @@ useEffect(() => {
 - **Background Playback:** Service Worker for tab-independent playback
 
 ### Phase 3 (Advanced)
+
 - **Emotion Detection:** Adjust tone based on punctuation and context
 - **Multi-language Auto-detection:** Switch voices based on content language
 - **Voice Cloning:** Custom AI voices (via external API)
@@ -715,18 +730,22 @@ utterance.onerror = (event) => {
 ## 16. Related Files
 
 ### Core Implementation
+
 - `types/index.ts` - Type definitions
 - `hooks/useTTS.ts` - TTS hook (300+ lines)
 - `components/TTSPlayer.tsx` - Player UI (250+ lines)
 
 ### Integration
+
 - `app/reader/[id]/page.tsx` - Reader integration
 - `components/SettingsModal.tsx` - Settings UI
 
 ### Constants
+
 - `lib/constants/settings.ts` - Default values
 
 ### Documentation
+
 - `docs/prd/PRD-013-text-to-speech.md` - Product requirements
 
 ---

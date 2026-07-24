@@ -21,11 +21,13 @@ Esta guía te ayudará a configurar Firebase Authentication y Firestore para tel
 ## Paso 3: Configurar Variables de Entorno
 
 1. En la raíz del proyecto, copia el archivo de ejemplo:
+
    ```bash
    cp .env.local.example .env.local
    ```
 
-2. Abre `.env.local` y pega los valores de tu `firebaseConfig`:
+1. Abre `.env.local` y pega los valores de tu `firebaseConfig`:
+
    ```env
    NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSy...
    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=tu-proyecto.firebaseapp.com
@@ -59,12 +61,15 @@ Esta guía te ayudará a configurar Firebase Authentication y Firestore para tel
 
 1. En Firestore Database, ve a la pestaña **Rules**
 2. Reemplaza el contenido con las reglas del archivo `firestore.rules`:
+
    ```bash
    # Copia el contenido de firestore.rules
    ```
+
 3. Click en **Publish**
 
-### Resumen de las Reglas:
+### Resumen de las Reglas
+
 - ✅ Los usuarios solo pueden leer/escribir sus propios datos
 - ✅ Validación de estructura de datos (readings, settings)
 - ✅ Requiere autenticación para todas las operaciones
@@ -75,6 +80,7 @@ Esta guía te ayudará a configurar Firebase Authentication y Firestore para tel
 Las queries complejas pueden requerir índices. Firebase te mostrará el link para crearlos si son necesarios.
 
 Para crear índices manualmente:
+
 1. Ve a **Firestore Database** > **Indexes**
 2. Click en **Create Index**
 3. Colección: `users/{uid}/readings`
@@ -86,17 +92,18 @@ Para crear índices manualmente:
 ## Paso 8: Verificar Instalación
 
 1. Reinicia el servidor de desarrollo:
+
    ```bash
    npm run dev
    ```
 
-2. Abre http://localhost:3000
+2. Abre <http://localhost:3000>
 3. Click en **Iniciar Sesión**
 4. Si todo está correcto, deberías ver el popup de Google OAuth
 
 ## Estructura de Datos en Firestore
 
-```
+```text
 users/
   {uid}/
     profile/
@@ -133,17 +140,20 @@ users/
 
 Firebase ofrece un plan gratuito generoso que debería ser suficiente para desarrollo y usuarios iniciales:
 
-### Firestore:
+### Firestore
+
 - **Almacenamiento**: 1 GB
 - **Lecturas**: 50,000 / día
 - **Escrituras**: 20,000 / día
 - **Eliminaciones**: 20,000 / día
 
-### Authentication:
+### Authentication
+
 - **Usuarios**: Ilimitados
 - **Autenticaciones**: Ilimitadas
 
-### Estimación de Uso:
+### Estimación de Uso
+
 - **1000 usuarios activos**
 - **10 lecturas por usuario** = 10,000 readings
 - **5 sincronizaciones/día** = 50,000 lecturas/día
@@ -160,19 +170,23 @@ Firebase ofrece un plan gratuito generoso que debería ser suficiente para desar
 ## Solución de Problemas
 
 ### Error: "Firebase not configured"
+
 - Verifica que `.env.local` existe y tiene los valores correctos
 - Reinicia el servidor de desarrollo
 
 ### Error: "Permission denied" en Firestore
+
 - Verifica que las reglas de seguridad estén publicadas
 - Asegúrate de estar autenticado
 - Revisa la consola de Firebase para ver los errores de reglas
 
 ### Error: "Auth domain is not authorized"
+
 - Ve a Authentication > Settings > Authorized domains
 - Agrega `localhost` si no está presente
 
 ### Popup de Google no aparece
+
 - Verifica que Google Sign-In esté habilitado en Authentication
 - Revisa la consola del navegador para errores
 - Asegúrate de que no haya bloqueadores de popups activos
@@ -207,13 +221,13 @@ NEXT_PUBLIC_FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1
 NEXT_PUBLIC_FIREBASE_AUTH_EMULATOR_PORT=9099
 ```
 
-2. Inicia emuladores:
+1. Inicia emuladores:
 
 ```bash
 npm run emulators:start
 ```
 
-3. (Opcional) Persistir dataset local para pruebas reproducibles:
+1. (Opcional) Persistir dataset local para pruebas reproducibles:
 
 ```bash
 npm run emulators:start:seed

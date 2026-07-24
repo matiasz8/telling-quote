@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Atkinson_Hyperlegible, Geist, Geist_Mono } from "next/font/google";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import "./globals.css";
 import "./tutorial.css";
@@ -13,6 +13,12 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const atkinson = Atkinson_Hyperlegible({
+  variable: "--font-atkinson",
+  subsets: ["latin"],
+  weight: ["400", "700"],
 });
 
 export const metadata: Metadata = {
@@ -31,10 +37,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible&display=swap"
-          rel="stylesheet"
-        />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -113,7 +115,7 @@ export default function RootLayout({
                       'mono': '"Courier New", monospace',
                       'opendyslexic': 'OpenDyslexic, sans-serif',
                       'comic-sans': '"Comic Sans MS", cursive',
-                      'atkinson': 'Atkinson Hyperlegible, sans-serif'
+                      'atkinson': 'var(--font-atkinson), sans-serif'
                     };
                     return fontMap[fontFamily] || 'system-ui, -apple-system, sans-serif';
                   }
@@ -124,7 +126,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${atkinson.variable} antialiased`}
       >
         <ErrorBoundary>
           <TutorialProvider>

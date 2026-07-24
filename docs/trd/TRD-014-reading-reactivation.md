@@ -12,6 +12,7 @@
 Technical implementation details for the Reading Reactivation feature, allowing users to move completed readings back to the Active tab.
 
 ### Key Components
+
 - `ConfirmReactivateModal.tsx` - Confirmation dialog
 - `ReadingCard.tsx` - Reactivate button UI
 - `app/page.tsx` - State management and localStorage logic
@@ -21,7 +22,8 @@ Technical implementation details for the Reading Reactivation feature, allowing 
 ## 2. Architecture
 
 ### Component Hierarchy
-```
+
+```text
 Dashboard (page.tsx)
 ├── ReadingCard (completed readings)
 │   └── ReactivateButton (emerald button)
@@ -29,6 +31,7 @@ Dashboard (page.tsx)
 ```
 
 ### State Management
+
 ```typescript
 // app/page.tsx
 const [completedReadings, setCompletedReadings] = useState<string[]>([]);
@@ -37,7 +40,8 @@ const [isReactivateModalOpen, setIsReactivateModalOpen] = useState(false);
 ```
 
 ### Data Flow
-```
+
+```text
 User clicks reactivate button
   ↓
 ReadingCard.onReactivate(reading) triggered
@@ -64,11 +68,13 @@ Reading moves to Active tab
 **File:** `components/ReadingCard.tsx`  
 **Lines:** 143-166 (button), 42-47 (handler)  
 **Responsibilities:**
+
 - Render emerald reactivate button (completed readings only)
 - Theme-specific button styling
 - Click handler delegates to parent
 
 **Code Structure:**
+
 ```typescript
 interface ReadingCardProps {
   reading: Reading;
@@ -92,6 +98,7 @@ const handleReactivateClick = (e: React.MouseEvent) => {
 ```
 
 **Button Styling (Theme-Specific):**
+
 ```typescript
 {isCompleted && onReactivate && (
   <button
@@ -119,6 +126,7 @@ const handleReactivateClick = (e: React.MouseEvent) => {
 ```
 
 **Theme Colors:**
+
 - **Light/Dark:** Emerald gradient (`emerald-500` → `teal-500`, hover: `emerald-600` → `teal-600`)
 - **Detox:** Gray monochrome (`gray-900`, hover: `gray-800`)
 - **High-Contrast:** White on black (`bg-white text-black`, hover: `bg-gray-200`)
@@ -132,12 +140,14 @@ const handleReactivateClick = (e: React.MouseEvent) => {
 **File:** `components/ConfirmReactivateModal.tsx`  
 **Lines:** 110 total  
 **Responsibilities:**
+
 - Display confirmation dialog
 - Focus trap for accessibility
 - Keyboard shortcuts (Enter/Esc)
 - Theme-aware styling
 
 **Props Interface:**
+
 ```typescript
 interface ConfirmReactivateModalProps {
   isOpen: boolean;
@@ -150,12 +160,14 @@ interface ConfirmReactivateModalProps {
 **Key Features:**
 
 1. **Focus Trap:**
+
 ```typescript
 const modalRef = useRef<HTMLDivElement>(null);
 useFocusTrap(modalRef, isOpen); // Custom hook prevents tab-out
 ```
 
-2. **Auto-Focus Confirm Button:**
+1. **Auto-Focus Confirm Button:**
+
 ```typescript
 useEffect(() => {
   if (isOpen && confirmButtonRef.current) {
@@ -166,7 +178,8 @@ useEffect(() => {
 }, [isOpen]);
 ```
 
-3. **Keyboard Shortcuts:**
+1. **Keyboard Shortcuts:**
+
 ```typescript
 const handleKeyDown = (e: React.KeyboardEvent) => {
   if (e.key === 'Escape') {
@@ -178,6 +191,7 @@ const handleKeyDown = (e: React.KeyboardEvent) => {
 ```
 
 **Modal Structure:**
+
 ```tsx
 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
   <div ref={modalRef} onKeyDown={handleKeyDown} className="modal-container">
@@ -190,6 +204,7 @@ const handleKeyDown = (e: React.KeyboardEvent) => {
 ```
 
 **Theme Styling:**
+
 - Light: White modal, gray cancel, emerald confirm
 - Dark: `gray-800` modal, `gray-700` cancel, emerald confirm
 - Detox: White modal, gray buttons (monochrome)
@@ -201,12 +216,14 @@ const handleKeyDown = (e: React.KeyboardEvent) => {
 
 **File:** `app/page.tsx`  
 **Key Lines:**
+
 - 70-72: Filter completed readings
 - 116-129: Reactivation handlers
 - 373: Pass `onReactivate` to ReadingCard
 - 458-466: Render ConfirmReactivateModal
 
 **State Management:**
+
 ```typescript
 // Completed readings IDs (stored in localStorage)
 const [completedReadings, setCompletedReadings] = useState<string[]>([]);
@@ -219,6 +236,7 @@ const [isReactivateModalOpen, setIsReactivateModalOpen] = useState(false);
 ```
 
 **Filtering Logic:**
+
 ```typescript
 const completedReadingsList = readings.filter((r) =>
   completedReadings.includes(r.id)
@@ -226,6 +244,7 @@ const completedReadingsList = readings.filter((r) =>
 ```
 
 **Reactivation Flow:**
+
 ```typescript
 // 1. Open modal with reading to reactivate
 const handleReactivate = (reading: Reading) => {
@@ -249,6 +268,7 @@ const handleReactivateConfirm = () => {
 ```
 
 **localStorage Sync:**
+
 ```typescript
 // Automatically syncs when completedReadings changes
 useEffect(() => {
@@ -258,6 +278,7 @@ useEffect(() => {
 ```
 
 **Rendering:**
+
 ```tsx
 {/* Completed readings tab */}
 {completedReadingsList.map((reading) => (
@@ -294,6 +315,7 @@ useEffect(() => {
 **Type:** `string[]` (array of reading UUIDs)
 
 **Example:**
+
 ```json
 [
   "550e8400-e29b-41d4-a716-446655440000",
@@ -305,24 +327,29 @@ useEffect(() => {
 **Operations:**
 
 1. **Mark as Completed:**
+
 ```typescript
 setCompletedReadings((prev) => [...prev, readingId]);
 ```
 
-2. **Reactivate (Remove from Completed):**
+1. **Reactivate (Remove from Completed):**
+
 ```typescript
 setCompletedReadings((prev) => prev.filter((id) => id !== readingId));
 ```
 
-3. **Check if Completed:**
+1. **Check if Completed:**
+
 ```typescript
 const isCompleted = completedReadings.includes(reading.id);
 ```
 
 **Event Notification:**
+
 ```typescript
 window.dispatchEvent(new Event('storageUpdate'));
 ```
+
 Notifies other components when localStorage changes (cross-tab sync, etc.)
 
 ---
@@ -330,7 +357,8 @@ Notifies other components when localStorage changes (cross-tab sync, etc.)
 ## 5. User Interaction Flow
 
 ### Visual Flow Diagram
-```
+
+```text
 ┌──────────────────────────────────────┐
 │ Completed Tab                        │
 │                                      │
@@ -407,11 +435,13 @@ Notifies other components when localStorage changes (cross-tab sync, etc.)
 ### WCAG 2.1 Compliance
 
 **Level A:**
+
 - ✅ Keyboard accessible (Tab, Enter, Esc)
 - ✅ Focus visible (outline on button)
 - ✅ ARIA labels (`aria-label` on button)
 
 **Level AA:**
+
 - ✅ Color contrast (emerald: 4.5:1, high-contrast: 21:1)
 - ✅ Focus trap prevents tab-out
 - ✅ Sufficient touch target size (44×44px)
@@ -419,12 +449,15 @@ Notifies other components when localStorage changes (cross-tab sync, etc.)
 ### Screen Reader Support
 
 **Button Announcement:**
+
 ```html
 <button aria-label="Reactivar lectura: Mi Título">
 ```
+
 Screen reader: "Reactivar lectura: Mi Título, botón"
 
 **Modal Announcement:**
+
 ```html
 <div role="dialog" aria-labelledby="modal-title" aria-describedby="modal-desc">
   <h2 id="modal-title">¿Reactivar 'Mi Título'?</h2>
@@ -492,6 +525,7 @@ describe('Reading Reactivation', () => {
 ### Manual Testing Checklist
 
 **Functionality:**
+
 - [ ] Reactivate button visible only on completed readings
 - [ ] Button click opens confirmation modal
 - [ ] Modal shows correct reading title
@@ -501,6 +535,7 @@ describe('Reading Reactivation', () => {
 - [ ] Dashboard tab switches to Active after reactivation (if applicable)
 
 **Visual (All Themes):**
+
 - [ ] Light: Emerald gradient button visible
 - [ ] Dark: Emerald gradient button visible on gray-800 background
 - [ ] Detox: Gray button visible (monochrome)
@@ -509,6 +544,7 @@ describe('Reading Reactivation', () => {
 - [ ] Modal styled correctly in all themes
 
 **Accessibility:**
+
 - [ ] Tab key focuses reactivate button
 - [ ] Enter key opens modal (on button)
 - [ ] Focus trapped inside modal
@@ -519,6 +555,7 @@ describe('Reading Reactivation', () => {
 - [ ] Color contrast sufficient (WCAG AA)
 
 **Edge Cases:**
+
 - [ ] Multiple readings can be reactivated sequentially
 - [ ] Reactivating last completed reading empties Completed tab
 - [ ] Clicking outside modal does not close (focus trap)
@@ -530,13 +567,16 @@ describe('Reading Reactivation', () => {
 ## 8. Troubleshooting
 
 ### Issue 1: Button Not Visible on Hover
+
 **Symptom:** Reactivate button doesn't appear when hovering over card  
 **Causes:**
+
 - CSS class `group-hover:opacity-100` not applied
 - Parent `group` class missing from card
 - Theme-specific styling override
 
 **Solution:**
+
 ```tsx
 // Ensure card has 'group' class
 <div className="... group">
@@ -548,13 +588,16 @@ describe('Reading Reactivation', () => {
 ---
 
 ### Issue 2: Reading Doesn't Move to Active Tab
+
 **Symptom:** After reactivation, reading still in Completed tab  
 **Causes:**
+
 - localStorage not syncing
 - `completedReadings` state not updating
 - Filter logic incorrect
 
 **Solution:**
+
 ```typescript
 // Verify localStorage update
 useEffect(() => {
@@ -574,12 +617,15 @@ const activeReadingsList = readings.filter((r) =>
 ---
 
 ### Issue 3: Modal Doesn't Close on Confirm
+
 **Symptom:** Modal stays open after clicking confirm  
 **Causes:**
+
 - `onClose()` not called in `handleConfirm()`
 - State not cleared
 
 **Solution:**
+
 ```typescript
 const handleConfirm = () => {
   onConfirm(); // Execute reactivation logic
@@ -590,13 +636,16 @@ const handleConfirm = () => {
 ---
 
 ### Issue 4: Emerald Color Not Showing
+
 **Symptom:** Button shows gray or wrong color  
 **Causes:**
+
 - Tailwind gradient not rendering
 - Theme override
 - CSS precedence issue
 
 **Solution:**
+
 ```typescript
 // Use proper Tailwind gradient syntax
 className="bg-gradient-to-r from-emerald-500 to-teal-500"
@@ -605,6 +654,7 @@ className="bg-gradient-to-r from-emerald-500 to-teal-500"
 ```
 
 **Verify in browser DevTools:**
+
 ```css
 /* Should compile to: */
 background-image: linear-gradient(to right, #10b981, #14b8a6);
@@ -613,13 +663,16 @@ background-image: linear-gradient(to right, #10b981, #14b8a6);
 ---
 
 ### Issue 5: Focus Trap Not Working
+
 **Symptom:** User can tab outside modal  
 **Causes:**
+
 - `useFocusTrap` hook not working
 - Modal ref not attached
 - Modal not rendered (z-index issue)
 
 **Solution:**
+
 ```typescript
 // Ensure ref is attached
 const modalRef = useRef<HTMLDivElement>(null);
@@ -629,6 +682,7 @@ useFocusTrap(modalRef, isOpen);
 ```
 
 **Verify hook implementation:**
+
 ```typescript
 // useFocusTrap should:
 // 1. Find all focusable elements in modalRef
@@ -643,6 +697,7 @@ useFocusTrap(modalRef, isOpen);
 ### Optimizations
 
 1. **Memoization:**
+
 ```typescript
 const completedReadingsList = useMemo(
   () => readings.filter((r) => completedReadings.includes(r.id)),
@@ -650,14 +705,16 @@ const completedReadingsList = useMemo(
 );
 ```
 
-2. **Lazy Modal Rendering:**
+1. **Lazy Modal Rendering:**
+
 ```tsx
 {isReactivateModalOpen && (
   <ConfirmReactivateModal {...props} />
 )}
 ```
 
-3. **Event Delegation:**
+1. **Event Delegation:**
+
 - Button clicks handled at card level, not globally
 - Prevents unnecessary re-renders
 
@@ -684,6 +741,7 @@ const completedReadingsList = useMemo(
 | Chrome Android | 90+ | ✅ Full | Touch-optimized |
 
 **Fallbacks:**
+
 - Older browsers: Button still works, modal may lack animations
 - No JS: Feature unavailable (requires JavaScript)
 
@@ -692,6 +750,7 @@ const completedReadingsList = useMemo(
 ## 11. Future Enhancements
 
 ### Planned Features
+
 1. **Bulk Reactivation:** Reactivate multiple readings at once
 2. **Undo:** Toast notification with "Undo" button
 3. **History:** Track reactivation history (timestamps)
@@ -699,6 +758,7 @@ const completedReadingsList = useMemo(
 5. **Animation:** Smooth card transition from Completed → Active
 
 ### Potential Improvements
+
 - Add animation when card moves between tabs
 - Show toast notification: "Reading reactivated"
 - Keyboard shortcut: `R` key to reactivate focused reading
@@ -709,16 +769,19 @@ const completedReadingsList = useMemo(
 ## 12. Related Files
 
 ### Core Implementation
+
 - `components/ReadingCard.tsx` (button UI)
 - `components/ConfirmReactivateModal.tsx` (modal)
 - `app/page.tsx` (dashboard logic)
 
 ### Dependencies
+
 - `hooks/useFocusTrap.ts` (modal accessibility)
 - `types/index.ts` (Reading type definition)
 - `lib/constants/storage.ts` (localStorage keys)
 
 ### Testing
+
 - `__tests__/ReadingCard.test.tsx` (unit tests)
 - `__tests__/ConfirmReactivateModal.test.tsx` (unit tests)
 - `__tests__/integration/reactivation.test.tsx` (integration tests)

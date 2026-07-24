@@ -40,6 +40,9 @@ npm run dev
 # Type checking + linting
 npm run validate
 
+# Markdown lint
+npm run lint:md
+
 # Documentation contracts + feature traceability
 npm run validate:docs
 
@@ -48,7 +51,11 @@ npm run build
 
 # Fix issues automatically
 npm run lint:fix
+npm run lint:md:fix:md032
+npm run lint:md:fix
 ```
+
+Staged Markdown files are auto-fixed for `MD032` during pre-commit via Husky + lint-staged.
 
 ---
 
@@ -58,9 +65,11 @@ npm run lint:fix
 
 1. **Check existing PRDs**: Browse `docs/prd/README.md`
 2. **Draft new PRD**: Copy `docs/prd/TEMPLATE.md` (if needed)
+
    ```bash
    cp docs/prd/TEMPLATE.md docs/prd/PRD-NNN-your-feature.md
    ```
+
 3. **Fill PRD sections**:
    - Problem Statement
    - Goals & Objectives
@@ -73,9 +82,11 @@ npm run lint:fix
 4. **Get feedback**: Open a draft PR or Discussion
 
 5. **Use Planning Agent**:
-   ```
+
+   ```text
    @copilot: Plan PRD-NNN for implementation
    ```
+
    This will output:
    - Completeness checklist
    - Task breakdown
@@ -87,9 +98,11 @@ npm run lint:fix
 ### Phase 2: Technical Design (TRD)
 
 1. **Create TRD**: Copy `docs/trd/TEMPLATE.md`
+
    ```bash
    cp docs/trd/TEMPLATE.md docs/trd/TRD-NNN-your-feature.md
    ```
+
    Number must match PRD (TRD-002 implements PRD-002)
 
 2. **Fill TRD sections**:
@@ -113,9 +126,11 @@ npm run lint:fix
 ### Phase 3: Implementation
 
 1. **Create feature branch**:
+
    ```bash
    git checkout -b feat/PRD-NNN-your-feature
    ```
+
    Convention: `feat/PRD-NNN-kebab-name`
 
 2. **Implement according to TRD**:
@@ -124,6 +139,7 @@ npm run lint:fix
    - Write tests as you go (unit + hotspot regression tests)
 
 3. **Update types if needed**:
+
    ```bash
    # All type changes go to types/index.ts
    # Make sure TypeScript strict mode still passes
@@ -131,6 +147,7 @@ npm run lint:fix
    ```
 
 4. **Run tests locally**:
+
    ```bash
    # When test infrastructure is ready:
    npm run test  # unit + integration
@@ -144,6 +161,7 @@ npm run lint:fix
    - **Settings** (`components/SettingsModal.tsx`): Test theme/font/a11y application
 
 6. **Validate before pushing**:
+
    ```bash
    npm run validate  # lint + type-check
    npm run build     # full build
@@ -160,17 +178,21 @@ npm run lint:fix
    - [ ] List hotspots tested
 
 3. **Use Delivery Agent** to generate implementation report:
-   ```
+
+   ```text
    @copilot: Generate Delivery Report for PRD-NNN / TRD-NNN
    ```
+
    Include this in PR description
 
 4. **Use Review Agent** for automated validation:
-   ```
+
+   ```text
    @copilot: Review PR for PRD-NNN / TRD-NNN
    ```
 
 5. **Run docs contracts gate locally before requesting final review**:
+
    ```bash
    npm run validate:docs
    ```
@@ -205,9 +227,11 @@ npm run lint:fix
 1. Create issue with reproduction steps
 2. Assign priority: Critical/High/Medium/Low
 3. If touching hotspots (sync, TTS, settings), run extra validation:
+
    ```bash
    npm run test  # full suite (when available)
    ```
+
 4. Link PR to issue: "Fixes #123"
 
 ---
@@ -216,7 +240,7 @@ npm run lint:fix
 
 ### Message Format
 
-```
+```text
 type: description
 
 - Bullet point 1
@@ -253,6 +277,7 @@ npm run test
 ```
 
 Test utilities, hooks, and pure functions:
+
 - `lib/utils/tagHelpers.ts`
 - `lib/utils/markdownFormatter.ts`
 - `hooks/useLocalStorage.ts`
@@ -276,6 +301,7 @@ npm run test:e2e
 ```
 
 Test full user flows with Playwright:
+
 - Create reading → Complete → Reactivate
 - Sign in → Migrate readings → Sync to device
 - Change theme → Verify CSS applies
@@ -368,10 +394,10 @@ export function normalizeTags(tags: string): string[] {
 
 ### When Available (Phase 2+)
 
-5. **Unit Tests** — `npm run test`
-6. **Firebase Emulator Tests** — `npm run test:firestore:rules`
-7. **E2E Tests** — `npm run test:e2e` (Playwright)
-8. **Accessibility Audit** — `npm run audit:a11y` (axe-core)
+1. **Unit Tests** — `npm run test`
+2. **Firebase Emulator Tests** — `npm run test:firestore:rules`
+3. **E2E Tests** — `npm run test:e2e` (Playwright)
+4. **Accessibility Audit** — `npm run audit:a11y` (axe-core)
 
 **All must pass before merge** (except Markdown, which is advisory).
 
@@ -415,6 +441,7 @@ Before implementing, check `FEATURE_INDEX.json`:
 ```
 
 This tells you:
+
 - What files you'll likely touch
 - What risks to watch for
 - What other features you depend on

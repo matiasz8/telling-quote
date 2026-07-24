@@ -17,6 +17,7 @@ Define an interactive onboarding flow that guides first-time users through the c
 New users report confusion about how to use the application. There's no guided introduction to core features like creating readings, navigating content, or accessing settings. This leads to increased friction and potential abandonment.
 
 **User Feedback:**
+
 - "I don't understand how to use the app"
 - "Where do I create new readings?"
 - "What do all these settings do?"
@@ -45,32 +46,38 @@ New users report confusion about how to use the application. There's no guided i
 ## User Stories
 
 ### Story 1: First-Time User Guidance
+
 **As a** new user visiting the app for the first time  
 **I want** a guided walkthrough of main features  
 **So that** I understand how to use the app quickly
 
 **Acceptance Criteria:**
+
 - [ ] Tutorial launches automatically on first visit
 - [ ] Shows 5-7 steps covering core features
 - [ ] Can be skipped at any time
 - [ ] Never blocks critical functionality
 
 ### Story 2: Tutorial Replay
+
 **As a** returning user who forgot how something works  
 **I want** to replay the tutorial  
 **So that** I can refresh my knowledge
 
 **Acceptance Criteria:**
+
 - [ ] Tutorial accessible from Settings menu
 - [ ] Option labeled "Show Tutorial Again"
 - [ ] Resets tutorial state and starts from beginning
 
 ### Story 3: Accessible Tutorial
+
 **As a** user with accessibility needs  
 **I want** the tutorial to respect my settings  
 **So that** it doesn't interfere with my experience
 
 **Acceptance Criteria:**
+
 - [ ] Respects `reduceMotion` setting (no animations)
 - [ ] Keyboard navigable (Tab, Enter, Escape)
 - [ ] High-contrast compatible
@@ -125,9 +132,11 @@ New users report confusion about how to use the application. There's no guided i
 ### Tutorial Steps
 
 #### Step 0: Welcome Modal (Optional Pre-Tour)
+
 **Type:** Centered modal with overlay  
 **Content:**
-```
+
+```text
 Title: Welcome to Telling! 📖
 
 Body:
@@ -140,15 +149,18 @@ Let us show you around!
 ```
 
 **Behavior:**
+
 - Shows only on first visit
 - Can be dismissed with X or Skip button
 - Starting tour proceeds to Step 1
 
 #### Step 1: Settings Introduction
+
 **Target:** Settings button (⚙️) in header  
 **Position:** Below-left  
 **Content:**
-```
+
+```text
 Title: Customize Your Experience
 
 Body:
@@ -161,10 +173,12 @@ reading style here.
 **Highlight:** Settings button with spotlight effect
 
 #### Step 2: Creating New Readings
+
 **Target:** "+ New Reading" button  
 **Position:** Below  
 **Content:**
-```
+
+```text
 Title: Add Your Content
 
 Body:
@@ -177,10 +191,12 @@ or markdown - we'll format it beautifully.
 **Highlight:** New Reading button
 
 #### Step 3: Reading Cards
+
 **Target:** First reading card (or example reading)  
 **Position:** Right (if space) or Below  
 **Content:**
-```
+
+```text
 Title: Your Reading Library
 
 Body:
@@ -194,11 +210,13 @@ start reading. You can tag, edit, or delete them.
 **Fallback:** If no readings exist, show example reading card
 
 #### Step 4: Reader Navigation (Conditional)
+
 **Trigger:** User clicks a reading card OR automatic navigation  
 **Target:** Navigation controls in reader  
 **Position:** Above  
 **Content:**
-```
+
+```text
 Title: Navigate Your Reading
 
 Body:
@@ -213,10 +231,12 @@ maximum focus!
 **Behavior:** If user navigates away, tutorial pauses
 
 #### Step 5: Keyboard Shortcuts
+
 **Target:** Keyboard icon or header area  
 **Position:** Below-right  
 **Content:**
-```
+
+```text
 Title: Power User Tips ⚡
 
 Body:
@@ -231,9 +251,11 @@ Press '?' to see all keyboard shortcuts. Try:
 **Highlight:** Keyboard shortcuts button (if visible)
 
 #### Step 6: Completion
+
 **Type:** Centered modal  
 **Content:**
-```
+
+```text
 Title: You're All Set! 🎉
 
 Body:
@@ -246,6 +268,7 @@ Now create your first reading and start focusing!
 ```
 
 **Behavior:**
+
 - Marks tutorial as completed
 - Closes modal on button click
 - Returns user to home page
@@ -255,11 +278,13 @@ Now create your first reading and start focusing!
 #### Library Choice: driver.js
 
 **Installation:**
+
 ```bash
 npm install driver.js
 ```
 
 **Rationale:**
+
 - Modern, vanilla JavaScript library (23k+ GitHub stars)
 - Framework-agnostic (works with React 19+)
 - Excellent TypeScript support
@@ -271,6 +296,7 @@ npm install driver.js
 #### State Management
 
 **localStorage Keys:**
+
 ```typescript
 'tutorial-completed': 'true' | 'false'
 'tutorial-skipped': 'true' | 'false'
@@ -278,6 +304,7 @@ npm install driver.js
 ```
 
 **Hook: `useTutorial`**
+
 ```typescript
 interface UseTutorialReturn {
   showTutorial: boolean;
@@ -293,7 +320,8 @@ interface UseTutorialReturn {
 #### Component Structure
 
 **Files to Create:**
-```
+
+```text
 lib/
   tutorial/
     index.ts               # Tutorial initialization
@@ -341,12 +369,14 @@ lib/constants/
 #### Accessibility Requirements
 
 **Keyboard Navigation:**
+
 - Tab: Navigate between buttons
 - Enter: Activate focused button
 - Escape: Close/skip tutorial
 - Arrow keys: Previous/Next steps
 
 **ARIA Labels:**
+
 ```typescript
 {
   'aria-label': 'Tutorial step 1 of 5',
@@ -357,6 +387,7 @@ lib/constants/
 ```
 
 **Reduce Motion:**
+
 ```typescript
 if (settings.reduceMotion) {
   animate: false,
@@ -365,6 +396,7 @@ if (settings.reduceMotion) {
 ```
 
 **Screen Reader Support:**
+
 - All steps have descriptive titles
 - Button labels are explicit ("Next step", not just "Next")
 - Progress indicator announced ("Step 1 of 5")
@@ -372,7 +404,9 @@ if (settings.reduceMotion) {
 ### Integration Points
 
 #### Settings Component
+
 Add new option:
+
 ```tsx
 <button
   onClick={startTutorial}
@@ -384,6 +418,7 @@ Add new option:
 ```
 
 #### App Layout (app/layout.tsx)
+
 ```tsx
 'use client';
 import { useEffect } from 'react';
@@ -405,7 +440,9 @@ export default function RootLayout({ children }) {
 ```
 
 #### Data Attributes for Targeting
+
 Add to components:
+
 ```tsx
 // components/Header.tsx
 <button data-tour="settings-button">...</button>
@@ -423,7 +460,7 @@ Add to components:
 
 ### User Flow Diagram
 
-```
+```text
 First Visit
     ↓
 [Welcome Modal]
@@ -459,22 +496,27 @@ Reset tutorial state
 ### Edge Cases
 
 #### No Readings Exist
+
 **Scenario:** User has no readings yet  
 **Solution:** Show example reading card or tutorial uses placeholder
 
 #### Tutorial Interrupted
+
 **Scenario:** User navigates away mid-tutorial  
 **Solution:** Save current step, offer to resume on return
 
 #### Mobile vs Desktop
+
 **Scenario:** Different layouts  
 **Solution:** Responsive positioning (above/below/left/right based on space)
 
 #### Browser Refresh
+
 **Scenario:** User refreshes during tutorial  
 **Solution:** Resume from last completed step
 
 #### Multiple Tabs
+
 **Scenario:** User opens app in multiple tabs  
 **Solution:** Tutorial state synced via localStorage events
 
@@ -509,6 +551,7 @@ Reset tutorial state
 ## Implementation Phases
 
 ### Phase 1: Core Tutorial (MVP)
+
 - Install driver.js
 - Create tutorial configuration with 5 basic steps
 - Add data attributes to target elements
@@ -516,6 +559,7 @@ Reset tutorial state
 - Basic styling for light/dark themes
 
 ### Phase 2: Polish & Accessibility
+
 - Add Welcome and Completion modals
 - Full theme integration (4 themes)
 - Keyboard navigation
@@ -523,6 +567,7 @@ Reset tutorial state
 - Reduce motion support
 
 ### Phase 3: Enhancements
+
 - Tutorial replay from settings
 - Resume interrupted tutorial
 - Responsive positioning
@@ -533,6 +578,7 @@ Reset tutorial state
 ### Manual Testing Checklist
 
 **First-Time User:**
+
 - [ ] Tutorial launches automatically
 - [ ] All 5 steps display correctly
 - [ ] Tooltips point to correct elements
@@ -541,17 +587,20 @@ Reset tutorial state
 - [ ] Tutorial doesn't reappear on second visit
 
 **Returning User:**
+
 - [ ] Settings option appears
 - [ ] "Show Tutorial Again" works
 - [ ] Tutorial state resets properly
 
 **Accessibility:**
+
 - [ ] Keyboard navigation works (Tab, Enter, Esc)
 - [ ] Screen reader announces steps
 - [ ] High-contrast theme displays properly
 - [ ] Reduce motion disables animations
 
 **Themes:**
+
 - [ ] Light theme styling correct
 - [ ] Dark theme styling correct
 - [ ] Detox theme styling correct
@@ -579,16 +628,19 @@ Reset tutorial state
 ### Alternative Libraries Considered
 
 **driver.js:**
+
 - Pros: Lighter (~5KB), framework-agnostic, React 19 compatible
 - Cons: More manual setup than dedicated React lib
 - Verdict: ✅ **Selected** - Modern, lightweight, compatible
 
 **intro.js:**
+
 - Pros: Very popular, mature
 - Cons: Paid for commercial use, heavier
 - Verdict: driver.js is better fit
 
 **shepherd.js:**
+
 - Pros: Popular, feature-rich
 - Cons: Heavier (~15KB), more complex API
 - Verdict: driver.js is simpler and lighter

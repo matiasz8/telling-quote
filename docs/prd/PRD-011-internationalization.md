@@ -11,19 +11,23 @@
 ## 1. Overview
 
 ### Purpose
+
 Enable **Telling** to support multiple languages, starting with English and Spanish, allowing users to select their preferred language for the entire platform interface.
 
-### Background
+#### Background
+
 Currently, the platform is fully implemented in Spanish. To expand accessibility and reach a broader audience, we need to implement a robust internationalization (i18n) system that allows seamless language switching while maintaining performance and user experience.
 
-### Goals
+##### Goals
+
 1. Support two languages: Spanish (default) and English
 2. Allow users to select language via Settings
 3. Persist language preference across sessions
 4. Translate all UI elements, modals, tutorials, and static text
 5. Maintain accessibility standards across all languages
 
-### Non-Goals
+###### Non-Goals
+
 - Automatic language detection based on browser settings (future enhancement)
 - Right-to-left (RTL) language support
 - Content translation (readings remain in their original language)
@@ -42,17 +46,20 @@ Without a structured i18n layer, translating UI text is error-prone, hard to mai
 ## 2. User Stories
 
 ### As a Spanish-speaking user (current state)
+
 - I can use the platform entirely in Spanish as it is today
 - I can see all UI elements, tutorials, and modals in Spanish
 - I have no need to switch languages
 
-### As an English-speaking user
+#### As an English-speaking user
+
 - I want to switch the interface language to English in Settings
 - I want all UI elements, buttons, labels, and help text to appear in English
 - I want my language preference to persist across sessions
 - I want tutorials and keyboard shortcuts to display in English
 
-### As a bilingual user
+##### As a bilingual user
+
 - I want to easily toggle between Spanish and English
 - I want the language change to take effect immediately without page refresh
 - I want my readings to remain in their original language regardless of UI language
@@ -65,7 +72,8 @@ Without a structured i18n layer, translating UI text is error-prone, hard to mai
 
 **Location:** Settings Modal → New "General Settings" section
 
-**Component:**
+#### Component
+
 ```tsx
 <div className="space-y-2" data-tour="settings-language">
   <label htmlFor="language" className="block text-sm font-medium">
@@ -89,24 +97,27 @@ Without a structured i18n layer, translating UI text is error-prone, hard to mai
 </div>
 ```
 
-**Behavior:**
+##### Behavior
+
 - Language changes immediately upon selection
 - No page reload required
 - New selection saved to `localStorage` as `user-language`
 - Default language: `es` (Spanish)
 
-### 3.2 Translation Architecture
+###### 3.2 Translation Architecture
 
-**Approach 1: React Context + Translation Dictionaries (Recommended)**
+###### Approach 1: React Context + Translation Dictionaries (Recommended)
 
-**Pros:**
+###### Pros
+
 - No external dependencies
 - Full control over implementation
 - Lightweight (~2-3 KB for translation files)
 - Easy to maintain and extend
 
-**Structure:**
-```
+###### Structure
+
+```text
 lib/
   i18n/
     index.ts          // Context provider and useTranslation hook
@@ -115,7 +126,8 @@ lib/
       en.ts           // English translations
 ```
 
-**Implementation:**
+###### Implementation
+
 ```typescript
 // lib/i18n/index.ts
 import { createContext, useContext, ReactNode } from 'react';
@@ -157,7 +169,8 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 export const useTranslation = () => useContext(I18nContext);
 ```
 
-**Usage in Components:**
+###### Usage in Components
+
 ```tsx
 import { useTranslation } from '@/lib/i18n';
 
@@ -172,71 +185,75 @@ function Header() {
 }
 ```
 
-**Approach 2: next-intl (Alternative)**
+###### Approach 2: next-intl (Alternative)
 
-**Pros:**
+###### Pros
+
 - Built for Next.js App Router
 - Automatic route-based language detection
 - Strong TypeScript support
 
-**Cons:**
+###### Cons
+
 - Adds ~15 KB to bundle
 - More complex setup
 - Requires route structure changes (`/es/`, `/en/`)
 
-**Approach 3: react-i18next (Alternative)**
+###### Approach 3: react-i18next (Alternative)
 
-**Pros:**
+###### Pros
+
 - Industry standard
 - Extensive features (pluralization, interpolation, namespaces)
 
-**Cons:**
+###### Cons
+
 - Heaviest solution (~20 KB)
 - Overkill for two languages
 - More configuration required
 
 **Recommendation:** Use **Approach 1** (React Context) for simplicity, control, and minimal bundle size.
 
-### 3.3 Explicit Functional Requirement Summary
+###### 3.3 Explicit Functional Requirement Summary
 
-#### FR-1: Runtime Language Switching
+###### FR-1: Runtime Language Switching
 
 - Users must be able to switch between Spanish and English from the Settings modal.
 - The visible interface must update immediately without full page reload.
 
-#### FR-2: Translation Coverage for Core UI
+###### FR-2: Translation Coverage for Core UI
 
 - Shared UI surfaces such as header, settings, modals, dashboard labels, and reader navigation must be translated.
 - Translation coverage must include helper text, button labels, and validation copy.
 
-#### FR-3: Persistent Language Preference
+###### FR-3: Persistent Language Preference
 
 - The selected language must persist across refreshes and sessions via localStorage.
 - Missing preference state must fall back safely to Spanish.
 
-#### FR-4: Tutorial and Accessibility Text Coverage
+###### FR-4: Tutorial and Accessibility Text Coverage
 
 - Tutorials, keyboard shortcuts, ARIA labels, and screen-reader announcements must follow the active language.
 - The HTML `lang` attribute must stay synchronized with the active locale.
 
-#### FR-5: Fallback and Translation Safety
+###### FR-5: Fallback and Translation Safety
 
 - Missing translation keys must fall back safely without breaking the interface.
 - Shared translation primitives must be reusable across components, tutorials, and accessibility copy.
 
-### 3.4 Non-Functional Requirements
+###### 3.4 Non-Functional Requirements
 
-#### NFR-1: Performance
+###### NFR-1: Performance
 
 - Language switching must remain responsive and must not introduce noticeable UI lag.
 - Bundle size impact for two-language support should remain modest.
 
-#### NFR-2: Maintainability
+###### NFR-2: Maintainability
 
 - Translation keys must be organized predictably so future contributors can add copy safely.
 - Missing key handling must fail gracefully without breaking UI rendering.
 
-#### NFR-3: Accessibility
+###### NFR-3: Accessibility
 
 - Screen readers must announce translated labels in the correct language.
 - Internationalization must not regress WCAG behavior already supported by the product.
@@ -247,7 +264,8 @@ function Header() {
 
 ### 4.1 Translation Dictionary Structure
 
-**Spanish (es.ts):**
+#### Spanish (es.ts)
+
 ```typescript
 export const es = {
   common: {
@@ -296,7 +314,8 @@ export const es = {
 };
 ```
 
-**English (en.ts):**
+##### English (en.ts)
+
 ```typescript
 export const en = {
   common: {
@@ -327,9 +346,10 @@ export const en = {
 };
 ```
 
-### 4.2 Files to Internationalize
+###### 4.2 Files to Internationalize
 
-**Priority 1: Core UI (MVP)**
+###### Priority 1: Core UI (MVP)
+
 1. `components/Header.tsx`
 2. `components/SettingsModal.tsx`
 3. `components/NewReadingModal.tsx`
@@ -339,18 +359,21 @@ export const en = {
 7. `lib/tutorial/steps.ts` (all tutorial steps)
 8. `lib/tutorial/config.ts` (button labels)
 
-**Priority 2: Reader & Navigation**
-9. `app/reader/[id]/page.tsx` (navigation buttons, progress)
-10. `components/ReadingCard.tsx` (labels, buttons)
-11. `app/page.tsx` (dashboard text)
+###### Priority 2: Reader & Navigation
 
-**Priority 3: Accessibility**
-12. `app/accessibility/page.tsx`
-13. ARIA labels and screen reader text
+1. `app/reader/[id]/page.tsx` (navigation buttons, progress)
+2. `components/ReadingCard.tsx` (labels, buttons)
+3. `app/page.tsx` (dashboard text)
 
-### 4.3 Storage & Persistence
+###### Priority 3: Accessibility
 
-**localStorage Key:**
+1. `app/accessibility/page.tsx`
+2. ARIA labels and screen reader text
+
+###### 4.3 Storage & Persistence
+
+###### localStorage Key
+
 ```typescript
 const STORAGE_KEY = 'user-language';
 
@@ -358,7 +381,8 @@ const STORAGE_KEY = 'user-language';
 // Possible values: 'es' | 'en'
 ```
 
-**Behavior:**
+###### Behavior
+
 - Language preference persists across sessions
 - Survives page refreshes
 - Independent of other settings
@@ -381,14 +405,16 @@ const STORAGE_KEY = 'user-language';
 6. All other UI elements (Header, cards, modals) now in English
 7. Language preference saved to localStorage
 
-### 5.2 First-Time User Experience
+#### 5.2 First-Time User Experience
 
-**Spanish User (Default):**
+##### Spanish User (Default)
+
 - Platform loads in Spanish (current behavior)
 - Tutorial starts in Spanish
 - No action needed
 
-**English User:**
+###### English User
+
 1. Platform loads in Spanish
 2. User opens Settings (⚙️)
 3. User sees "Idioma / Language" selector
@@ -396,16 +422,18 @@ const STORAGE_KEY = 'user-language';
 5. Settings modal immediately translates
 6. User continues in English
 
-### 5.3 Tutorial Integration
+###### 5.3 Tutorial Integration
 
-**Tutorial Steps Translation:**
+###### Tutorial Steps Translation
+
 - All 7 main tutorial steps translated
 - All 4 New Reading tutorial steps translated
 - All 11 Settings tutorial steps translated
 - Button labels ("Next →", "← Back", "Finish") translated
 - Checkbox "No volver a mostrar" → "Don't show again"
 
-**Tutorial Launch:**
+###### Tutorial Launch
+
 - Tutorial language matches selected UI language
 - If user changes language mid-tutorial, tutorial restarts in new language
 
@@ -426,31 +454,35 @@ const STORAGE_KEY = 'user-language';
 
 **Total estimate:** 12-18 working days
 
-### Stage 0: Text Audit & Scope Freeze
+#### Stage 0: Text Audit & Scope Freeze
 
 **Objective:** Identify every string that must move out of components before implementation starts.
 
-**Tasks:**
+##### Tasks
+
 - [ ] Audit all user-facing strings in `app/`, `components/`, `lib/tutorial/`, and accessibility-only text.
 - [ ] Classify strings by type: visible UI, validation/error copy, ARIA labels, tutorial copy, keyboard help.
 - [ ] Identify strings that must remain user-generated and should not be translated (titles, tags, reading content).
 - [ ] Define translation key naming convention and folder structure.
 - [ ] Confirm MVP scope is Spanish + English only.
 
-**Deliverables:**
+###### Deliverables
+
 - [ ] String inventory document or checklist.
 - [ ] Final list of MVP files to migrate.
 - [ ] Approved key naming scheme.
 
-**Exit criteria:**
+###### Exit criteria
+
 - [ ] No major UI surface remains unaccounted for.
 - [ ] Product and engineering agree on MVP scope.
 
-### Stage 1: Foundation & Runtime Infrastructure
+###### Stage 1: Foundation & Runtime Infrastructure
 
 **Objective:** Build the minimum technical base required for runtime language switching.
 
-**Tasks:**
+###### Tasks
+
 - [ ] Create `lib/i18n/` directory structure.
 - [ ] Implement `I18nProvider` context and `useTranslation` hook.
 - [ ] Create Spanish (`es.ts`) and English (`en.ts`) dictionaries.
@@ -458,21 +490,24 @@ const STORAGE_KEY = 'user-language';
 - [ ] Update HTML `lang` attribute when the active language changes.
 - [ ] Add fallback behavior for missing translation keys.
 
-**Deliverables:**
+###### Deliverables
+
 - [ ] Working provider mounted near app root.
 - [ ] Runtime language switching without page reload.
 - [ ] Baseline dictionary coverage for common/shared labels.
 
-**Exit criteria:**
+###### Exit criteria
+
 - [ ] Language change works globally in a sample component.
 - [ ] Refresh preserves selected language.
 - [ ] Missing keys fail safely without breaking rendering.
 
-### Stage 2: Core UI Migration
+###### Stage 2: Core UI Migration
 
 **Objective:** Translate the highest-frequency interface surfaces first.
 
-**Scope:**
+###### Scope
+
 - `components/Header.tsx`
 - `components/SettingsModal.tsx`
 - `components/NewReadingModal.tsx`
@@ -480,27 +515,31 @@ const STORAGE_KEY = 'user-language';
 - `components/ConfirmDeleteModal.tsx`
 - `components/EditTitleModal.tsx`
 
-**Tasks:**
+###### Tasks
+
 - [ ] Replace hardcoded strings with translation keys.
 - [ ] Add language selector to Settings modal.
 - [ ] Translate shared actions: save, cancel, close, delete, edit, confirm.
 - [ ] Translate validation and helper copy used in modals.
 - [ ] Verify English text does not break spacing or layout.
 
-**Deliverables:**
+###### Deliverables
+
 - [ ] Settings-driven language selection fully usable.
 - [ ] Core global actions translated in both languages.
 - [ ] Shared modal flows working in Spanish and English.
 
-**Exit criteria:**
+###### Exit criteria
+
 - [ ] A user can change language from Settings and see immediate effect in core modals.
 - [ ] No hardcoded Spanish remains in core shared components.
 
-### Stage 3: Guided Flows, Dashboard & Reader
+###### Stage 3: Guided Flows, Dashboard & Reader
 
 **Objective:** Complete the product experience beyond the shared UI shell.
 
-**Scope:**
+###### Scope
+
 - `lib/tutorial/steps.ts`
 - `lib/tutorial/config.ts`
 - `app/page.tsx`
@@ -508,63 +547,72 @@ const STORAGE_KEY = 'user-language';
 - `components/ReadingCard.tsx`
 - `app/accessibility/page.tsx`
 
-**Tasks:**
+###### Tasks
+
 - [ ] Translate all tutorial steps, CTA labels, and dismiss actions.
 - [ ] Ensure tutorial restarts or re-renders safely when language changes.
 - [ ] Translate dashboard labels, counters, and empty states.
 - [ ] Translate reader navigation, progress labels, and helper text.
 - [ ] Translate accessibility-specific explanatory content.
 
-**Deliverables:**
+###### Deliverables
+
 - [ ] Full primary user journey available in both languages.
 - [ ] Tutorial system aligned with active UI language.
 - [ ] Dashboard and reader free of hardcoded Spanish UI strings.
 
-**Exit criteria:**
+###### Exit criteria
+
 - [ ] New user can complete onboarding in Spanish or English.
 - [ ] Reading flow remains consistent when switching language between sessions.
 
-### Stage 4: Accessibility, QA & Content Verification
+###### Stage 4: Accessibility, QA & Content Verification
 
 **Objective:** Ensure the translated product is not only functional but also accessible and maintainable.
 
-**Tasks:**
+###### Tasks
+
 - [ ] Translate all ARIA labels, titles, and screen-reader-only copy.
 - [ ] Verify screen readers announce content in the correct language.
 - [ ] Run manual regression checks in both languages across settings, tutorial, dashboard, and reader.
 - [ ] Check missing-key fallbacks and untranslated strings.
 - [ ] Validate no layout overflow or truncation in English.
 
-**Deliverables:**
+###### Deliverables
+
 - [ ] Bilingual QA checklist completed.
 - [ ] Accessibility sign-off for both languages.
 - [ ] List of deferred enhancements (pluralization, locale formatting, browser detection).
 
-**Exit criteria:**
+###### Exit criteria
+
 - [ ] No critical untranslated strings remain in MVP surfaces.
 - [ ] Accessibility behavior is preserved after translation.
 
-### Stage 5: Documentation, Handoff & Rollout
+###### Stage 5: Documentation, Handoff & Rollout
 
 **Objective:** Close the workstream with technical design, contributor guidance, and release readiness.
 
-**Tasks:**
+###### Tasks
+
 - [ ] Create `TRD-011` with technical architecture and file-level implementation plan.
 - [ ] Update contributor docs if translation workflow introduces new conventions.
 - [ ] Document how to add new translation keys and new languages.
 - [ ] Define release checklist for bilingual verification.
 - [ ] Record post-launch metrics to track adoption and missing translations.
 
-**Deliverables:**
+###### Deliverables
+
 - [ ] TRD-011 completed and linked.
 - [ ] Translation maintenance instructions documented.
 - [ ] Rollout checklist ready for release.
 
-**Exit criteria:**
+###### Exit criteria
+
 - [ ] Feature is implementable and reviewable end-to-end.
 - [ ] Future contributors can extend translations without re-deriving conventions.
 
-### Recommended Delivery Order
+###### Recommended Delivery Order
 
 1. Ship Stage 0 + Stage 1 together so the repo gets one stable i18n foundation early.
 2. Ship Stage 2 next because it unlocks visible language switching for users.
@@ -576,15 +624,19 @@ const STORAGE_KEY = 'user-language';
 ## 7. Accessibility Considerations
 
 ### 7.1 ARIA Labels
+
 All ARIA labels must be translated:
+
 ```tsx
 <button aria-label={t('common.close')}>
   <X className="w-5 h-5" />
 </button>
 ```
 
-### 7.2 Screen Reader Announcements
+#### 7.2 Screen Reader Announcements
+
 Dynamic announcements must use translated strings:
+
 ```tsx
 const { t } = useTranslation();
 const announceChange = () => {
@@ -592,8 +644,10 @@ const announceChange = () => {
 };
 ```
 
-### 7.3 Language Attribute
+##### 7.3 Language Attribute
+
 Update HTML `lang` attribute when language changes:
+
 ```tsx
 useEffect(() => {
   document.documentElement.lang = language;
@@ -605,18 +659,21 @@ useEffect(() => {
 ## 8. Testing Strategy
 
 ### 8.1 Unit Tests
+
 - Test `useTranslation` hook
 - Test translation key resolution
 - Test fallback behavior for missing keys
 - Test localStorage persistence
 
-### 8.2 Integration Tests
+#### 8.2 Integration Tests
+
 - Test language change across components
 - Test tutorial language switching
 - Test modal translations
 - Test Settings persistence
 
-### 8.3 Manual Testing Checklist
+##### 8.3 Manual Testing Checklist
+
 - [ ] Change language in Settings
 - [ ] All visible text updates immediately
 - [ ] No console errors
@@ -633,16 +690,19 @@ useEffect(() => {
 ## 9. Performance Considerations
 
 ### Bundle Size Impact
+
 - Translation files: ~3-5 KB (gzipped)
 - Context provider: ~1 KB
 - Total overhead: **~4-6 KB**
 
-### Runtime Performance
+#### Runtime Performance
+
 - Translation lookup: O(1) for flat keys, O(n) for nested keys
 - Context re-renders: Minimal (only when language changes)
 - No network requests (all translations bundled)
 
-### Optimization
+##### Optimization
+
 - Use `React.memo()` for components that don't need translations
 - Lazy-load translation files if bundle size becomes concern
 - Consider code-splitting for future languages
@@ -652,6 +712,7 @@ useEffect(() => {
 ## 10. Future Enhancements
 
 ### V2 Features (Future)
+
 - [ ] Automatic language detection from browser settings
 - [ ] Support for additional languages (French, Portuguese, etc.)
 - [ ] Pluralization support (1 reading vs. 2 readings)
@@ -659,7 +720,8 @@ useEffect(() => {
 - [ ] Number formatting per locale
 - [ ] Currency formatting (if adding payment features)
 
-### Content Translation (Future)
+#### Content Translation (Future)
+
 - [ ] AI-powered translation of reading content
 - [ ] Language tags for readings (EN, ES, FR, etc.)
 - [ ] Filter readings by language
@@ -680,6 +742,7 @@ useEffect(() => {
 ## 11. Success Metrics
 
 ### Launch Criteria
+
 - ✅ All UI elements translated in both languages
 - ✅ Language persists across sessions
 - ✅ No visual bugs or layout issues
@@ -687,7 +750,8 @@ useEffect(() => {
 - ✅ Accessibility maintained (WCAG 2.1 AA)
 - ✅ Performance impact < 5% bundle size increase
 
-### Post-Launch Metrics
+#### Post-Launch Metrics
+
 - **Adoption Rate:** % of users who change language to English
 - **Error Rate:** Console errors related to missing translations
 - **Performance:** Page load time impact
@@ -711,16 +775,16 @@ useEffect(() => {
 
 1. **Should we auto-detect language from browser settings?**
    - Decision: No for MVP, add in V2
-   
+
 2. **How do we handle user-generated content (titles, tags)?**
    - Decision: Keep in original language, don't translate
-   
+
 3. **Should we translate reading content?**
    - Decision: No, readings remain in original language
-   
+
 4. **Do we need pluralization support?**
    - Decision: Yes, add simple pluralization helper
-   
+
 5. **Should language selector be in Header or Settings?**
    - Decision: Settings (consistent with other preferences)
 
@@ -763,7 +827,8 @@ const translations = {
 
 ## Appendix B: Example Component Migration
 
-**Before (hardcoded Spanish):**
+### Before (hardcoded Spanish)
+
 ```tsx
 export function Header() {
   return (
@@ -774,7 +839,8 @@ export function Header() {
 }
 ```
 
-**After (internationalized):**
+#### After (internationalized)
+
 ```tsx
 import { useTranslation } from '@/lib/i18n';
 
@@ -791,4 +857,4 @@ export function Header() {
 
 ---
 
-**End of PRD-011**
+##### End of PRD-011

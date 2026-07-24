@@ -12,6 +12,7 @@
 Technical implementation details for the Auto-Advance Timer feature, which automatically advances slides based on content length and configurable reading speed.
 
 ### Key Components
+
 - Timer logic with WPM-based calculation
 - Visual progress ring (SVG)
 - Keyboard shortcuts for control
@@ -23,7 +24,8 @@ Technical implementation details for the Auto-Advance Timer feature, which autom
 ## 2. Architecture
 
 ### Component Hierarchy
-```
+
+```text
 Reader Page (app/reader/[id]/page.tsx)
 ├── Auto-Advance State Management
 │   ├── isAutoAdvanceActive: boolean
@@ -44,6 +46,7 @@ Reader Page (app/reader/[id]/page.tsx)
 ```
 
 ### State Management
+
 ```typescript
 // Auto-advance state
 const [isAutoAdvanceActive, setIsAutoAdvanceActive] = useState(false);
@@ -460,6 +463,7 @@ The auto-advance timer works seamlessly with all reading transition modes:
 | `line-focus` | Line highlight, timer continues |
 
 Timer behavior during transitions:
+
 - Timer pauses during animation
 - Elapsed time resets to 0 after advancing
 - Animation duration doesn't count toward reading time
@@ -470,6 +474,7 @@ Timer behavior during transitions:
 ## 9. Accessibility Features
 
 ### ARIA Labels
+
 ```tsx
 <button
   onClick={handleAutoAdvanceToggle}
@@ -485,6 +490,7 @@ Timer behavior during transitions:
 ```
 
 ### Reduce Motion Support
+
 ```typescript
 // Respects user preference from accessibility settings
 if (settings.accessibility?.reduceMotion) {
@@ -494,6 +500,7 @@ if (settings.accessibility?.reduceMotion) {
 ```
 
 ### Keyboard Accessibility
+
 - All controls accessible via keyboard
 - Visual focus indicators on buttons
 - Shortcuts don't interfere with form inputs
@@ -504,6 +511,7 @@ if (settings.accessibility?.reduceMotion) {
 ## 10. Performance Considerations
 
 ### Optimization Techniques
+
 1. **Interval Precision**: 100ms updates (10 updates/second)
 2. **Memoization**: `useMemo` for duration calculation
 3. **Cleanup**: Proper cleanup of intervals in useEffect
@@ -511,6 +519,7 @@ if (settings.accessibility?.reduceMotion) {
 5. **CPU Usage**: Minimal (<1%) due to infrequent updates
 
 ### Battery Impact
+
 - Interval only runs when timer is active
 - Paused state clears interval completely
 - No background processing when disabled
@@ -536,6 +545,7 @@ if (settings.accessibility?.reduceMotion) {
 ## 12. Testing Checklist
 
 ### Functionality ✅
+
 - ✅ Timer calculates correct durations for various content types
 - ✅ Play/Pause/Resume controls work correctly
 - ✅ Keyboard shortcuts functional (Space, +/-, Esc)
@@ -545,6 +555,7 @@ if (settings.accessibility?.reduceMotion) {
 - ✅ Auto-start works when enabled
 
 ### Visual ✅
+
 - ✅ Progress ring animates smoothly (100ms precision)
 - ✅ Colors correct for all 4 themes
 - ✅ Button states clear (play vs pause icon)
@@ -552,6 +563,7 @@ if (settings.accessibility?.reduceMotion) {
 - ✅ Mobile-responsive (touch-friendly)
 
 ### Accessibility ✅
+
 - ✅ Keyboard navigation works
 - ✅ ARIA labels present and accurate
 - ✅ Screen reader compatible
@@ -559,6 +571,7 @@ if (settings.accessibility?.reduceMotion) {
 - ✅ Reduce motion respected
 
 ### Performance ✅
+
 - ✅ No lag during transitions
 - ✅ Accurate timing (±100ms tolerance)
 - ✅ Low CPU usage (<1%)
@@ -569,6 +582,7 @@ if (settings.accessibility?.reduceMotion) {
 ## 13. Future Enhancements
 
 ### Potential Improvements
+
 - **Voice control**: "Start auto-advance" voice commands
 - **Smart speed**: AI-based WPM adjustment based on complexity
 - **Analytics**: Track actual vs estimated reading times
@@ -578,6 +592,7 @@ if (settings.accessibility?.reduceMotion) {
 - **Sync across devices**: Share timer state via Firebase
 
 ### Integration Opportunities
+
 - **PRD-013 (TTS)**: Sync audio with auto-advance
 - **PRD-008 (Advanced Accessibility)**: Voice command integration
 - **PRD-011 (i18n)**: Localized WPM labels and messages

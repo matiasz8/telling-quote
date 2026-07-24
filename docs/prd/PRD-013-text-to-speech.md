@@ -14,22 +14,27 @@
 ## 1. Overview
 
 ### Purpose
+
 Add text-to-speech functionality to read content aloud in Spanish and English, enabling hands-free listening and improving accessibility for users with visual impairments or reading difficulties.
 
-### Background
+#### Background
+
 Users have requested audio playback of readings for:
+
 - **Accessibility:** Blind/low-vision users, dyslexia, cognitive disabilities
 - **Multitasking:** Listen while driving, exercising, cooking
 - **Language learning:** Hear correct pronunciation
 - **Auditory learners:** Better retention through hearing
 
-**User Feedback:**
+##### User Feedback
+
 - "Can the app read to me? I have low vision"
 - "Would love to listen while commuting"
 - "TTS would help me learn Spanish pronunciation"
 - "I need audio for accessibility"
 
-### Goals
+###### Goals
+
 1. Implement browser-native TTS (Web Speech API)
 2. Support Spanish and English voices
 3. Provide playback controls (play/pause/stop)
@@ -46,6 +51,7 @@ Users have requested audio playback of readings for:
 **What:** No audio playback available for readings
 
 **Why:** Some users can't read text due to:
+
 - Visual impairments
 - Learning disabilities (dyslexia)
 - Situational limitations (driving, exercising)
@@ -58,22 +64,26 @@ Users have requested audio playback of readings for:
 ## 3. User Stories
 
 ### As a Blind User
+
 - I want TTS so I can consume all content
 - I want to control speed so I can understand easily
 - I want to pause/resume so I can think about content
 - I want keyboard shortcuts so I can navigate without seeing
 
-### As a Language Learner
+#### As a Language Learner
+
 - I want to hear Spanish pronunciation so I can learn correctly
 - I want to adjust speed so I can follow along
 - I want to switch voices so I can hear different accents
 
-### As a Commuter
+##### As a Commuter
+
 - I want to listen hands-free so I can focus on driving
 - I want auto-advance so it flows like a podcast
 - I want easy pause/play so I can respond to notifications
 
-### As a Dyslexic User
+###### As a Dyslexic User
+
 - I want audio support so I can understand content better
 - I want highlighting of spoken text so I can follow along
 - I want to adjust speed so I can match my comprehension pace
@@ -85,6 +95,7 @@ Users have requested audio playback of readings for:
 ### 4.1 Functional Requirements
 
 #### FR-1: Voice Selection
+
 - **Spanish Voices:**
   - Female: "es-MX-DaliaNeural" (Microsoft Edge)
   - Male: "es-ES-AlvaroNeural" (Microsoft Edge)
@@ -97,7 +108,8 @@ Users have requested audio playback of readings for:
 - **User preference:** Save voice choice in settings
 - **Voice preview:** Test voices before selecting
 
-#### FR-2: Playback Controls
+##### FR-2: Playback Controls
+
 - **Play Button:** Start reading from current slide
 - **Pause Button:** Stop mid-sentence, resume from same spot
 - **Stop Button:** End playback, return to beginning
@@ -109,7 +121,8 @@ Users have requested audio playback of readings for:
   - `Alt + Left/Right`: Previous/next sentence
   - `Esc`: Stop playback
 
-#### FR-3: Speech Rate Control
+###### FR-3: Speech Rate Control
+
 - Range: 0.5x to 2.0x speed
 - Default: 1.0x (normal)
 - Increment: 0.25x steps
@@ -119,21 +132,24 @@ Users have requested audio playback of readings for:
   - `Alt + -`: Decrease speed
 - Persist preference in settings
 
-#### FR-4: Visual Feedback
+###### FR-4: Visual Feedback
+
 - **Highlight current sentence:** Yellow/purple background based on theme
 - **Progress indicator:** Show current sentence / total sentences
 - **Playback state icons:** Play/pause/stop clearly visible
 - **Sentence tracking:** Auto-scroll to keep current sentence visible
 - **Animation:** Smooth transitions (if reduce motion disabled)
 
-#### FR-5: Integration with Auto-Advance Timer
+###### FR-5: Integration with Auto-Advance Timer
+
 - **Sync playback:** TTS duration matches auto-advance timer
 - **Auto-advance on sentence end:** Move to next slide after speaking
 - **Pause timer when paused:** Both systems pause together
 - **Manual override:** User can navigate while TTS continues or stops
 - **Seamless flow:** No gap between slides when advancing
 
-#### FR-6: Settings Integration
+###### FR-6: Settings Integration
+
 - **Enable/disable TTS:** Toggle in settings
 - **Voice selector:** Dropdown with all available voices
 - **Default speed:** Slider (0.5x - 2.0x)
@@ -141,7 +157,8 @@ Users have requested audio playback of readings for:
 - **Highlight spoken text:** Toggle on/off
 - **Continue on navigation:** Keep playing when manually advancing (optional)
 
-#### FR-7: Edge Cases
+###### FR-7: Edge Cases
+
 - **Empty slide:** Skip silently
 - **Code blocks:** Read as-is or skip (user preference)
 - **Lists:** Pause between items (200ms)
@@ -150,16 +167,18 @@ Users have requested audio playback of readings for:
 - **Long sentences:** Split at punctuation if >20 words
 - **Network issues:** Graceful fallback to browser voices
 
-### 4.2 Non-Functional Requirements
+###### 4.2 Non-Functional Requirements
 
-#### NFR-1: Performance
+###### NFR-1: Performance
+
 - Instant voice initialization (<500ms)
 - No lag during playback
 - Smooth sentence transitions
 - Minimal CPU usage (<5%)
 - Works offline (browser voices)
 
-#### NFR-2: Accessibility
+###### NFR-2: Accessibility
+
 - WCAG 2.1 Level AA compliant
 - Screen reader compatible (ARIA live regions)
 - Keyboard accessible (all controls)
@@ -167,14 +186,16 @@ Users have requested audio playback of readings for:
 - Respects reduce motion
 - Focus management (keep focus on current sentence)
 
-#### NFR-3: Browser Compatibility
+###### NFR-3: Browser Compatibility
+
 - **Chrome/Edge:** Full support (Neural voices)
 - **Firefox:** Basic support (limited voices)
 - **Safari:** Basic support (limited voices)
 - **Mobile:** iOS Safari, Chrome Android
 - **Fallback:** Always have at least 1 Spanish + 1 English voice
 
-#### NFR-4: Usability
+###### NFR-4: Usability
+
 - Intuitive controls (standard icons)
 - Clear voice names (no technical IDs)
 - Easy to discover (onboarding tooltip)
@@ -186,7 +207,8 @@ Users have requested audio playback of readings for:
 
 ### 5.1 Architecture
 
-**Components:**
+#### Components
+
 - `TTSPlayer` - Main TTS component
 - `TTSControls` - Play/pause/stop buttons
 - `VoiceSelector` - Voice picker dropdown
@@ -194,7 +216,8 @@ Users have requested audio playback of readings for:
 - `SentenceHighlighter` - Visual tracking component
 - `useTTS` - Custom React hook for TTS logic
 
-**State Management:**
+##### State Management
+
 ```typescript
 interface TTSState {
   isPlaying: boolean;
@@ -209,7 +232,7 @@ interface TTSState {
 }
 ```
 
-### 5.2 Web Speech API Usage
+###### 5.2 Web Speech API Usage
 
 ```typescript
 function useTTS(sentences: ProcessedText[], settings: Settings) {
@@ -300,7 +323,7 @@ function useTTS(sentences: ProcessedText[], settings: Settings) {
 }
 ```
 
-### 5.3 Voice Detection
+###### 5.3 Voice Detection
 
 ```typescript
 function getAvailableVoices() {
@@ -322,9 +345,10 @@ function getVoiceByName(name: string): SpeechSynthesisVoice | null {
 }
 ```
 
-### 5.4 UI Components
+###### 5.4 UI Components
 
-**TTS Player:**
+###### TTS Player
+
 ```typescript
 <div className="tts-player fixed bottom-4 right-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4">
   {/* Voice selector */}
@@ -392,7 +416,8 @@ function getVoiceByName(name: string): SpeechSynthesisVoice | null {
 </div>
 ```
 
-**Sentence Highlighting:**
+###### Sentence Highlighting
+
 ```typescript
 <p className={cn(
   "text-lg leading-relaxed",
@@ -405,7 +430,7 @@ function getVoiceByName(name: string): SpeechSynthesisVoice | null {
 </p>
 ```
 
-### 5.5 Settings UI
+###### 5.5 Settings UI
 
 ```typescript
 <div className="space-y-4">
@@ -518,7 +543,7 @@ function estimateSpeechDuration(text: string, rate: number): number {
 }
 ```
 
-### 6.2 User Experience Flow
+#### 6.2 User Experience Flow
 
 1. User enables both TTS and auto-advance
 2. Opens reading
@@ -535,18 +560,20 @@ function estimateSpeechDuration(text: string, rate: number): number {
 
 ### 7.1 WCAG 2.1 Compliance
 
-**Level A:**
+#### Level A
+
 - ✅ Keyboard accessible (all controls)
 - ✅ Focus visible
 - ✅ Screen reader compatible
 
-**Level AA:**
+##### Level AA
+
 - ✅ ARIA labels on all buttons
 - ✅ Live regions for state changes
 - ✅ Sufficient color contrast (4.5:1)
 - ✅ Resize text up to 200%
 
-### 7.2 Screen Reader Support
+###### 7.2 Screen Reader Support
 
 ```typescript
 <div role="region" aria-label="Text-to-Speech Player">
@@ -568,7 +595,7 @@ function estimateSpeechDuration(text: string, rate: number): number {
 </div>
 ```
 
-### 7.3 Keyboard Shortcuts
+###### 7.3 Keyboard Shortcuts
 
 | Shortcut | Action |
 |----------|--------|
@@ -589,18 +616,21 @@ function estimateSpeechDuration(text: string, rate: number): number {
 ## 8. Success Metrics
 
 ### Primary Metrics
+
 - **Adoption:** 25-35% of users try TTS
 - **Retention:** 20% use it regularly
 - **Satisfaction:** 4.5/5 average rating
 - **Accessibility users:** 80%+ adoption
 
-### Secondary Metrics
+#### Secondary Metrics
+
 - **Speed distribution:** Most at 0.75x - 1.25x
 - **Voice preference:** Track Spanish vs English usage
 - **Session length:** 30% longer with TTS
 - **Completion rate:** 15% increase in finished readings
 
-### A11y Metrics
+##### A11y Metrics
+
 - **Screen reader users:** 95% can use TTS
 - **Keyboard-only users:** 100% can control playback
 - **Blind users:** Report app is fully accessible
@@ -610,6 +640,7 @@ function estimateSpeechDuration(text: string, rate: number): number {
 ## 9. Out of Scope
 
 ### Not Included
+
 - **Offline voices:** Download voices for offline use
 - **Voice customization:** Pitch, volume, emphasis
 - **Multiple languages:** Beyond Spanish/English
@@ -617,7 +648,8 @@ function estimateSpeechDuration(text: string, rate: number): number {
 - **Background playback:** Continue when tab closed
 - **Annotations while listening:** Highlight/note-taking during playback
 
-### Future Enhancements
+#### Future Enhancements
+
 - **Smart pause:** Detect questions, pause longer
 - **Emotion detection:** Adjust tone based on content
 - **Pronunciation dictionary:** Custom word pronunciations
@@ -629,17 +661,23 @@ function estimateSpeechDuration(text: string, rate: number): number {
 ## Open Questions (Resolved)
 
 1. Should offline voice packs be required for the first release?
-  - Decision: No. Browser-provided voices are sufficient for the initial version.
-2. Should pitch and volume customization be part of MVP?
-  - Decision: No. MVP focuses on voice selection, rate, and playback control.
-3. Should TTS continue when the tab is no longer active?
-  - Decision: No for MVP. Background playback remains a future enhancement.
+
+- Decision: No. Browser-provided voices are sufficient for the initial version.
+
+1. Should pitch and volume customization be part of MVP?
+
+- Decision: No. MVP focuses on voice selection, rate, and playback control.
+
+1. Should TTS continue when the tab is no longer active?
+
+- Decision: No for MVP. Background playback remains a future enhancement.
 
 ---
 
 ## 10. Testing Checklist
 
 ### Functionality
+
 - [ ] TTS speaks all text correctly
 - [ ] Play/pause/stop work as expected
 - [ ] Speed adjustment affects playback
@@ -649,14 +687,16 @@ function estimateSpeechDuration(text: string, rate: number): number {
 - [ ] Keyboard shortcuts functional
 - [ ] Settings persist correctly
 
-### Browser Testing
+#### Browser Testing
+
 - [ ] Chrome/Edge (full Neural voices)
 - [ ] Firefox (basic voices)
 - [ ] Safari macOS (basic voices)
 - [ ] Safari iOS (mobile voices)
 - [ ] Chrome Android (mobile voices)
 
-### Accessibility
+##### Accessibility
+
 - [ ] Keyboard navigation complete
 - [ ] Screen reader announces states
 - [ ] ARIA labels present
@@ -664,7 +704,8 @@ function estimateSpeechDuration(text: string, rate: number): number {
 - [ ] High-contrast compatible
 - [ ] Reduce motion respected
 
-### Edge Cases
+###### Edge Cases
+
 - [ ] Empty slides skip correctly
 - [ ] Code blocks handled per preference
 - [ ] Long sentences don't timeout
@@ -677,39 +718,44 @@ function estimateSpeechDuration(text: string, rate: number): number {
 ## 11. Implementation Plan
 
 ### Phase 1: Core TTS (5 days)
+
 - [ ] Implement `useTTS` hook
 - [ ] Web Speech API integration
 - [ ] Basic play/pause/stop controls
 - [ ] Voice selection
 - [ ] Test in Chrome/Edge
 
-### Phase 2: UI Components (4 days)
+#### Phase 2: UI Components (4 days)
+
 - [ ] Build TTS player component
 - [ ] Speed control slider
 - [ ] Sentence highlighting
 - [ ] Progress indicator
 - [ ] Style for all themes
 
-### Phase 3: Settings & Persistence (2 days)
+##### Phase 3: Settings & Persistence (2 days)
+
 - [ ] Add TTS settings UI
 - [ ] Persist preferences
 - [ ] Keyboard shortcuts
 - [ ] Test settings sync
 
-### Phase 4: Auto-Advance Integration (3 days)
+###### Phase 4: Auto-Advance Integration (3 days)
+
 - [ ] Sync timer with TTS duration
 - [ ] Unified pause/resume
 - [ ] Seamless slide transitions
 - [ ] Test combined workflow
 
-### Phase 5: Accessibility & Polish (3 days)
+###### Phase 5: Accessibility & Polish (3 days)
+
 - [ ] ARIA labels and live regions
 - [ ] Screen reader testing
 - [ ] Keyboard navigation
 - [ ] High-contrast compatibility
 - [ ] Final user testing
 
-**Total: 17 days**
+###### Total: 17 days
 
 ---
 
@@ -728,31 +774,43 @@ function estimateSpeechDuration(text: string, rate: number): number {
 ## 12. Risks & Mitigations
 
 ### Risk 1: Browser Voice Availability
+
 **Impact:** High  
-**Mitigation:**
+
+#### Mitigation
+
 - Always provide fallback voices
 - Test on all major browsers
 - Document voice availability per browser
 - Graceful degradation
 
-### Risk 2: Performance on Long Readings
+##### Risk 2: Performance on Long Readings
+
 **Impact:** Medium  
-**Mitigation:**
+
+###### Mitigation
+
 - Lazy load sentences
 - Optimize rendering
 - Test with 100+ slide readings
 - Monitor memory usage
 
-### Risk 3: Pronunciation Errors
+###### Risk 3: Pronunciation Errors
+
 **Impact:** Low  
-**Mitigation:**
+
+###### Mitigation
+
 - Use high-quality Neural voices when available
 - Document known issues
 - Future: pronunciation dictionary
 
-### Risk 4: User Confusion (Too Many Controls)
+###### Risk 4: User Confusion (Too Many Controls)
+
 **Impact:** Medium  
-**Mitigation:**
+
+###### Mitigation
+
 - Simple default UI (play/pause only)
 - Advanced controls collapsible
 - Onboarding tutorial

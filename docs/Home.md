@@ -61,6 +61,7 @@ tellingQuote is an interactive reading application that transforms markdown cont
 Browse all features in the [Feature Matrix](Feature-Matrix.md) or see detailed workflows in [Use Cases](Use-Cases.md).
 
 **Core Capabilities**:
+
 - **Markdown Processing**: Automatic conversion to slides
 - **Customization**: 4 fonts × 4 sizes × 4 themes = many combinations
 - **Code Blocks**: Professional rendering with copy functionality
@@ -69,16 +70,19 @@ Browse all features in the [Feature Matrix](Feature-Matrix.md) or see detailed w
 - **Persistent Storage**: All data stored locally in browser or synced to cloud
 
 **Learning & Focus**:
+
 - **Spotlight Mode**: Reduce cognitive overload with sentence-by-sentence focus
 - **Auto-Advance Timer**: Practice reading at controlled pace
 - **Interactive Tutorial**: Learn shortcuts and features on first visit
 
 **Accessibility**:
+
 - **Accessibility Suite**: Dyslexia-friendly fonts, letter/line spacing, high contrast, keyboard navigation
 - **Text-to-Speech**: Audio alternative in multiple languages
 - **Theme System**: Light, Dark, Detox (blue light reduction), and High-Contrast modes
 
 **Organization & Collaboration**:
+
 - **Tags System**: Organize readings by topic
 - **Firebase Auth**: Sign in to sync readings across devices
 - **Reactivation**: Undo accidental reading completion

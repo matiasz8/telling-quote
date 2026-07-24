@@ -13,9 +13,11 @@
 ## 1. Overview
 
 ### Purpose
+
 Implement automated visual regression testing using Playwright to catch unintended visual changes across themes, components, and features. Reduce manual testing time and ensure visual consistency across all four theme variants.
 
 ### Background
+
 The application has four distinct themes (Light, Dark, Detox, High-Contrast) with specific visual requirements. Manual visual testing is time-consuming, error-prone, and doesn't scale as features are added. We need automated screenshot-based testing to:
 
 - Catch visual regressions before they reach production
@@ -24,12 +26,14 @@ The application has four distinct themes (Light, Dark, Detox, High-Contrast) wit
 - Speed up development and review cycles
 
 **Current Pain Points:**
+
 - Manual testing of 4 themes × multiple pages = 30+ minutes per feature
 - Visual bugs slip through code review
 - Difficult to verify accessibility color requirements
 - No visual baseline for comparison during PRs
 
 ### Goals
+
 1. Reduce visual testing time by 80% through automation
 2. Catch visual regressions in CI/CD pipeline
 3. Provide visual documentation of all themes
@@ -53,17 +57,20 @@ The application has four distinct themes (Light, Dark, Detox, High-Contrast) wit
 ## 3. User Stories
 
 ### As a Developer
+
 - I want automated screenshot tests so I can catch visual regressions early
 - I want visual baselines so I can compare my changes side-by-side
 - I want theme validation so I don't accidentally break theme rules
 - I want fast feedback so I can iterate quickly
 
 ### As a QA Engineer
+
 - I want automated visual tests so I can focus on complex manual testing
 - I want visual reports so I can quickly identify what changed
 - I want baseline management so I can approve legitimate visual changes
 
 ### As a Reviewer
+
 - I want visual diffs in PRs so I can see exactly what changed visually
 - I want automated checks so I can trust visual changes are intentional
 
@@ -74,19 +81,23 @@ The application has four distinct themes (Light, Dark, Detox, High-Contrast) wit
 ### 4.1 Functional Requirements
 
 #### FR-1: Playwright Setup
+
 - Install and configure Playwright for visual testing
 - Configure browsers (Chromium primary, optional Firefox/WebKit)
 - Set up test environment with Next.js dev server
 - Configure viewport sizes (desktop: 1280×720, mobile: 375×667)
 
 #### FR-2: Snapshot Management
+
 - Generate baseline screenshots for all test scenarios
 - Store snapshots in version control
 - Update snapshots when visual changes are intentional
 - Compare current screenshots against baselines
 
 #### FR-3: Theme Testing Coverage
+
 **Required test scenarios per theme:**
+
 - ✅ Home page (dashboard with reading cards)
 - ✅ Reader page - top of content
 - ✅ Reader page - middle of content
@@ -97,18 +108,21 @@ The application has four distinct themes (Light, Dark, Detox, High-Contrast) wit
 **Total coverage:** 4 themes × 6 scenarios = 24 base screenshots
 
 #### FR-4: Component Testing
+
 - Test `ReadingCard` component in all states (active, completed, example)
 - Test navigation controls (prev, next, finish buttons)
 - Test settings modal appearance
 - Test theme-specific color rules
 
 #### FR-5: Accessibility Validation
+
 - Validate High-Contrast theme has no colors (pure black/white)
 - Validate Detox theme is strictly monochrome (grayscale)
 - Validate contrast ratios meet WCAG AA standards
 - Test focus indicators are visible
 
 #### FR-6: Test Commands
+
 ```bash
 npm run test:visual              # Run all visual tests
 npm run test:visual:update       # Update baseline snapshots
@@ -118,6 +132,7 @@ npm run test:visual:debug        # Debug mode with headed browser
 ```
 
 #### FR-7: CI/CD Integration
+
 - Run tests on pull requests automatically
 - Upload test reports as artifacts
 - Fail PRs if visual regressions detected (unless approved)
@@ -126,17 +141,20 @@ npm run test:visual:debug        # Debug mode with headed browser
 ### 4.2 Non-Functional Requirements
 
 #### NFR-1: Performance
+
 - Test suite completes in under 2 minutes
 - Screenshot comparison is deterministic (no flaky tests)
 - Minimal storage overhead for snapshots (~10MB total)
 
 #### NFR-2: Maintainability
+
 - Clear test organization by feature/component
 - Easy to add new test scenarios
 - Self-documenting test names
 - Inline documentation in test files
 
 #### NFR-3: Reliability
+
 - Tests are stable across environments
 - No false positives from timing issues
 - Proper wait conditions for dynamic content
@@ -149,11 +167,13 @@ npm run test:visual:debug        # Debug mode with headed browser
 ### 5.1 Technology Stack
 
 **Core:**
+
 - Playwright (v1.48+) - Browser automation and testing
 - @playwright/test - Test runner with visual comparison
 - Next.js test server - Running app during tests
 
 **Why Playwright?**
+
 - ✅ Built-in visual comparison with configurable thresholds
 - ✅ Fast and reliable (powered by browser DevTools Protocol)
 - ✅ Cross-browser support (Chromium, Firefox, WebKit)
@@ -163,6 +183,7 @@ npm run test:visual:debug        # Debug mode with headed browser
 - ✅ Screenshot diffing with HTML reports
 
 **Alternatives Considered:**
+
 - ❌ Percy: Expensive for small projects, external service dependency
 - ❌ Chromatic: Requires Storybook setup, paid tiers
 - ❌ Jest + Puppeteer: More setup, less features than Playwright
@@ -170,7 +191,7 @@ npm run test:visual:debug        # Debug mode with headed browser
 
 ### 5.2 Project Structure
 
-```
+```text
 tests/
 ├── README.md                              # Visual testing guide
 ├── visual/
@@ -187,6 +208,7 @@ playwright.config.ts                       # Playwright configuration
 ### 5.3 Configuration
 
 **playwright.config.ts:**
+
 ```typescript
 import { defineConfig, devices } from '@playwright/test';
 
@@ -228,6 +250,7 @@ export default defineConfig({
 ### 5.4 Test Examples
 
 **Theme Testing:**
+
 ```typescript
 // tests/visual/themes.spec.ts
 import { test, expect } from '@playwright/test';
@@ -249,6 +272,7 @@ for (const theme of themes) {
 ```
 
 **Spotlight Testing:**
+
 ```typescript
 // tests/visual/spotlight.spec.ts
 import { test, expect } from '@playwright/test';
@@ -275,7 +299,8 @@ test('spotlight mode - light theme - start', async ({ page }) => {
 ### 5.5 Snapshot Storage
 
 **Storage Strategy:**
-```
+
+```text
 tests/visual/
 ├── spotlight.spec.ts
 └── spotlight.spec.ts-snapshots/
@@ -294,13 +319,15 @@ tests/visual/
 ```
 
 **Naming Convention:**
+
 - `{feature}-{theme}-{state}-{browser}-{os}.png`
 - Example: `spotlight-dark-finished-chromium-linux.png`
 
 ### 5.6 Git Integration
 
 **Add to .gitignore:**
-```
+
+```text
 # Playwright
 /test-results/
 /playwright-report/
@@ -311,7 +338,8 @@ tests/visual/
 ```
 
 **Update .gitattributes:**
-```
+
+```text
 *.png binary
 tests/**/*-snapshots/*.png -diff
 ```
@@ -319,6 +347,7 @@ tests/**/*-snapshots/*.png -diff
 ### 5.7 CI/CD Pipeline
 
 **GitHub Actions (.github/workflows/visual-tests.yml):**
+
 ```yaml
 name: Visual Tests
 
@@ -355,18 +384,21 @@ jobs:
 ## 6. Theme-Specific Visual Rules
 
 ### Light Theme
+
 - **Background:** White (`#FFFFFF`)
 - **Text:** Dark gray/black (`#1F2937`)
 - **Spotlight glow:** Yellow (`#FDE047`)
 - **Primary accent:** Orange (`#F97316`)
 
 ### Dark Theme  
+
 - **Background:** Dark gray (`#1F2937`)
 - **Text:** Light gray/white (`#F3F4F6`)
 - **Spotlight glow:** Purple (`#A855F7`)
 - **Primary accent:** Purple (`#8B5CF6`)
 
 ### Detox Theme
+
 - **Background:** White (`#FFFFFF`)
 - **Text:** Dark gray (`#374151`)
 - **Spotlight glow:** Yellow (`#FDE047`)
@@ -374,6 +406,7 @@ jobs:
 - **No accent colors** (except spotlight)
 
 ### High-Contrast Theme
+
 - **Background:** Pure black (`#000000`)
 - **Text:** Pure white (`#FFFFFF`)
 - **Spotlight glow:** White (`#FFFFFF`)
@@ -386,6 +419,7 @@ jobs:
 ## 7. Testing Workflow
 
 ### 7.1 Initial Setup
+
 ```bash
 # Install Playwright
 npm install -D @playwright/test
@@ -398,6 +432,7 @@ npm run test:visual:update
 ```
 
 ### 7.2 Development Workflow
+
 ```bash
 # 1. Make visual changes to CSS/components
 # 2. Run tests to see failures
@@ -415,6 +450,7 @@ git commit -m "test: update visual baselines for theme changes"
 ```
 
 ### 7.3 PR Review Workflow
+
 1. CI runs visual tests automatically
 2. If failures: Review HTML report artifact
 3. Approve changes or request fixes
@@ -425,17 +461,20 @@ git commit -m "test: update visual baselines for theme changes"
 ## 8. Success Metrics
 
 ### Primary Metrics
+
 - **Test coverage:** 24+ screenshots covering all themes and key features
 - **Test execution time:** < 2 minutes for full suite
 - **False positive rate:** < 5% (tests fail only on real visual changes)
 - **Bug detection:** Catch 90%+ of visual regressions before production
 
 ### Secondary Metrics
+
 - **Developer adoption:** 80%+ of PRs include visual tests
 - **Time savings:** 30+ minutes saved per feature (vs manual testing)
 - **Visual documentation:** Screenshots serve as theme reference guide
 
 ### KPIs
+
 - Visual bugs in production: Reduce by 75%
 - PR review time: Reduce by 20% (less back-and-forth on visuals)
 - Theme consistency issues: Reduce to near zero
@@ -445,12 +484,14 @@ git commit -m "test: update visual baselines for theme changes"
 ## 9. Testing Coverage Plan
 
 ### Phase 1: Core Pages (v0.4.0)
+
 - ✅ Home page (all themes)
 - ✅ Reader page (all themes, 2 scroll positions)
 - ✅ Spotlight mode (all themes, 3 states: start/mid/finished)
 - **Total:** 24 screenshots
 
 ### Phase 2: Components (v0.5.0)
+
 - ReadingCard variations (active, completed, example badge)
 - Navigation buttons (enabled, disabled, hover)
 - Settings modal (all sections)
@@ -458,6 +499,7 @@ git commit -m "test: update visual baselines for theme changes"
 - **Estimated:** +16 screenshots
 
 ### Phase 3: Interactive Features (v0.6.0)
+
 - Onboarding tutorial (all steps)
 - Tag filtering
 - Search functionality
@@ -465,6 +507,7 @@ git commit -m "test: update visual baselines for theme changes"
 - **Estimated:** +12 screenshots
 
 ### Phase 4: Edge Cases (v0.7.0)
+
 - Long content (scrolling)
 - Empty states (no readings)
 - Error states
@@ -479,6 +522,7 @@ git commit -m "test: update visual baselines for theme changes"
 ## 10. Best Practices
 
 ### 10.1 Writing Stable Tests
+
 ```typescript
 // ✅ Good: Wait for specific condition
 await page.waitForSelector('[data-testid="reading-card"]');
@@ -500,6 +544,7 @@ await page.click('.button.primary.large');
 ```
 
 ### 10.2 Screenshot Configuration
+
 ```typescript
 await expect(page).toHaveScreenshot('screenshot.png', {
   maxDiffPixels: 100,      // Allow up to 100 pixels difference
@@ -510,6 +555,7 @@ await expect(page).toHaveScreenshot('screenshot.png', {
 ```
 
 ### 10.3 Test Organization
+
 - One test file per feature/page
 - Group related tests with `test.describe()`
 - Use descriptive test names: `${feature} - ${theme} - ${state}`
@@ -520,6 +566,7 @@ await expect(page).toHaveScreenshot('screenshot.png', {
 ## 11. Out of Scope
 
 ### Not Included
+
 - **Functional/unit testing**: Use Jest + React Testing Library
 - **API testing**: Use Supertest or Postman
 - **Performance testing**: Use Lighthouse CI
@@ -528,6 +575,7 @@ await expect(page).toHaveScreenshot('screenshot.png', {
 - **Video recording**: Screenshots only (video on failure optional)
 
 ### Future Enhancements
+
 - Visual testing in multiple browsers (Firefox, WebKit)
 - Mobile viewport testing (375×667, 414×896)
 - Tablet viewport testing (768×1024)
@@ -540,6 +588,7 @@ await expect(page).toHaveScreenshot('screenshot.png', {
 ## 12. Open Questions
 
 ### Technical Questions
+
 - **Q:** Should we test in multiple browsers or just Chromium?
   - **A:** Start with Chromium only, add Firefox/WebKit if needed
 
@@ -553,6 +602,7 @@ await expect(page).toHaveScreenshot('screenshot.png', {
   - **A:** Git for now (small size), move to LFS if it grows large
 
 ### Process Questions
+
 - **Q:** Who approves visual baseline updates?
   - **A:** PR reviewer + original developer
 
@@ -567,6 +617,7 @@ await expect(page).toHaveScreenshot('screenshot.png', {
 ## 13. Dependencies
 
 ### Packages
+
 ```json
 {
   "devDependencies": {
@@ -576,6 +627,7 @@ await expect(page).toHaveScreenshot('screenshot.png', {
 ```
 
 ### System Requirements
+
 - Node.js 18+
 - Chromium browser (auto-installed by Playwright)
 - 1GB disk space for snapshots and reports
@@ -585,23 +637,27 @@ await expect(page).toHaveScreenshot('screenshot.png', {
 ## 14. Implementation Plan
 
 ### Phase 1: Setup (1 day)
+
 - [ ] Install Playwright and dependencies
 - [ ] Configure playwright.config.ts
 - [ ] Set up npm scripts
 - [ ] Update .gitignore
 
 ### Phase 2: Core Tests (2 days)
+
 - [ ] Write theme tests (home page)
 - [ ] Write reader page tests
 - [ ] Write spotlight mode tests
 - [ ] Generate baseline snapshots
 
 ### Phase 3: CI Integration (1 day)
+
 - [ ] Set up GitHub Actions workflow
 - [ ] Configure artifact uploads
 - [ ] Test PR checks
 
 ### Phase 4: Documentation (1 day)
+
 - [ ] Write tests/README.md
 - [ ] Document workflow in main README
 - [ ] Add examples and troubleshooting guide
@@ -613,30 +669,38 @@ await expect(page).toHaveScreenshot('screenshot.png', {
 ## 15. Risks & Mitigations
 
 ### Risk 1: Flaky Tests
+
 **Impact:** High - False positives reduce trust  
 **Mitigation:**
+
 - Use proper wait conditions
 - Disable animations
 - Mock dynamic content
 - Set appropriate thresholds
 
 ### Risk 2: Large Snapshot Size
+
 **Impact:** Medium - Repo bloat  
 **Mitigation:**
+
 - Use compressed PNG format
 - Consider Git LFS if > 50MB
 - Limit screenshot count to essential tests
 
 ### Risk 3: CI Time Increase
+
 **Impact:** Medium - Slower PR feedback  
 **Mitigation:**
+
 - Run tests in parallel
 - Cache Playwright browsers
 - Optimize viewport size (720p vs 1080p)
 
 ### Risk 4: Maintenance Burden
+
 **Impact:** Medium - Tests break frequently  
 **Mitigation:**
+
 - Keep tests simple and focused
 - Use data attributes for selectors
 - Document test intent clearly
@@ -652,6 +716,7 @@ If visual testing proves problematic:
 3. **Long-term:** Revert Playwright installation if unused for 2 sprints
 
 **Rollback command:**
+
 ```bash
 npm uninstall @playwright/test
 git rm -r tests/ playwright.config.ts
@@ -662,6 +727,7 @@ git rm -r tests/ playwright.config.ts
 ## 17. Success Criteria
 
 ### Launch Checklist
+
 - ✅ 24+ visual tests passing consistently
 - ✅ < 2 minute test execution time
 - ✅ < 5% false positive rate
@@ -670,6 +736,7 @@ git rm -r tests/ playwright.config.ts
 - ✅ Team trained on workflow
 
 ### Post-Launch (30 days)
+
 - ✅ Zero visual bugs reached production
 - ✅ 50%+ of PRs include visual tests
 - ✅ 80%+ developer satisfaction with tool
@@ -744,19 +811,25 @@ for (const theme of themes) {
 ## Appendix B: Troubleshooting
 
 ### Issue: Tests fail with "Screenshot comparison failed"
+
 **Solution:** Review HTML report to see visual diff. If legitimate change, update baseline:
+
 ```bash
 npm run test:visual:update
 ```
 
 ### Issue: Tests timeout waiting for page load
+
 **Solution:** Increase timeout in playwright.config.ts:
+
 ```typescript
 timeout: 60000, // 60 seconds
 ```
 
 ### Issue: Snapshots look different on different machines
+
 **Solution:** Run tests in Docker container for consistency:
+
 ```dockerfile
 FROM mcr.microsoft.com/playwright:v1.48.0-jammy
 WORKDIR /app
@@ -766,7 +839,9 @@ CMD ["npm", "run", "test:visual"]
 ```
 
 ### Issue: Too many false positives
+
 **Solution:** Increase `maxDiffPixels` and `threshold`:
+
 ```typescript
 maxDiffPixels: 200,  // More tolerance
 threshold: 0.3,      // 30% per pixel

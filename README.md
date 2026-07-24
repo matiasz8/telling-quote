@@ -34,19 +34,19 @@ git clone git@github.com:matiasz8/telling-quote.git
 cd telling-quote
 ```
 
-2. Install dependencies:
+1. Install dependencies:
 
 ```bash
 npm install
 ```
 
-3. Start the development server:
+1. Start the development server:
 
 ```bash
 npm run dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+1. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### Production Build
 
@@ -155,7 +155,7 @@ telling-quote/
   ````markdown
   ```javascript
   console.log('Hello');
-  ```
+  ```text
   ````
 
 - **Links**: `[text](url)` with hover effect

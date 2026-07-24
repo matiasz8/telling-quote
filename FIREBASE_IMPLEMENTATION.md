@@ -9,12 +9,14 @@ Esta rama (`feat/firebase-auth`) contiene la implementación completa de Firebas
 ## 📦 What's Implemented
 
 ### 1. Firebase SDK Integration
+
 - ✅ Firebase v10.7.1 installed
 - ✅ Lazy initialization with SSR safety
 - ✅ Environment variable configuration
 - ✅ Offline persistence with IndexedDB
 
 ### 2. Authentication (`lib/firebase/auth.ts`)
+
 - ✅ Google OAuth sign-in with popup
 - ✅ Sign out functionality
 - ✅ Auth state change listener
@@ -22,6 +24,7 @@ Esta rama (`feat/firebase-auth`) contiene la implementación completa de Firebas
 - ✅ Account deletion
 
 ### 3. Firestore Database (`lib/firebase/firestore.ts`)
+
 - ✅ Complete CRUD operations for readings
 - ✅ Settings and accessibility settings sync
 - ✅ User profile management
@@ -29,22 +32,26 @@ Esta rama (`feat/firebase-auth`) contiene la implementación completa de Firebas
 - ✅ Batch data deletion for GDPR compliance
 - ✅ Server timestamps for consistency across devices
 
-### 4. React Hooks
+#### 4. React Hooks
+
 - ✅ `useAuth()` - Authentication state management
 - ✅ `useReadingSync()` - Reading synchronization with status tracking
 
-### 5. UI Components
+##### 5. UI Components
+
 - ✅ `SignInModal.tsx` - Google OAuth login with benefits display
 - ✅ `MigrationModal.tsx` - localStorage to Firestore migration
 - ✅ `UserMenu.tsx` - User dropdown with real-time sync status
 
-### 6. Security
+###### 6. Security
+
 - ✅ `firestore.rules` - Secure user data isolation
 - ✅ Data validation functions
 - ✅ No public access, authentication required
 - ✅ Explicit allow-list approach
 
-### 7. Documentation
+###### 7. Documentation
+
 - ✅ `FIREBASE_SETUP.md` - Complete setup guide (Step-by-step)
 - ✅ `.env.local.example` - Environment variables template
 - ✅ Security rules documentation
@@ -63,13 +70,16 @@ Sigue las instrucciones en [FIREBASE_SETUP.md](../FIREBASE_SETUP.md):
 4. Crea base de datos Firestore
 5. Despliega las security rules
 
-### 2. Configurar Variables de Entorno
+#### 2. Configurar Variables de Entorno
 
 ```bash
+
 # Copiar el template
+
 cp .env.local.example .env.local
 
 # Agregar tus valores de Firebase Console
+
 NEXT_PUBLIC_FIREBASE_API_KEY=...
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=...
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=...
@@ -78,11 +88,12 @@ NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=...
 NEXT_PUBLIC_FIREBASE_APP_ID=...
 ```
 
-### 3. Integrar con la Aplicación Principal
+## 3. Integrar con la Aplicación Principal
 
 Los componentes están listos pero necesitan integrarse en:
 
-#### `components/Header.tsx`:
+### `components/Header.tsx`
+
 ```typescript
 import UserMenu from './UserMenu';
 import SignInModal from './SignInModal';
@@ -105,7 +116,8 @@ const { user } = useAuth();
 )}
 ```
 
-#### `app/page.tsx`:
+#### `app/page.tsx`
+
 ```typescript
 import { useAuth } from '@/hooks/useAuth';
 import { useReadingSync } from '@/hooks/useReadingSync';
@@ -123,7 +135,7 @@ if (user) {
 }
 ```
 
-### 4. Implementar Data Migration
+##### 4. Implementar Data Migration
 
 Cuando el usuario inicia sesión por primera vez:
 
@@ -154,7 +166,7 @@ const handleMigrate = async (shouldMigrate: boolean) => {
 };
 ```
 
-### 5. Agregar Export Data
+###### 5. Agregar Export Data
 
 ```typescript
 const handleExportData = async () => {
@@ -179,7 +191,7 @@ const handleExportData = async () => {
 };
 ```
 
-### 6. Agregar Delete Account
+###### 6. Agregar Delete Account
 
 ```typescript
 const handleDeleteAccount = async () => {
@@ -225,7 +237,7 @@ const handleDeleteAccount = async () => {
 
 ## 📊 Architecture
 
-```
+```text
 User Actions
     ↓
 React Components
@@ -261,6 +273,7 @@ service cloud.firestore {
 ```
 
 **Características**:
+
 - ✅ Solo el usuario puede acceder a sus propios datos
 - ✅ Requiere autenticación para todas las operaciones
 - ✅ Validación de estructura de datos
@@ -273,33 +286,37 @@ service cloud.firestore {
 ### Offline-First Architecture
 
 La app funciona igual sin conexión:
+
 1. Usuario crea/edita lectura
 2. Cambios guardados en IndexedDB inmediatamente
 3. UI actualiza (optimistic update)
 4. Cuando hay conexión, sincroniza a Firestore
 
-### Conflict Resolution (V1)
+#### Conflict Resolution (V1)
 
 **Strategy**: Last-Write-Wins
+
 - Usa timestamps `updatedAt`
 - El cambio más reciente gana
 - Simple y efectivo para v1
 
 **Future**: Operational Transforms para resolución avanzada
 
-### Performance
+##### Performance
 
 **Firebase Free Tier** (Spark Plan):
+
 - 50,000 lecturas/día
 - 20,000 escrituras/día
 - 1GB almacenamiento
 
 **Estimación** (1000 usuarios activos):
+
 - ~10,000 lecturas/día ✅
 - ~5,000 escrituras/día ✅
 - ~50MB almacenamiento ✅
 
-**Dentro del límite gratuito**
+###### Dentro del límite gratuito
 
 ---
 

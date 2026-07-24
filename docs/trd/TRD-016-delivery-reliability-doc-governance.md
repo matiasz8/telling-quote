@@ -29,7 +29,7 @@ This TRD documents the technical implementation of a delivery reliability baseli
 
 ### 3.1 Documentation Validation Layer
 
-```
+```text
 validate:docs
   ├── validate-prd-trd.mjs       (structure + status-aware strictness)
   └── validate-traceability.mjs  (FEATURE_INDEX link/ID consistency)
@@ -37,7 +37,7 @@ validate:docs
 
 ### 3.2 Firebase Local Runtime Layer
 
-```
+```text
 firebase.json + .firebaserc
   ├── Auth emulator (9099)
   ├── Firestore emulator (8080)

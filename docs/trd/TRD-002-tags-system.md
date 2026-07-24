@@ -43,7 +43,7 @@ flowchart TD
 
 ### Component Architecture
 
-```
+```text
 types/index.ts
     └── Reading type (add tags?: string[])
 
@@ -945,5 +945,3 @@ function migrateReadings(readings: Reading[]): Reading[] {
 **Status**: 📝 Draft  
 **Implementation Date**: TBD  
 **Review Status**: Pending
-
-
