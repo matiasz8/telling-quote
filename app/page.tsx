@@ -7,13 +7,14 @@ import ConfirmDeleteModal from "@/components/ConfirmDeleteModal";
 import ConfirmReactivateModal from "@/components/ConfirmReactivateModal";
 import MigrationModal from "@/components/MigrationModal";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
-import ProjectCard from "@/components/dashboard/ProjectCard";
-import ProjectDetailsPanel from "@/components/dashboard/ProjectDetailsPanel";
+import ProjectCardV2 from "@/components/dashboard/ProjectCardV2";
+import ProjectDetailView from "@/components/dashboard/ProjectDetailView";
+import NewProjectModal from "@/components/dashboard/NewProjectModal";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useSettings } from "@/hooks/useSettings";
 import { useAuth } from "@/hooks/useAuth";
 import { useReadingSync } from "@/hooks/useReadingSync";
-import { Reading } from "@/types";
+import { Reading, Project } from "@/types";
 import { STORAGE_KEYS } from "@/lib/constants";
 import {
   EXAMPLE_READING,
@@ -25,17 +26,32 @@ import {
   shouldPromptMigration,
 } from "@/lib/dashboard/homeLogic";
 import { getDashboardTheme } from "@/lib/dashboard/theme";
+import {
+  getProjectReadingCount,
+  getProjectCompletionPercent,
+  filterProjectsList,
+  getAllProjectTags,
+} from "@/lib/dashboard/projectHelpers";
 
 const isDev = process.env.NODE_ENV === "development";
 const dlog = (...args: unknown[]) => {
   if (isDev) console.log(...args);
 };
 
-// Temporary type for migration period (will be refactored in Phase 2)
+// Filter type for projects
 type ProjectFilter = "all" | "active" | "completed" | "favorites";
 
+// Default project for existing readings (migration)
+const DEFAULT_PROJECT: Project = {
+  id: "default",
+  title: "Mis Lecturas",
+  description: "Proyecto por defecto para lecturas existentes",
+  tags: [],
+};
+
 export default function Home() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isNewProjectModalOpen, setIsNewProjectModalOpen] = useState(false);
+  const [isNewReadingModalOpen, setIsNewReadingModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isReactivateModalOpen, setIsReactivateModalOpen] = useState(false);
@@ -45,6 +61,11 @@ export default function Home() {
   const [deletingReading, setDeletingReading] = useState<Reading | null>(null);
   const [reactivatingReading, setReactivatingReading] = useState<Reading | null>(null);
 
+  // Data storage
+  const [projects, setProjects] = useLocalStorage<Project[]>(
+    "projects",
+    []
+  );
   const [readings, setReadings] = useLocalStorage<Reading[]>(
     STORAGE_KEYS.READINGS,
     []
@@ -65,7 +86,7 @@ export default function Home() {
   // UI-only state
   const [query, setQuery] = useState("");
   const [activeTag, setActiveTag] = useState<string | null>(null);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const { settings } = useSettings();
@@ -78,6 +99,7 @@ export default function Home() {
   const localReadingsToMigrate = useRef<Reading[]>([]);
   const hasAutoSynced = useRef(false);
   const readingsRef = useRef<Reading[]>(readings);
+  const projectsRef = useRef<Project[]>(projects);
   const [mounted, setMounted] = useState(false);
 
   const dash = getDashboardTheme(settings.theme);
@@ -88,12 +110,43 @@ export default function Home() {
 
   useEffect(() => {
     readingsRef.current = readings;
-  }, [readings]);
+    projectsRef.current = projects;
+  }, [readings, projects]);
 
   useEffect(() => {
     hasSyncedFromCloud.current = false;
     hasAutoSynced.current = false;
   }, [user?.uid]);
+
+  // Auto-create default project if none exists on first load
+  useEffect(() => {
+    if (!mounted || projects.length > 0) return;
+    setProjects([DEFAULT_PROJECT]);
+  }, [mounted, projects.length, setProjects]);
+
+  // Ensure example reading is assigned to a project
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (hasInitializedExample.current) return;
+
+    const exampleDismissed =
+      localStorage.getItem(STORAGE_KEYS.EXAMPLE_DISMISSED) === "true";
+
+    if (shouldInitializeExampleReading({ readings, exampleDismissed })) {
+      // Add to default project
+      const exampleWithProject = {
+        ...EXAMPLE_READING,
+        projectId: DEFAULT_PROJECT.id,
+      };
+      setReadings([exampleWithProject]);
+      // Ensure default project exists
+      if (!projects.some((p) => p.id === DEFAULT_PROJECT.id)) {
+        setProjects((prev) => [DEFAULT_PROJECT, ...prev]);
+      }
+    }
+
+    hasInitializedExample.current = true;
+  }, [readings, projects, setReadings, setProjects]);
 
   // Check for migration on first user sign-in
   useEffect(() => {
@@ -115,21 +168,6 @@ export default function Home() {
       hasSyncedFromCloud.current = true;
     }
   }, [mounted, user, readings]);
-
-  // Auto-create example reading on first load
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (hasInitializedExample.current) return;
-
-    const exampleDismissed =
-      localStorage.getItem(STORAGE_KEYS.EXAMPLE_DISMISSED) === "true";
-
-    if (shouldInitializeExampleReading({ readings, exampleDismissed })) {
-      setReadings([EXAMPLE_READING]);
-    }
-
-    hasInitializedExample.current = true;
-  }, [readings, setReadings]);
 
   // Sync with Firestore when user signs in (after migration handled)
   useEffect(() => {
@@ -191,60 +229,70 @@ export default function Home() {
   };
 
   // Derived data
-  const activeCount = readings.filter(
-    (r) => !completedReadings.includes(r.id)
-  ).length;
-  const completedCount = readings.filter((r) =>
-    completedReadings.includes(r.id)
-  ).length;
-  const favoritesCount = readings.filter((r) =>
-    favoriteReadings.includes(r.id)
-  ).length;
+  const projectTags = getAllProjectTags(projects);
+  const displayedProjects = (() => {
+    let base = projects;
 
-  // Temporary implementations for migration (to be refactored in Phase 2)
-  const tags = (() => {
-    const set = new Set<string>();
-    readings.forEach((r) => r.tags?.forEach((t) => set.add(t)));
-    return Array.from(set).sort();
-  })();
-
-  const displayedReadings = (() => {
-    let base = readings;
-    if (filter === "active") {
-      base = readings.filter((r) => !completedReadings.includes(r.id));
-    } else if (filter === "completed") {
-      base = readings.filter((r) => completedReadings.includes(r.id));
-    } else if (filter === "favorites") {
-      base = readings.filter((r) => favoriteReadings.includes(r.id));
-    }
-
+    // Apply tag filter
     if (activeTag) {
-      base = base.filter((r) => r.tags?.includes(activeTag));
+      base = base.filter((p) => p.tags?.includes(activeTag));
     }
 
+    // Apply query filter
     const q = query.trim().toLowerCase();
     if (q) {
       base = base.filter(
-        (r) =>
-          r.title.toLowerCase().includes(q) ||
-          r.content.toLowerCase().includes(q) ||
-          r.tags?.some((t) => t.toLowerCase().includes(q))
+        (p) =>
+          p.title.toLowerCase().includes(q) ||
+          p.description?.toLowerCase().includes(q) ||
+          p.tags?.some((t) => t.toLowerCase().includes(q))
       );
+    }
+
+    // Apply status filter
+    if (filter === "completed" || filter === "active" || filter === "favorites") {
+      base = base.filter((p) => {
+        const projectReadings = readings.filter((r) => r.projectId === p.id);
+        const completedCount = projectReadings.filter((r) =>
+          completedReadings.includes(r.id)
+        ).length;
+        const isFavorite = favoriteReadings.some((fid) =>
+          projectReadings.some((r) => r.id === fid)
+        );
+
+        if (filter === "completed") {
+          return completedCount === projectReadings.length && projectReadings.length > 0;
+        } else if (filter === "active") {
+          return completedCount < projectReadings.length;
+        } else if (filter === "favorites") {
+          return isFavorite;
+        }
+        return true;
+      });
     }
 
     return base;
   })();
 
-  // Derived state - only keep selected ID if it still exists
-  const selectedReading =
-    (selectedId && readings.find((r) => r.id === selectedId)) || null;
+  const selectedProject =
+    (selectedProjectId && projects.find((p) => p.id === selectedProjectId)) ||
+    null;
 
-  const handleSave = async (reading: Reading) => {
-    setReadings((prev) => [...prev, reading]);
-    setSelectedId(reading.id);
+  const handleSaveNewProject = (newProject: Project) => {
+    setProjects((prev) => [...prev, newProject]);
+    setSelectedProjectId(newProject.id);
+  };
+
+  const handleSaveNewReading = async (reading: Reading) => {
+    // Add to selected project or default project
+    const projectId = selectedProject?.id || DEFAULT_PROJECT.id;
+    const readingWithProject = { ...reading, projectId };
+
+    setReadings((prev) => [...prev, readingWithProject]);
+
     if (user) {
       try {
-        await syncReading(reading);
+        await syncReading(readingWithProject);
       } catch (error) {
         console.error("Error syncing new reading:", error);
       }
@@ -292,7 +340,6 @@ export default function Home() {
     }
 
     setReadings((prev) => prev.filter((r) => r.id !== deletingReading.id));
-    if (selectedId === deletingReading.id) setSelectedId(null);
 
     if (user) {
       try {
@@ -321,7 +368,6 @@ export default function Home() {
 
   const handleToggleComplete = (reading: Reading) => {
     if (completedReadings.includes(reading.id)) {
-      // Reactivate needs confirmation
       handleReactivate(reading);
     } else {
       setCompletedReadings((prev) => [...prev, reading.id]);
@@ -336,16 +382,32 @@ export default function Home() {
     );
   };
 
-  const handleSelect = (reading: Reading) => {
-    setSelectedId(reading.id);
-  };
-
   const filterLabels: Record<ProjectFilter, string> = {
     all: "Todos los proyectos",
     active: "Proyectos activos",
     completed: "Proyectos completados",
     favorites: "Favoritos",
   };
+
+  // Calculate project counts for sidebar
+  const allProjectsCount = projects.length;
+  const activeProjectsCount = projects.filter((p) => {
+    const projectReadings = readings.filter((r) => r.projectId === p.id);
+    const completedCount = projectReadings.filter((r) =>
+      completedReadings.includes(r.id)
+    ).length;
+    return completedCount < projectReadings.length && projectReadings.length > 0;
+  }).length;
+  const completedProjectsCount = projects.filter((p) => {
+    const projectReadings = readings.filter((r) => r.projectId === p.id);
+    return projectReadings.length > 0 && projectReadings.every((r) =>
+      completedReadings.includes(r.id)
+    );
+  }).length;
+  const favoritesProjectsCount = projects.filter((p) => {
+    return readings.filter((r) => r.projectId === p.id)
+      .some((r) => favoriteReadings.includes(r.id));
+  }).length;
 
   return (
     <div className={`flex h-screen overflow-hidden ${dash.shell}`} suppressHydrationWarning>
@@ -364,17 +426,17 @@ export default function Home() {
           setSidebarOpen(false);
         }}
         counts={{
-          all: readings.length,
-          active: activeCount,
-          completed: completedCount,
-          favorites: favoritesCount,
+          all: allProjectsCount,
+          active: activeProjectsCount,
+          completed: completedProjectsCount,
+          favorites: favoritesProjectsCount,
         }}
-        tags={tags}
+        tags={projectTags}
         activeTag={activeTag}
         onTagChange={setActiveTag}
         query={query}
         onQueryChange={setQuery}
-        onNewProject={() => setIsModalOpen(true)}
+        onNewProject={() => setIsNewProjectModalOpen(true)}
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
       />
@@ -402,11 +464,11 @@ export default function Home() {
                 {activeTag ? ` · ${activeTag}` : ""}
               </h1>
               <p className={`text-xs ${dash.textMuted}`}>
-                {mounted ? `${displayedReadings.length} proyecto${displayedReadings.length === 1 ? "" : "s"}` : "\u00a0"}
+                {mounted ? `${displayedProjects.length} proyecto${displayedProjects.length === 1 ? "" : "s"}` : "\u00a0"}
               </p>
             </div>
             <button
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => setIsNewProjectModalOpen(true)}
               className={`hidden items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold shadow-sm transition-all sm:flex ${dash.primaryBtn}`}
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -418,19 +480,21 @@ export default function Home() {
 
           {/* Content */}
           <div className="flex-1 overflow-y-auto p-4 sm:p-6">
-            {!mounted ? null : displayedReadings.length > 0 ? (
+            {!mounted ? null : displayedProjects.length > 0 ? (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {displayedReadings.map((reading) => (
-                  <ProjectCard
-                    key={reading.id}
-                    reading={reading}
+                {displayedProjects.map((project) => (
+                  <ProjectCardV2
+                    key={project.id}
+                    project={project}
+                    readingCount={getProjectReadingCount(readings, project.id)}
+                    completionPercent={getProjectCompletionPercent(
+                      readings,
+                      completedReadings,
+                      project.id
+                    )}
                     dash={dash}
-                    isSelected={selectedId === reading.id}
-                    isCompleted={completedReadings.includes(reading.id)}
-                    isFavorite={favoriteReadings.includes(reading.id)}
-                    isExample={reading.id === EXAMPLE_READING_ID}
-                    onSelect={handleSelect}
-                    onToggleFavorite={handleToggleFavorite}
+                    isSelected={selectedProjectId === project.id}
+                    onSelect={() => setSelectedProjectId(project.id)}
                   />
                 ))}
               </div>
@@ -452,7 +516,7 @@ export default function Home() {
                     : "Crea tu primer proyecto para empezar a leer de forma cómoda."}
                 </p>
                 <button
-                  onClick={() => setIsModalOpen(true)}
+                  onClick={() => setIsNewProjectModalOpen(true)}
                   className={`mt-5 flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold shadow-sm transition-all ${dash.primaryBtn}`}
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -467,53 +531,70 @@ export default function Home() {
 
         {/* Details panel - static on large screens */}
         <div
-          className={`hidden w-96 shrink-0 border-l lg:block ${dash.divider} ${dash.sidebar}`}
+          className={`hidden w-full lg:w-1/2 xl:w-2/5 shrink-0 border-l lg:block overflow-hidden ${dash.divider} ${dash.sidebar}`}
         >
-          <ProjectDetailsPanel
-            reading={selectedReading}
-            dash={dash}
-            isCompleted={selectedReading ? completedReadings.includes(selectedReading.id) : false}
-            isFavorite={selectedReading ? favoriteReadings.includes(selectedReading.id) : false}
-            isExample={selectedReading?.id === EXAMPLE_READING_ID}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onToggleFavorite={handleToggleFavorite}
-            onToggleComplete={handleToggleComplete}
-            onClose={() => setSelectedId(null)}
-          />
-        </div>
-      </div>
-
-      {/* Details panel - overlay on small screens */}
-      {selectedReading && (
-        <div className="fixed inset-0 z-40 lg:hidden">
-          <div
-            className="absolute inset-0 bg-black/40"
-            onClick={() => setSelectedId(null)}
-            aria-hidden="true"
-          />
-          <div className={`absolute inset-y-0 right-0 w-full max-w-sm border-l ${dash.divider} ${dash.sidebar}`}>
-            <ProjectDetailsPanel
-              reading={selectedReading}
+          {selectedProject ? (
+            <ProjectDetailView
+              project={selectedProject}
+              readings={readings.filter((r) => r.projectId === selectedProject.id)}
+              completedReadings={completedReadings}
+              favoriteReadings={favoriteReadings}
               dash={dash}
-              isCompleted={completedReadings.includes(selectedReading.id)}
-              isFavorite={favoriteReadings.includes(selectedReading.id)}
-              isExample={selectedReading.id === EXAMPLE_READING_ID}
               onEdit={handleEdit}
               onDelete={handleDelete}
               onToggleFavorite={handleToggleFavorite}
               onToggleComplete={handleToggleComplete}
-              onClose={() => setSelectedId(null)}
+              onNewReading={() => setIsNewReadingModalOpen(true)}
+              onClose={() => setSelectedProjectId(null)}
+            />
+          ) : (
+            <div className={`flex h-full items-center justify-center ${dash.sidebar}`}>
+              <p className={`text-center ${dash.textMuted}`}>
+                Selecciona un proyecto para ver detalles
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Details panel - overlay on small screens */}
+      {selectedProject && (
+        <div className="fixed inset-0 z-40 lg:hidden">
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={() => setSelectedProjectId(null)}
+            aria-hidden="true"
+          />
+          <div className={`absolute inset-y-0 right-0 w-full max-w-sm border-l overflow-y-auto ${dash.divider} ${dash.sidebar}`}>
+            <ProjectDetailView
+              project={selectedProject}
+              readings={readings.filter((r) => r.projectId === selectedProject.id)}
+              completedReadings={completedReadings}
+              favoriteReadings={favoriteReadings}
+              dash={dash}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onToggleFavorite={handleToggleFavorite}
+              onToggleComplete={handleToggleComplete}
+              onNewReading={() => setIsNewReadingModalOpen(true)}
+              onClose={() => setSelectedProjectId(null)}
             />
           </div>
         </div>
       )}
 
       {/* Modals */}
+      <NewProjectModal
+        isOpen={isNewProjectModalOpen}
+        onClose={() => setIsNewProjectModalOpen(false)}
+        onSave={handleSaveNewProject}
+        dash={dash}
+      />
       <NewReadingModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSave={handleSave}
+        isOpen={isNewReadingModalOpen}
+        onClose={() => setIsNewReadingModalOpen(false)}
+        onSave={handleSaveNewReading}
+        projectId={selectedProject?.id}
       />
       {editingReading && (
         <EditTitleModal
