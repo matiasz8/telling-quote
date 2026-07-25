@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { Project, Reading } from "@/types";
 import { DashboardTheme } from "@/lib/dashboard/theme";
 import {
@@ -23,6 +22,7 @@ interface ProjectDetailViewProps {
   onToggleComplete: (reading: Reading) => void;
   onNewReading: () => void;
   onClose: () => void;
+  onOpenProject: () => void;
 }
 
 function Icon({ path, className = "w-5 h-5" }: { path: string; className?: string }) {
@@ -45,8 +45,8 @@ export default function ProjectDetailView({
   onToggleComplete,
   onNewReading,
   onClose,
+  onOpenProject,
 }: ProjectDetailViewProps) {
-  const router = useRouter();
   const readingCount = getProjectReadingCount(readings, project.id);
   const completedCount = getProjectCompletedCount(readings, completedReadings, project.id);
   const completionPercent = getProjectCompletionPercent(readings, completedReadings, project.id);
@@ -144,7 +144,7 @@ export default function ProjectDetailView({
       {/* Actions */}
       <div className={`border-t px-5 py-4 space-y-2 ${dash.divider}`}>
         <button
-          onClick={() => router.push(`/project/${project.id}`)}
+          onClick={onOpenProject}
           className={`w-full flex items-center justify-center gap-2 rounded-lg px-4 py-3 font-semibold shadow-sm transition-all ${dash.primaryBtn}`}
         >
           <Icon path="M4 6h16M4 12h16M4 18h16" />

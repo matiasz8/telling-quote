@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import NewReadingModal from "@/components/NewReadingModal";
 import EditTitleModal from "@/components/EditTitleModal";
 import ConfirmDeleteModal from "@/components/ConfirmDeleteModal";
@@ -8,6 +9,7 @@ import ConfirmReactivateModal from "@/components/ConfirmReactivateModal";
 import MigrationModal from "@/components/MigrationModal";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import ProjectCardV2 from "@/components/dashboard/ProjectCardV2";
+import ReadingCardV2 from "@/components/dashboard/ReadingCardV2";
 import ProjectDetailView from "@/components/dashboard/ProjectDetailView";
 import NewProjectModal from "@/components/dashboard/NewProjectModal";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
@@ -92,6 +94,8 @@ export default function Home() {
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<"projects" | "readings">("projects");
+  const [expandedProjectId, setExpandedProjectId] = useState<string | null>(null);
 
   const { settings } = useSettings();
   const { user } = useAuth();
@@ -492,71 +496,137 @@ export default function Home() {
             </button>
             <div className="min-w-0 flex-1">
               <h1 className={`truncate text-lg font-bold ${dash.textPrimary}`}>
-                {filterLabels[filter]}
+                {viewMode === "readings" && expandedProjectId
+                  ? projects.find((p) => p.id === expandedProjectId)?.title || "Proyecto"
+                  : filterLabels[filter]}
                 {activeTag ? ` · ${activeTag}` : ""}
               </h1>
               <p className={`text-xs ${dash.textMuted}`}>
-                {mounted ? `${displayedProjects.length} proyecto${displayedProjects.length === 1 ? "" : "s"}` : "\u00a0"}
+                {mounted ? (
+                  viewMode === "readings" && expandedProjectId
+                    ? (() => {
+                        const projectReadings = readings.filter((r) => r.projectId === expandedProjectId);
+                        return `${projectReadings.length} lectura${projectReadings.length === 1 ? "" : "s"}`;
+                      })()
+                    : `${displayedProjects.length} proyecto${displayedProjects.length === 1 ? "" : "s"}`
+                ) : (
+                  "\u00a0"
+                )}
               </p>
             </div>
-            <button
-              onClick={() => setIsNewProjectModalOpen(true)}
-              className={`hidden items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold shadow-sm transition-all sm:flex ${dash.primaryBtn}`}
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              Nuevo proyecto
-            </button>
+            {viewMode === "readings" && expandedProjectId && (
+              <button
+                onClick={() => {
+                  setViewMode("projects");
+                  setExpandedProjectId(null);
+                }}
+                className={`hidden items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold shadow-sm transition-all sm:flex ${dash.ghostBtn}`}
+              >
+                ← Volver a Proyectos
+              </button>
+            )}
+            {viewMode === "projects" && (
+              <button
+                onClick={() => setIsNewProjectModalOpen(true)}
+                className={`hidden items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold shadow-sm transition-all sm:flex ${dash.primaryBtn}`}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Nuevo proyecto
+              </button>
+            )}
           </div>
 
           {/* Content */}
           <div className="flex-1 overflow-y-auto p-4 sm:p-6">
-            {!mounted ? null : displayedProjects.length > 0 ? (
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {displayedProjects.map((project) => (
-                  <ProjectCardV2
-                    key={project.id}
-                    project={project}
-                    readingCount={getProjectReadingCount(readings, project.id)}
-                    completionPercent={getProjectCompletionPercent(
-                      readings,
-                      completedReadings,
-                      project.id
-                    )}
-                    dash={dash}
-                    isSelected={selectedProjectId === project.id}
-                    onSelect={() => setSelectedProjectId(project.id)}
-                  />
-                ))}
-              </div>
+            {viewMode === "readings" && expandedProjectId ? (
+              // Grid de Lecturas
+              !mounted ? null : (() => {
+                const projectReadings = readings.filter((r) => r.projectId === expandedProjectId);
+                return projectReadings.length > 0 ? (
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                    {projectReadings.map((reading) => (
+                      <ReadingCardV2
+                        key={reading.id}
+                        reading={reading}
+                        isCompleted={completedReadings.includes(reading.id)}
+                        isFavorite={favoriteReadings.includes(reading.id)}
+                        dash={dash}
+                        onComplete={() => handleToggleComplete(reading)}
+                        onFavorite={() => handleToggleFavorite(reading)}
+                        onEdit={() => handleEdit(reading)}
+                        onDelete={() => handleDelete(reading)}
+                        onOpen={() => {
+                          window.location.href = `/reader/${reading.id}`;
+                        }}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-20 text-center">
+                    <div className={`mb-4 flex h-16 w-16 items-center justify-center rounded-2xl ${dash.chip}`}>
+                      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                      </svg>
+                    </div>
+                    <p className={`text-lg font-semibold ${dash.textPrimary}`}>
+                      Sin lecturas aún
+                    </p>
+                    <p className={`mt-1 max-w-sm text-sm ${dash.textMuted}`}>
+                      Agrega la primera lectura a este proyecto desde el panel.
+                    </p>
+                  </div>
+                );
+              })()
             ) : (
-              <div className="flex flex-col items-center justify-center py-20 text-center">
-                <div className={`mb-4 flex h-16 w-16 items-center justify-center rounded-2xl ${dash.chip}`}>
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                  </svg>
+              // Grid de Proyectos
+              !mounted ? null : displayedProjects.length > 0 ? (
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                  {displayedProjects.map((project) => (
+                    <ProjectCardV2
+                      key={project.id}
+                      project={project}
+                      readingCount={getProjectReadingCount(readings, project.id)}
+                      completionPercent={getProjectCompletionPercent(
+                        readings,
+                        completedReadings,
+                        project.id
+                      )}
+                      dash={dash}
+                      isSelected={selectedProjectId === project.id}
+                      onSelect={() => setSelectedProjectId(project.id)}
+                    />
+                  ))}
                 </div>
-                <p className={`text-lg font-semibold ${dash.textPrimary}`}>
-                  {query || activeTag
-                    ? "Sin resultados"
-                    : "Aún no tienes proyectos aquí"}
-                </p>
-                <p className={`mt-1 max-w-sm text-sm ${dash.textMuted}`}>
-                  {query || activeTag
-                    ? "Prueba con otra búsqueda o quita los filtros."
-                    : "Crea tu primer proyecto para empezar a leer de forma cómoda."}
-                </p>
-                <button
-                  onClick={() => setIsNewProjectModalOpen(true)}
-                  className={`mt-5 flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold shadow-sm transition-all ${dash.primaryBtn}`}
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                  Nuevo proyecto
-                </button>
-              </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-20 text-center">
+                  <div className={`mb-4 flex h-16 w-16 items-center justify-center rounded-2xl ${dash.chip}`}>
+                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                  </div>
+                  <p className={`text-lg font-semibold ${dash.textPrimary}`}>
+                    {query || activeTag
+                      ? "Sin resultados"
+                      : "Aún no tienes proyectos aquí"}
+                  </p>
+                  <p className={`mt-1 max-w-sm text-sm ${dash.textMuted}`}>
+                    {query || activeTag
+                      ? "Prueba con otra búsqueda o quita los filtros."
+                      : "Crea tu primer proyecto para empezar a leer de forma cómoda."}
+                  </p>
+                  <button
+                    onClick={() => setIsNewProjectModalOpen(true)}
+                    className={`mt-5 flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold shadow-sm transition-all ${dash.primaryBtn}`}
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                    Nuevo proyecto
+                  </button>
+                </div>
+              )
             )}
           </div>
         </main>
@@ -578,6 +648,11 @@ export default function Home() {
               onToggleComplete={handleToggleComplete}
               onNewReading={() => setIsNewReadingModalOpen(true)}
               onClose={() => setSelectedProjectId(null)}
+              onOpenProject={() => {
+                setViewMode("readings");
+                setExpandedProjectId(selectedProject.id);
+                setSelectedProjectId(null);
+              }}
             />
           ) : (
             <div className={`flex h-full items-center justify-center ${dash.sidebar}`}>
@@ -610,6 +685,11 @@ export default function Home() {
               onToggleComplete={handleToggleComplete}
               onNewReading={() => setIsNewReadingModalOpen(true)}
               onClose={() => setSelectedProjectId(null)}
+              onOpenProject={() => {
+                setViewMode("readings");
+                setExpandedProjectId(selectedProject.id);
+                setSelectedProjectId(null);
+              }}
             />
           </div>
         </div>
