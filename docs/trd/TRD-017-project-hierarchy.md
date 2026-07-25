@@ -9,7 +9,17 @@
 
 Technical implementation of Project Hierarchy feature including data model, state management, and automatic migration.
 
-## Data Model
+---
+
+## Related PRD
+
+**PRD-017:** Project Hierarchy  
+- See `/docs/prd/PRD-017-project-hierarchy.md` for business requirements, user stories, and success metrics
+- This TRD provides the implementation details for: data model, state management, automatic migration, components, and breaking changes
+
+---
+
+## Implementation
 
 ### Project Type
 ```typescript
@@ -87,6 +97,118 @@ Detail panel showing reading preview (status, excerpt, metadata).
 - Route /project/[id] removed
 - New Project type introduced
 
+## Testing
+
+### Unit Tests
+```typescript
+// tests/dashboard/migrationHelpers.test.ts
+describe('Migration Helpers', () => {
+  it('should detect orphaned readings', () => {
+    const readings = [{ id: '1', title: 'Test' }];  // no projectId
+    expect(needsMigration(readings)).toBe(true);
+  });
+
+  it('should assign readings to default project', () => {
+    const readings = [{ id: '1', title: 'Test' }];
+    const migrated = assignToDefaultProject(readings, 'default-id');
+    expect(migrated[0].projectId).toBe('default-id');
+  });
+
+  it('should be idempotent', () => {
+    const readings1 = [{ id: '1', projectId: 'p1' }];
+    const result1 = assignToDefaultProject(readings1, 'default');
+    const result2 = assignToDefaultProject(result1, 'default');
+    expect(result1).toEqual(result2);
+  });
+});
+```
+
+### Integration Tests
+```typescript
+// tests/dashboard/project-hierarchy.integration.test.ts
+describe('Project Hierarchy Integration', () => {
+  it('should create project and assign reading', () => {
+    const projects = [];
+    const readings = [{ id: '1', title: 'Test' }];
+    
+    // Create project
+    const newProject = { id: 'p1', title: 'My Project' };
+    const updatedProjects = [...projects, newProject];
+    
+    // Assign reading
+    const updatedReadings = readings.map(r => ({ ...r, projectId: 'p1' }));
+    
+    expect(updatedReadings[0].projectId).toBe('p1');
+  });
+
+  it('should preserve reading data during migration', () => {
+    const reading = { 
+      id: '1', 
+      title: 'Test Reading',
+      content: 'Long content',
+      tags: ['react', 'hooks']
+    };
+    
+    const migrated = assignToDefaultProject([reading], 'default');
+    expect(migrated[0]).toMatchObject({
+      title: 'Test Reading',
+      content: 'Long content',
+      tags: ['react', 'hooks']
+    });
+  });
+});
+```
+
+### E2E Tests
+```typescript
+// e2e/project-hierarchy.spec.ts
+test('create project and move reading to it', async ({ page }) => {
+  // Create project
+  await page.goto('/');
+  await page.click('button:has-text("New Project")');
+  await page.fill('input[placeholder="Project Title"]', 'My Learning');
+  await page.click('button:has-text("Create")');
+  
+  // Verify project appears
+  await expect(page.locator('text=My Learning')).toBeVisible();
+  
+  // Drill down
+  await page.click('text=My Learning');
+  
+  // Verify readings grid shows
+  await expect(page.locator('[data-tour="reading-card"]')).toBeVisible();
+});
+
+test('auto-migration on first load', async ({ page, context }) => {
+  // Set up: localStorage with orphaned readings
+  await context.addInitScript(() => {
+    const readings = [
+      { id: '1', title: 'Test Reading', tags: [] }
+    ];
+    localStorage.setItem('readings', JSON.stringify(readings));
+  });
+  
+  // Load app
+  await page.goto('/');
+  
+  // Migration should run silently
+  await page.waitForTimeout(1000);
+  
+  // Verify: projects created + reading migrated
+  const readingsData = await page.evaluate(() => 
+    JSON.parse(localStorage.getItem('readings') || '[]')
+  );
+  expect(readingsData[0].projectId).toBeDefined();
+});
+```
+
+### Performance Tests
+```bash
+# Verify migration completes < 500ms with 1000 readings
+npm run test:performance -- --scenario=migration --readingCount=1000
+# Target: < 500ms
+```
+
 ## Related Documentation
 - See PRD-017 for requirements
 - See PHASE-3B-BREAKING-CHANGES.md for migration details
@@ -96,4 +218,4 @@ Detail panel showing reading preview (status, excerpt, metadata).
 
 **Implementation Complete**: Phase 3b ✅  
 **Testing**: Migration tested on 5 scenarios, 100% success  
-**Status**: Ready for production  
+**Status**: Ready for production

@@ -9,6 +9,81 @@
 
 In-page drill-down navigation provides seamless project → readings navigation without page routing changes. Users stay in the same dashboard interface while exploring project content.
 
+---
+
+## Problem Statement
+
+### Current Issues
+- **Page Navigation:** Current route-based navigation causes full page reloads when switching between projects
+- **State Loss:** Navigation resets UI state (scroll position, selected reading, etc.)
+- **User Confusion:** Users expect smooth navigation within dashboard, not page changes
+- **Mobile Experience:** Page transitions cause jarring layout reflow on mobile devices
+
+### Why This Matters
+Modern web apps keep users in a single page context, providing smooth transitions and preserved state. Users expect:
+- Instant navigation without page reload
+- Preserved scroll and selection state
+- Smooth animations between views
+- Consistent dashboard layout
+
+---
+
+## Requirements
+
+### Functional Requirements
+
+#### FR-1: Drill-Down Navigation (State-Based)
+- Click project title to drill down into readings view
+- Dashboard stays on same page (no URL navigation)
+- ViewMode state changes: 'projects' → 'readings'
+- Back button/header returns to projects view
+- Navigation is instantaneous (no load time)
+
+#### FR-2: Reading Detail Preview
+- Click reading card body (not title) to show detail preview
+- Desktop: Sidebar panel (non-blocking, keeps grid visible)
+- Mobile: Full-screen overlay (takes full space, shows close button)
+- Preview displays: reading status, project name, excerpt, word count, estimated read time
+- Users can close preview or click to open full reader
+
+#### FR-3: Smart Card Interactions
+- **Project Card:**
+  - Title click: Drill down into readings
+  - Body/card click: Show project preview
+- **Reading Card:**
+  - Title click: Open in reader
+  - Body/card click: Show reading preview
+- Behavior is intuitive and learnable in < 30 seconds
+
+#### FR-4: Navigation State Persistence
+- Back button always returns to previous view (projects or readings)
+- Selected project/reading ID preserved during session
+- Smooth visual transition between views
+
+#### FR-5: Responsive Layouts
+- Desktop (lg+): Detail sidebar 300-400px, grid takes remaining space
+- Tablet (md): Detail sidebar 250px, grid responsive
+- Mobile (<md): Detail as full-screen overlay, close button to return
+
+### Non-Functional Requirements
+
+#### NFR-1: Performance
+- Drill-down transition < 100ms
+- Preview panel render < 50ms
+- No animation lag (60fps animations)
+
+#### NFR-2: User Experience
+- Intuitiveness rating: 4+/5
+- Click-through rates: maintained or increased vs previous nav
+- Mobile engagement: no degradation
+
+#### NFR-3: Accessibility
+- Keyboard navigation works (arrow keys, enter, escape)
+- Screen reader announces view changes
+- Focus management preserved
+
+---
+
 ## User Stories
 
 ### FR-001: Drill-Down Navigation
