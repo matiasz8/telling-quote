@@ -38,6 +38,18 @@ export function getReadingTimeMinutes(content: string): number {
 
 export type ProjectFilter = "all" | "active" | "completed" | "favorites";
 
+/**
+ * Cleans up orphaned IDs that no longer exist in readings.
+ * Prevents "ghost projects" from appearing in filters.
+ */
+export function cleanOrphanedIds(
+  ids: string[],
+  readings: Reading[]
+): string[] {
+  const readingIds = new Set(readings.map((r) => r.id));
+  return ids.filter((id) => readingIds.has(id));
+}
+
 export function filterProjects(params: {
   readings: Reading[];
   completedIds: string[];
@@ -49,13 +61,17 @@ export function filterProjects(params: {
   const { readings, completedIds, favoriteIds, filter, activeTag, query } =
     params;
 
+  // Clean orphaned IDs before filtering
+  const validCompletedIds = cleanOrphanedIds(completedIds, readings);
+  const validFavoriteIds = cleanOrphanedIds(favoriteIds, readings);
+
   let base = readings;
   if (filter === "active") {
-    base = readings.filter((r) => !completedIds.includes(r.id));
+    base = readings.filter((r) => !validCompletedIds.includes(r.id));
   } else if (filter === "completed") {
-    base = readings.filter((r) => completedIds.includes(r.id));
+    base = readings.filter((r) => validCompletedIds.includes(r.id));
   } else if (filter === "favorites") {
-    base = readings.filter((r) => favoriteIds.includes(r.id));
+    base = readings.filter((r) => validFavoriteIds.includes(r.id));
   }
 
   if (activeTag) {
