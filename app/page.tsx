@@ -25,16 +25,14 @@ import {
   shouldPromptMigration,
 } from "@/lib/dashboard/homeLogic";
 import { getDashboardTheme } from "@/lib/dashboard/theme";
-import {
-  filterProjects,
-  getAllTags,
-  ProjectFilter,
-} from "@/lib/dashboard/projectHelpers";
 
 const isDev = process.env.NODE_ENV === "development";
 const dlog = (...args: unknown[]) => {
   if (isDev) console.log(...args);
 };
+
+// Temporary type for migration period (will be refactored in Phase 2)
+type ProjectFilter = "all" | "active" | "completed" | "favorites";
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -203,26 +201,43 @@ export default function Home() {
     favoriteReadings.includes(r.id)
   ).length;
 
-  const tags = getAllTags(readings);
+  // Temporary implementations for migration (to be refactored in Phase 2)
+  const tags = (() => {
+    const set = new Set<string>();
+    readings.forEach((r) => r.tags?.forEach((t) => set.add(t)));
+    return Array.from(set).sort();
+  })();
 
-  const displayedReadings = filterProjects({
-    readings,
-    completedIds: completedReadings,
-    favoriteIds: favoriteReadings,
-    filter,
-    activeTag,
-    query,
-  });
+  const displayedReadings = (() => {
+    let base = readings;
+    if (filter === "active") {
+      base = readings.filter((r) => !completedReadings.includes(r.id));
+    } else if (filter === "completed") {
+      base = readings.filter((r) => completedReadings.includes(r.id));
+    } else if (filter === "favorites") {
+      base = readings.filter((r) => favoriteReadings.includes(r.id));
+    }
 
+    if (activeTag) {
+      base = base.filter((r) => r.tags?.includes(activeTag));
+    }
+
+    const q = query.trim().toLowerCase();
+    if (q) {
+      base = base.filter(
+        (r) =>
+          r.title.toLowerCase().includes(q) ||
+          r.content.toLowerCase().includes(q) ||
+          r.tags?.some((t) => t.toLowerCase().includes(q))
+      );
+    }
+
+    return base;
+  })();
+
+  // Derived state - only keep selected ID if it still exists
   const selectedReading =
     (selectedId && readings.find((r) => r.id === selectedId)) || null;
-
-  // Clear selection if the reading no longer exists
-  useEffect(() => {
-    if (selectedId && !readings.some((r) => r.id === selectedId)) {
-      setSelectedId(null);
-    }
-  }, [readings, selectedId]);
 
   const handleSave = async (reading: Reading) => {
     setReadings((prev) => [...prev, reading]);

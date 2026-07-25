@@ -1,5 +1,13 @@
+export type Project = {
+  id: string;
+  title: string;
+  description: string; // Summary/description of the project
+  tags?: string[];
+};
+
 export type Reading = {
   id: string;
+  projectId: string; // Reference to parent project
   title: string;
   content: string;
   tags?: string[]; // Optional, default empty array

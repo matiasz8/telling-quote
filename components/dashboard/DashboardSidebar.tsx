@@ -11,7 +11,8 @@ import { resetTutorial } from "@/lib/tutorial";
 import { deleteAccount } from "@/lib/firebase/auth";
 import { deleteAllUserData } from "@/lib/firebase/firestore";
 import { DashboardTheme } from "@/lib/dashboard/theme";
-import { ProjectFilter } from "@/lib/dashboard/projectHelpers";
+
+type ProjectFilter = "all" | "active" | "completed" | "favorites";
 
 type NavItem = {
   key: ProjectFilter;
