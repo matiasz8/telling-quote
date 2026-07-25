@@ -19,21 +19,22 @@ export default function EditTitleModal({
   onClose,
   onSave,
 }: EditTitleModalProps) {
-  const [title, setTitle] = useState(currentTitle);
-  const [tagsInput, setTagsInput] = useState(currentTags?.join(", ") || "");
+  const [title, setTitle] = useState("");
+  const [tagsInput, setTagsInput] = useState("");
   const modalRef = useRef<HTMLDivElement>(null);
+  const prevIsOpenRef = useRef(isOpen);
 
   // Focus trap
   useFocusTrap(modalRef, isOpen);
 
-  // Update title and tags when current values change
+  // Reset form when modal opens
   useEffect(() => {
-    setTitle(currentTitle);
-  }, [currentTitle]);
-
-  useEffect(() => {
-    setTagsInput(currentTags?.join(", ") || "");
-  }, [currentTags]);
+    if (isOpen && !prevIsOpenRef.current) {
+      setTitle(currentTitle);
+      setTagsInput(currentTags?.join(", ") || "");
+    }
+    prevIsOpenRef.current = isOpen;
+  }, [isOpen]);
 
   if (!isOpen) return null;
 

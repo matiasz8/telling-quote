@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
 import NewReadingModal from "@/components/NewReadingModal";
 import EditTitleModal from "@/components/EditTitleModal";
 import ConfirmDeleteModal from "@/components/ConfirmDeleteModal";
