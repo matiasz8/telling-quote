@@ -4,7 +4,7 @@
 **Feature**: Project Hierarchy with In-Page Drill-Down Navigation  
 **Status**: Ready for Deployment  
 **Date**: 2024-01-XX  
-**Owner**: Nicolás Quiroga (@matiasz8)  
+**Owner**: Nahuel Quiroga (@matiasz8)  
 
 ---
 
@@ -609,7 +609,7 @@ If issues arise:
 
 ---
 
-**Prepared by**: Nicolás Quiroga (@matiasz8)  
+**Prepared by**: Nahuel Quiroga (@matiasz8)  
 **Review Date**: 2024-01-XX  
 **Approval Status**: ⏳ Pending  
 **Deployment Status**: ⏳ Ready  

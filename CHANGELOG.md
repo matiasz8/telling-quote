@@ -234,6 +234,5 @@ localStorage.setItem("readings", JSON.stringify(readings));
 
 ## Contributors
 
-- Nicolás Quiroga (@matiasz8) - Implementation
+- Nahuel Quiroga (@matiasz8) - Implementation
 - Copilot - Code generation and review
-

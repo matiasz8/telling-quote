@@ -2,7 +2,7 @@
 
 **Status**: Accepted  
 **Date**: 2024-01-XX  
-**Author**: Nicolás Quiroga (@matiasz8)  
+**Author**: Nahuel Quiroga (@matiasz8)  
 **Decision Impact**: BREAKING - Major UI/UX change with automatic data migration  
 
 ---
@@ -424,7 +424,7 @@ If critical issues discovered:
 
 ## Sign-Off
 
-- **Architect**: Nicolás Quiroga
+- **Architect**: Nahuel Quiroga
 - **Product**: Approved (Phase 3b)
 - **QA**: Testing complete
 - **Status**: Ready for deployment
