@@ -97,7 +97,7 @@ export default function ConfirmReactivateModal({
           <button
             ref={confirmButtonRef}
             onClick={handleConfirm}
-            className="px-5 py-2.5 bg-linear-to-r from-emerald-600 to-teal-600 dark:from-emerald-500 dark:to-teal-500 text-white rounded-lg hover:from-emerald-700 hover:to-teal-700 dark:hover:from-emerald-600 dark:hover:to-teal-600 transition-all duration-200 font-medium shadow-md hover:shadow-lg"
+            className="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-500 dark:to-teal-500 text-white rounded-lg hover:from-emerald-700 hover:to-teal-700 dark:hover:from-emerald-600 dark:hover:to-teal-600 transition-all duration-200 font-medium shadow-md hover:shadow-lg"
             aria-label={`Confirmar reactivación de ${title}`}
           >
             Reactivar

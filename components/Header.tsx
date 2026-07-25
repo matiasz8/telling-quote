@@ -98,8 +98,8 @@ export default function Header() {
           : isDetox
           ? 'border-gray-200 bg-white text-gray-900'
           : isDark
-          ? 'border-purple-900 bg-linear-to-r from-purple-900 to-black'
-          : 'border-lime-200 bg-linear-to-r from-yellow-100 to-lime-100'
+          ? 'border-purple-900 bg-gradient-to-r from-purple-900 to-black'
+          : 'border-lime-200 bg-gradient-to-r from-yellow-100 to-lime-100'
       }`}>
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className={`text-2xl font-bold ${
@@ -185,8 +185,8 @@ export default function Header() {
                   : isDetox
                   ? 'bg-emerald-600 text-white hover:bg-emerald-700'
                   : isDark
-                  ? 'bg-linear-to-r from-emerald-500 to-teal-500 text-white hover:shadow-lg'
-                  : 'bg-linear-to-r from-emerald-500 to-teal-500 text-white hover:shadow-lg'
+                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:shadow-lg'
+                  : 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:shadow-lg'
               }`}
               title="Iniciar Sesión"
             >

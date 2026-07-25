@@ -148,7 +148,7 @@ export default function ReadingCard({
                 ? "bg-white text-black border-2 border-white hover:bg-gray-200"
                 : isDetox
                 ? "bg-gray-900 text-white border-2 border-gray-900 hover:bg-gray-800"
-                : "bg-linear-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600"
+                : "bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600"
             }`}
             aria-label={`Reactivar lectura: ${reading.title}`}
             title="Reactivar lectura"
@@ -175,7 +175,7 @@ export default function ReadingCard({
               ? "bg-white text-black border-2 border-white hover:bg-gray-200"
               : isDetox
               ? "bg-gray-900 text-white border-2 border-gray-900 hover:bg-gray-800"
-              : "bg-linear-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600"
+                : "bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600"
           }`}
           aria-label={`Edit reading title: ${reading.title}`}
           title="Edit title"
@@ -201,7 +201,7 @@ export default function ReadingCard({
               ? "bg-white text-black border-2 border-white hover:bg-gray-200"
               : isDetox
               ? "bg-gray-900 text-white border-2 border-gray-900 hover:bg-gray-800"
-              : "bg-linear-to-r from-red-500 to-rose-500 text-white hover:from-red-600 hover:to-rose-600"
+                : "bg-gradient-to-r from-red-500 to-rose-500 text-white hover:from-red-600 hover:to-rose-600"
           }`}
           aria-label={`Delete reading: ${reading.title}`}
           title="Delete reading"

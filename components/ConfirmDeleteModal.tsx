@@ -95,7 +95,7 @@ export default function ConfirmDeleteModal({
           <button
             ref={deleteButtonRef}
             onClick={handleConfirm}
-            className="px-5 py-2.5 bg-linear-to-r from-red-600 to-rose-600 text-white rounded-lg hover:from-red-700 hover:to-rose-700 transition-all duration-200 font-medium shadow-md hover:shadow-lg"
+            className="px-5 py-2.5 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-lg hover:from-red-700 hover:to-rose-700 transition-all duration-200 font-medium shadow-md hover:shadow-lg"
             aria-label={`Confirm deletion of ${title}`}
           >
             Delete

@@ -1002,7 +1002,7 @@ export default function ReaderPage() {
           ) : currentSentence.isTable ? (
             <div className="my-12 overflow-x-auto">
               <table className={`min-w-full ${isDark ? 'bg-gray-800' : 'bg-white'} shadow-lg rounded-lg overflow-hidden`}>
-                <thead className={isDark ? 'bg-purple-900/50' : 'bg-linear-to-r from-yellow-400 to-lime-400'}>
+                <thead className={isDark ? 'bg-purple-900/50' : 'bg-gradient-to-r from-yellow-400 to-lime-400'}>
                   <tr>
                     {currentSentence.tableHeaders?.map((header, idx) => (
                       <th key={idx} className={`px-6 py-4 text-left ${fontSizeClasses.subtitle} font-semibold ${
