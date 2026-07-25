@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Header from "@/components/Header";
 import NewReadingModal from "@/components/NewReadingModal";
 import EditTitleModal from "@/components/EditTitleModal";
 import ConfirmDeleteModal from "@/components/ConfirmDeleteModal";
 import ConfirmReactivateModal from "@/components/ConfirmReactivateModal";
 import MigrationModal from "@/components/MigrationModal";
-import ReadingCard from "@/components/ReadingCard";
+import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
+import ProjectCard from "@/components/dashboard/ProjectCard";
+import ProjectDetailsPanel from "@/components/dashboard/ProjectDetailsPanel";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useSettings } from "@/hooks/useSettings";
 import { useAuth } from "@/hooks/useAuth";
@@ -19,11 +20,16 @@ import {
   EXAMPLE_READING_ID,
 } from "@/lib/constants/exampleReading";
 import {
-  getDashboardReadings,
   mergeCloudAndLocalReadings,
   shouldInitializeExampleReading,
   shouldPromptMigration,
 } from "@/lib/dashboard/homeLogic";
+import { getDashboardTheme } from "@/lib/dashboard/theme";
+import {
+  filterProjects,
+  getAllTags,
+  ProjectFilter,
+} from "@/lib/dashboard/projectHelpers";
 
 const isDev = process.env.NODE_ENV === "development";
 const dlog = (...args: unknown[]) => {
@@ -40,6 +46,7 @@ export default function Home() {
   const [editingReading, setEditingReading] = useState<Reading | null>(null);
   const [deletingReading, setDeletingReading] = useState<Reading | null>(null);
   const [reactivatingReading, setReactivatingReading] = useState<Reading | null>(null);
+
   const [readings, setReadings] = useLocalStorage<Reading[]>(
     STORAGE_KEYS.READINGS,
     []
@@ -48,13 +55,26 @@ export default function Home() {
     "completedReadings",
     []
   );
-  const [activeTab, setActiveTab] = useLocalStorage<"active" | "completed">(
-    "dashboardTab",
-    "active"
+  const [favoriteReadings, setFavoriteReadings] = useLocalStorage<string[]>(
+    "favoriteReadings",
+    []
   );
+  const [filter, setFilter] = useLocalStorage<ProjectFilter>(
+    "dashboardFilter",
+    "all"
+  );
+
+  // UI-only state
+  const [query, setQuery] = useState("");
+  const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   const { settings } = useSettings();
   const { user } = useAuth();
-  const { syncReading, syncUpdateReading, syncDeleteReading, subscribeReadings } = useReadingSync();
+  const { syncReading, syncUpdateReading, syncDeleteReading, subscribeReadings } =
+    useReadingSync();
+
   const hasInitializedExample = useRef(false);
   const hasSyncedFromCloud = useRef(false);
   const localReadingsToMigrate = useRef<Reading[]>([]);
@@ -62,7 +82,8 @@ export default function Home() {
   const readingsRef = useRef<Reading[]>(readings);
   const [mounted, setMounted] = useState(false);
 
-  // Prevent hydration mismatch by only rendering client-side features after mount
+  const dash = getDashboardTheme(settings.theme);
+
   useEffect(() => {
     setTimeout(() => setMounted(true), 0);
   }, []);
@@ -76,16 +97,9 @@ export default function Home() {
     hasAutoSynced.current = false;
   }, [user?.uid]);
 
-  // DEBUG: Log whenever readings change
-  useEffect(() => {
-    dlog('[DEBUG readings changed] readings.length:', readings.length);
-    dlog('[DEBUG readings changed] readings:', readings.map(r => ({ id: r.id, title: r.title })));
-  }, [readings]);
-
   // Check for migration on first user sign-in
   useEffect(() => {
-    dlog('[Migration check effect] mounted:', mounted, 'user:', !!user, 'hasSyncedFromCloud:', hasSyncedFromCloud.current);
-    const hasMigrated = localStorage.getItem('hasMigratedToCloud') === 'true';
+    const hasMigrated = localStorage.getItem("hasMigratedToCloud") === "true";
     const shouldMigrate = shouldPromptMigration({
       mounted,
       hasUser: Boolean(user),
@@ -94,33 +108,21 @@ export default function Home() {
       hasMigratedToCloud: hasMigrated,
     });
 
-    dlog('[Migration check effect] shouldMigrate:', shouldMigrate, 'readings.length:', readings.length);
-    dlog('[Migration check effect] hasMigrated:', hasMigrated);
-
     if (shouldMigrate) {
-      // Save local readings before they get overwritten
       localReadingsToMigrate.current = [...readings];
-      dlog('[Migration check effect] Saved', readings.length, 'readings to migrate');
       setTimeout(() => {
         setMigrationReadingCount(readings.length);
         setIsMigrationModalOpen(true);
-        dlog('[Migration check effect] Showing migration modal');
       }, 0);
-      hasSyncedFromCloud.current = true; // Prevent re-triggering
-    } else {
-      dlog('[Migration check effect] No migration needed');
+      hasSyncedFromCloud.current = true;
     }
   }, [mounted, user, readings]);
 
   // Auto-create example reading on first load
   useEffect(() => {
-    // Only run on client side
     if (typeof window === "undefined") return;
-
-    // Only run once, even if readings changes
     if (hasInitializedExample.current) return;
 
-    // Check if readings is empty and example hasn't been dismissed
     const exampleDismissed =
       localStorage.getItem(STORAGE_KEYS.EXAMPLE_DISMISSED) === "true";
 
@@ -133,139 +135,103 @@ export default function Home() {
 
   // Sync with Firestore when user signs in (after migration handled)
   useEffect(() => {
-    dlog('[Firestore sync effect] mounted:', mounted, 'user:', !!user, 'isMigrationModalOpen:', isMigrationModalOpen);
-    if (!mounted || !user || isMigrationModalOpen) {
-      dlog('[Firestore sync effect] SKIPPING - conditions not met');
-      return;
-    }
+    if (!mounted || !user || isMigrationModalOpen) return;
 
-    const hasMigrated = localStorage.getItem('hasMigratedToCloud') === 'true';
-    dlog('[Firestore sync effect] hasMigrated:', hasMigrated);
-    if (!hasMigrated) {
-      dlog('[Firestore sync effect] SKIPPING - not migrated yet');
-      return; // Wait for migration to complete
-    }
+    const hasMigrated = localStorage.getItem("hasMigratedToCloud") === "true";
+    if (!hasMigrated) return;
 
-    // Capture current local readings BEFORE subscribing
     const localReadingsSnapshot = [...readingsRef.current];
-    dlog('[Firestore sync effect] Local readings snapshot:', localReadingsSnapshot.length);
 
-    // Subscribe to real-time updates only after migration completes
-    dlog('[Firestore sync effect] SUBSCRIBING to Firestore...');
     const unsubscribe = subscribeReadings((cloudReadings) => {
-      dlog('[Firestore sync effect] Received cloudReadings:', cloudReadings.length, 'readings');
-      dlog('[Firestore sync effect] Local snapshot had:', localReadingsSnapshot.length, 'readings');
-      dlog('[Firestore sync effect] hasAutoSynced.current:', hasAutoSynced.current);
-      
-      // If Firestore is empty but we had local readings, sync them automatically (once)
-      if (cloudReadings.length === 0 && localReadingsSnapshot.length > 0 && !hasAutoSynced.current) {
-        dlog('[Firestore sync effect] Firestore is empty but we have', localReadingsSnapshot.length, 'local readings - syncing them now');
+      if (
+        cloudReadings.length === 0 &&
+        localReadingsSnapshot.length > 0 &&
+        !hasAutoSynced.current
+      ) {
         hasAutoSynced.current = true;
-        
-        // Sync local readings to Firestore
         const syncPromises = localReadingsSnapshot.map(async (reading) => {
           try {
             await syncReading(reading);
-            dlog('[Firestore sync effect] Auto-synced:', reading.title);
           } catch (error) {
-            console.error('[Firestore sync effect] Error auto-syncing:', error);
+            console.error("[Firestore sync effect] Error auto-syncing:", error);
           }
         });
-        
         Promise.all(syncPromises).then(() => {
-          dlog('[Firestore sync effect] Auto-sync complete');
+          dlog("[Firestore sync effect] Auto-sync complete");
         });
-        
-        // Don't overwrite local readings with empty array - wait for Firestore to return synced data
         return;
       }
-      
-      dlog('[Firestore sync effect] Merging cloudReadings with local state');
-      setReadings((currentLocal) => {
-        const merged = mergeCloudAndLocalReadings(cloudReadings, currentLocal);
-        
-        dlog('[Firestore sync effect] Cloud readings:', cloudReadings.length);
-        dlog('[Firestore sync effect] Local-only readings:', merged.length - cloudReadings.length);
-        dlog('[Firestore sync effect] Merged total:', merged.length);
-        
-        return merged;
-      });
+
+      setReadings((currentLocal) =>
+        mergeCloudAndLocalReadings(cloudReadings, currentLocal)
+      );
     });
 
-    return () => {
-      dlog('[Firestore sync effect] CLEANUP - unsubscribing');
-      unsubscribe();
-    };
+    return () => unsubscribe();
   }, [mounted, user, isMigrationModalOpen, subscribeReadings, setReadings, syncReading]);
 
   const handleMigrateToCloud = async (shouldMigrate: boolean) => {
-    dlog('[handleMigrateToCloud] shouldMigrate:', shouldMigrate);
-    dlog('[handleMigrateToCloud] user:', !!user);
-    dlog('[handleMigrateToCloud] current readings.length:', readings.length);
-    dlog('[handleMigrateToCloud] localReadingsToMigrate.length:', localReadingsToMigrate.current.length);
-    
     if (!user) return;
 
     if (shouldMigrate) {
-      // Use saved local readings, not current state (which might have been overwritten)
       const readingsToSync = localReadingsToMigrate.current;
-      
-      dlog(`[handleMigrateToCloud] Migrating ${readingsToSync.length} readings to Firestore...`);
-      
-      // Sync all local readings to Firestore
       for (const reading of readingsToSync) {
         try {
           await syncReading(reading);
-          dlog(`[handleMigrateToCloud] ✓ Migrated: ${reading.title}`);
         } catch (error) {
-          console.error(`[handleMigrateToCloud] ✗ Error migrating "${reading.title}":`, error);
+          console.error(`Error migrating "${reading.title}":`, error);
         }
       }
-      
-      dlog('[handleMigrateToCloud] Migration complete!');
     } else {
-      dlog('[handleMigrateToCloud] User chose to start fresh, skipping migration');
-      // Clear local readings if user wants to start fresh
       setReadings([]);
     }
 
-    // Mark as migrated to prevent showing modal again
-    dlog('[handleMigrateToCloud] Setting hasMigratedToCloud = true');
-    localStorage.setItem('hasMigratedToCloud', 'true');
-    dlog('[handleMigrateToCloud] Closing migration modal');
+    localStorage.setItem("hasMigratedToCloud", "true");
     setIsMigrationModalOpen(false);
     setMigrationReadingCount(0);
-    dlog('[handleMigrateToCloud] DONE - readings.length now:', readings.length);
-    
-    // Clear the saved readings
     localReadingsToMigrate.current = [];
   };
 
-  // Filter readings based on active tab
-  const { activeReadings, completedReadingsList, displayedReadings } =
-    getDashboardReadings({
-      readings,
-      completedReadingIds: completedReadings,
-      activeTab,
-    });
+  // Derived data
+  const activeCount = readings.filter(
+    (r) => !completedReadings.includes(r.id)
+  ).length;
+  const completedCount = readings.filter((r) =>
+    completedReadings.includes(r.id)
+  ).length;
+  const favoritesCount = readings.filter((r) =>
+    favoriteReadings.includes(r.id)
+  ).length;
+
+  const tags = getAllTags(readings);
+
+  const displayedReadings = filterProjects({
+    readings,
+    completedIds: completedReadings,
+    favoriteIds: favoriteReadings,
+    filter,
+    activeTag,
+    query,
+  });
+
+  const selectedReading =
+    (selectedId && readings.find((r) => r.id === selectedId)) || null;
+
+  // Clear selection if the reading no longer exists
+  useEffect(() => {
+    if (selectedId && !readings.some((r) => r.id === selectedId)) {
+      setSelectedId(null);
+    }
+  }, [readings, selectedId]);
 
   const handleSave = async (reading: Reading) => {
-    dlog(`[page.tsx handleSave] CALLED with reading:`, reading.id, reading.title);
-    setReadings((prev) => {
-      dlog(`[page.tsx handleSave] setReadings: prev.length =`, prev.length);
-      const newReadings = [...prev, reading];
-      dlog(`[page.tsx handleSave] setReadings: new.length =`, newReadings.length);
-      return newReadings;
-    });
-    
-    // Sync to Firestore if user is signed in
+    setReadings((prev) => [...prev, reading]);
+    setSelectedId(reading.id);
     if (user) {
       try {
-        dlog(`[page.tsx handleSave] Syncing to Firestore...`);
         await syncReading(reading);
-        dlog(`[page.tsx handleSave] Sync complete`);
       } catch (error) {
-        console.error('Error syncing new reading:', error);
+        console.error("Error syncing new reading:", error);
       }
     }
   };
@@ -284,16 +250,16 @@ export default function Home() {
           : r
       )
     );
-    
-    // Sync update to Firestore
     if (user) {
       try {
-        await syncUpdateReading(editingReading.id, { title: newTitle, tags: newTags });
+        await syncUpdateReading(editingReading.id, {
+          title: newTitle,
+          tags: newTags,
+        });
       } catch (error) {
-        console.error('Error syncing reading update:', error);
+        console.error("Error syncing reading update:", error);
       }
     }
-    
     setIsEditModalOpen(false);
     setEditingReading(null);
   };
@@ -306,22 +272,20 @@ export default function Home() {
   const handleDeleteConfirm = async () => {
     if (!deletingReading) return;
 
-    // If deleting the example reading, mark it as dismissed
     if (deletingReading.id === EXAMPLE_READING_ID) {
       localStorage.setItem(STORAGE_KEYS.EXAMPLE_DISMISSED, "true");
     }
 
     setReadings((prev) => prev.filter((r) => r.id !== deletingReading.id));
-    
-    // Sync deletion to Firestore
+    if (selectedId === deletingReading.id) setSelectedId(null);
+
     if (user) {
       try {
         await syncDeleteReading(deletingReading.id);
       } catch (error) {
-        console.error('Error syncing reading deletion:', error);
+        console.error("Error syncing reading deletion:", error);
       }
     }
-    
     setIsDeleteModalOpen(false);
     setDeletingReading(null);
   };
@@ -333,34 +297,43 @@ export default function Home() {
 
   const handleReactivateConfirm = () => {
     if (!reactivatingReading) return;
-
-    // Remove from completedReadings array
-    setCompletedReadings((prev) => 
+    setCompletedReadings((prev) =>
       prev.filter((id) => id !== reactivatingReading.id)
     );
-    
     setIsReactivateModalOpen(false);
     setReactivatingReading(null);
   };
 
-  const isDark = settings.theme === "dark";
-  const isDetox = settings.theme === "detox";
-  const isHighContrast = settings.theme === "high-contrast";
+  const handleToggleComplete = (reading: Reading) => {
+    if (completedReadings.includes(reading.id)) {
+      // Reactivate needs confirmation
+      handleReactivate(reading);
+    } else {
+      setCompletedReadings((prev) => [...prev, reading.id]);
+    }
+  };
+
+  const handleToggleFavorite = (reading: Reading) => {
+    setFavoriteReadings((prev) =>
+      prev.includes(reading.id)
+        ? prev.filter((id) => id !== reading.id)
+        : [...prev, reading.id]
+    );
+  };
+
+  const handleSelect = (reading: Reading) => {
+    setSelectedId(reading.id);
+  };
+
+  const filterLabels: Record<ProjectFilter, string> = {
+    all: "Todos los proyectos",
+    active: "Proyectos activos",
+    completed: "Proyectos completados",
+    favorites: "Favoritos",
+  };
 
   return (
-    <div
-      suppressHydrationWarning
-      className={`min-h-screen ${
-        isHighContrast
-          ? "bg-black text-white"
-          : isDetox
-          ? "bg-white text-gray-900"
-          : isDark
-          ? "bg-linear-to-br from-purple-900 via-gray-900 to-black"
-          : "bg-linear-to-br from-yellow-50 via-lime-100 to-emerald-50"
-      }`}
-    >
-      {/* Skip link for keyboard navigation */}
+    <div className={`flex h-screen overflow-hidden ${dash.shell}`} suppressHydrationWarning>
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-50 focus:bg-black focus:text-white focus:p-4 focus:rounded-b"
@@ -368,276 +341,160 @@ export default function Home() {
         Skip to main content
       </a>
 
-      <Header />
-      <main id="main-content" className="container mx-auto px-4 py-8">
-        <div className="flex justify-center mb-8">
-          <button
-            onClick={() => setIsModalOpen(true)}
-            data-tour="new-reading-button"
-            className={`
-              group relative px-8 py-4 rounded-xl font-semibold text-lg
-              transform transition-all duration-300 ease-out
-              ${
-                isHighContrast
-                  ? "bg-white text-black border-2 border-white hover:bg-gray-200 shadow-lg shadow-gray-900/50 hover:shadow-xl hover:shadow-gray-900/70"
-                  : isDetox
-                  ? "bg-gray-900 text-white border-2 border-gray-900 hover:bg-gray-800 shadow-lg shadow-gray-500/50 hover:shadow-xl hover:shadow-gray-500/70"
-                  : "hover:scale-105 active:scale-95"
-              }
-              ${
-                isDark
-                  ? "bg-linear-to-r from-purple-600 via-violet-600 to-fuchsia-600 text-white shadow-lg shadow-purple-500/50 hover:shadow-xl hover:shadow-purple-500/70"
-                  : !isDetox && !isHighContrast
-                  ? "bg-linear-to-r from-lime-500 via-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/50 hover:shadow-xl hover:shadow-emerald-500/70"
-                  : ""
-              }
-            `}
-          >
-            <span className="relative z-10 flex items-center gap-2">
-              <svg
-                className="w-5 h-5 transform group-hover:rotate-12 transition-transform duration-300"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
-              New Reading
-            </span>
-            <div
-              className={`absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
-                isDark
-                  ? "bg-linear-to-r from-purple-400 via-violet-400 to-fuchsia-400"
-                  : "bg-linear-to-r from-lime-400 via-emerald-400 to-teal-400"
-              } blur-xl -z-10`}
-            ></div>
-          </button>
-        </div>
+      <DashboardSidebar
+        dash={dash}
+        filter={filter}
+        onFilterChange={(f) => {
+          setFilter(f);
+          setSidebarOpen(false);
+        }}
+        counts={{
+          all: readings.length,
+          active: activeCount,
+          completed: completedCount,
+          favorites: favoritesCount,
+        }}
+        tags={tags}
+        activeTag={activeTag}
+        onTagChange={setActiveTag}
+        query={query}
+        onQueryChange={setQuery}
+        onNewProject={() => setIsModalOpen(true)}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
 
-        {/* Tabs */}
-        {mounted && readings.length > 0 && (
-          <div className="mb-6">
-            <div className="flex gap-2 justify-center border-b border-gray-300 dark:border-gray-700">
-              <button
-                onClick={() => setActiveTab("active")}
-                className={`
-                  relative px-6 py-3 font-semibold text-base transition-all duration-200
-                  ${
-                    activeTab === "active"
-                      ? isHighContrast
-                        ? "text-white"
-                        : isDetox
-                        ? "text-gray-900"
-                        : isDark
-                        ? "text-purple-400"
-                        : "text-lime-600"
-                      : isHighContrast
-                      ? "text-gray-400 hover:text-white"
-                      : isDetox
-                      ? "text-gray-500 hover:text-gray-700"
-                      : isDark
-                      ? "text-gray-400 hover:text-gray-300"
-                      : "text-gray-500 hover:text-gray-700"
-                  }
-                `}
-              >
-                <span className="flex items-center gap-2">
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                    />
-                  </svg>
-                  Active
-                  <span
-                    className={`
-                    ml-1 px-2 py-0.5 rounded-full text-xs font-bold
-                    ${
-                      activeTab === "active"
-                        ? isHighContrast
-                          ? "bg-white text-black"
-                          : isDetox
-                          ? "bg-gray-200 text-gray-900"
-                          : isDark
-                          ? "bg-purple-500/20 text-purple-300"
-                          : "bg-lime-500/20 text-lime-700"
-                        : isHighContrast
-                        ? "bg-gray-700 text-gray-300"
-                        : "bg-gray-500/20 text-gray-500"
-                    }
-                  `}
-                  >
-                    {activeReadings.length}
-                  </span>
-                </span>
-                {activeTab === "active" && (
-                  <div
-                    className={`absolute bottom-0 left-0 right-0 h-0.5 ${
-                      isHighContrast
-                        ? "bg-white"
-                        : isDetox
-                        ? "bg-gray-900"
-                        : isDark
-                        ? "bg-purple-500"
-                        : "bg-lime-500"
-                    }`}
-                  />
-                )}
-              </button>
-
-              <button
-                onClick={() => setActiveTab("completed")}
-                className={`
-                  relative px-6 py-3 font-semibold text-base transition-all duration-200
-                  ${
-                    activeTab === "completed"
-                      ? isHighContrast
-                        ? "text-white"
-                        : isDetox
-                        ? "text-gray-900"
-                        : isDark
-                        ? "text-purple-400"
-                        : "text-lime-600"
-                      : isHighContrast
-                      ? "text-gray-400 hover:text-white"
-                      : isDetox
-                      ? "text-gray-500 hover:text-gray-700"
-                      : isDark
-                      ? "text-gray-400 hover:text-gray-300"
-                      : "text-gray-500 hover:text-gray-700"
-                  }
-                `}
-              >
-                <span className="flex items-center gap-2">
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  Completed
-                  <span
-                    className={`
-                    ml-1 px-2 py-0.5 rounded-full text-xs font-bold
-                    ${
-                      activeTab === "completed"
-                        ? isHighContrast
-                          ? "bg-white text-black"
-                          : isDetox
-                          ? "bg-gray-200 text-gray-900"
-                          : isDark
-                          ? "bg-purple-500/20 text-purple-300"
-                          : "bg-lime-500/20 text-lime-700"
-                        : isHighContrast
-                        ? "bg-gray-700 text-gray-300"
-                        : "bg-gray-500/20 text-gray-500"
-                    }
-                  `}
-                  >
-                    {completedReadingsList.length}
-                  </span>
-                </span>
-                {activeTab === "completed" && (
-                  <div
-                    className={`absolute bottom-0 left-0 right-0 h-0.5 ${
-                      isHighContrast
-                        ? "bg-white"
-                        : isDetox
-                        ? "bg-gray-900"
-                        : isDark
-                        ? "bg-purple-500"
-                        : "bg-lime-500"
-                    }`}
-                  />
-                )}
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Reading Cards */}
-        {mounted && readings.length > 0 && displayedReadings.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
-            {displayedReadings.map((reading) => (
-              <ReadingCard
-                key={reading.id}
-                reading={reading}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                onReactivate={handleReactivate}
-                isDark={settings.theme === "dark"}
-                isDetox={settings.theme === "detox"}
-                isHighContrast={settings.theme === "high-contrast"}
-                isCompleted={completedReadings.includes(reading.id)}
-                isExample={reading.id === EXAMPLE_READING_ID}
-              />
-            ))}
-          </div>
-        )}
-
-        {/* Empty State */}
-        {mounted && readings.length > 0 && displayedReadings.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-16 px-4">
-            <div
-              className={`text-center ${
-                isDark ? "text-gray-400" : "text-gray-500"
-              }`}
+      {/* Main + details */}
+      <div className="flex flex-1 overflow-hidden">
+        <main
+          id="main-content"
+          className="flex flex-1 flex-col overflow-hidden"
+        >
+          {/* Top bar */}
+          <div className={`flex items-center gap-3 border-b px-4 sm:px-6 h-16 ${dash.divider}`}>
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className={`rounded-lg p-2 transition-colors lg:hidden ${dash.ghostBtn}`}
+              aria-label="Abrir menú"
             >
-              <svg
-                className="w-16 h-16 mx-auto mb-4 opacity-50"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                {activeTab === "active" ? (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                  />
-                ) : (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                )}
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
-              <p className="text-lg font-medium mb-2">
-                {activeTab === "active"
-                  ? "All readings completed!"
-                  : "No completed readings yet"}
-              </p>
-              <p className="text-sm">
-                {activeTab === "active"
-                  ? "Create a new reading to get started."
-                  : "Finish a reading to see it here."}
+            </button>
+            <div className="min-w-0 flex-1">
+              <h1 className={`truncate text-lg font-bold ${dash.textPrimary}`}>
+                {filterLabels[filter]}
+                {activeTag ? ` · ${activeTag}` : ""}
+              </h1>
+              <p className={`text-xs ${dash.textMuted}`}>
+                {mounted ? `${displayedReadings.length} proyecto${displayedReadings.length === 1 ? "" : "s"}` : "\u00a0"}
               </p>
             </div>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className={`hidden items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold shadow-sm transition-all sm:flex ${dash.primaryBtn}`}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Nuevo proyecto
+            </button>
           </div>
-        )}
-      </main>
+
+          {/* Content */}
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+            {!mounted ? null : displayedReadings.length > 0 ? (
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                {displayedReadings.map((reading) => (
+                  <ProjectCard
+                    key={reading.id}
+                    reading={reading}
+                    dash={dash}
+                    isSelected={selectedId === reading.id}
+                    isCompleted={completedReadings.includes(reading.id)}
+                    isFavorite={favoriteReadings.includes(reading.id)}
+                    isExample={reading.id === EXAMPLE_READING_ID}
+                    onSelect={handleSelect}
+                    onToggleFavorite={handleToggleFavorite}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-20 text-center">
+                <div className={`mb-4 flex h-16 w-16 items-center justify-center rounded-2xl ${dash.chip}`}>
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  </svg>
+                </div>
+                <p className={`text-lg font-semibold ${dash.textPrimary}`}>
+                  {query || activeTag
+                    ? "Sin resultados"
+                    : "Aún no tienes proyectos aquí"}
+                </p>
+                <p className={`mt-1 max-w-sm text-sm ${dash.textMuted}`}>
+                  {query || activeTag
+                    ? "Prueba con otra búsqueda o quita los filtros."
+                    : "Crea tu primer proyecto para empezar a leer de forma cómoda."}
+                </p>
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className={`mt-5 flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold shadow-sm transition-all ${dash.primaryBtn}`}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Nuevo proyecto
+                </button>
+              </div>
+            )}
+          </div>
+        </main>
+
+        {/* Details panel - static on large screens */}
+        <div
+          className={`hidden w-96 shrink-0 border-l lg:block ${dash.divider} ${dash.sidebar}`}
+        >
+          <ProjectDetailsPanel
+            reading={selectedReading}
+            dash={dash}
+            isCompleted={selectedReading ? completedReadings.includes(selectedReading.id) : false}
+            isFavorite={selectedReading ? favoriteReadings.includes(selectedReading.id) : false}
+            isExample={selectedReading?.id === EXAMPLE_READING_ID}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onToggleFavorite={handleToggleFavorite}
+            onToggleComplete={handleToggleComplete}
+            onClose={() => setSelectedId(null)}
+          />
+        </div>
+      </div>
+
+      {/* Details panel - overlay on small screens */}
+      {selectedReading && (
+        <div className="fixed inset-0 z-40 lg:hidden">
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={() => setSelectedId(null)}
+            aria-hidden="true"
+          />
+          <div className={`absolute inset-y-0 right-0 w-full max-w-sm border-l ${dash.divider} ${dash.sidebar}`}>
+            <ProjectDetailsPanel
+              reading={selectedReading}
+              dash={dash}
+              isCompleted={completedReadings.includes(selectedReading.id)}
+              isFavorite={favoriteReadings.includes(selectedReading.id)}
+              isExample={selectedReading.id === EXAMPLE_READING_ID}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onToggleFavorite={handleToggleFavorite}
+              onToggleComplete={handleToggleComplete}
+              onClose={() => setSelectedId(null)}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Modals */}
       <NewReadingModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -678,7 +535,6 @@ export default function Home() {
           onConfirm={handleReactivateConfirm}
         />
       )}
-      
       <MigrationModal
         isOpen={isMigrationModalOpen}
         onConfirm={handleMigrateToCloud}
