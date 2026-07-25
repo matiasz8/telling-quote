@@ -10,6 +10,7 @@ export type Reading = {
   projectId: string; // Reference to parent project
   title: string;
   content: string;
+  excerpt?: string; // Optional short preview/summary
   tags?: string[]; // Optional, default empty array
 };
 
