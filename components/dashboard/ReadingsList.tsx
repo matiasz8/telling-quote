@@ -124,6 +124,13 @@ export default function ReadingsList({
 
             {/* Quick action buttons */}
             <div className="mt-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Link
+                href={`/reader/${reading.id}`}
+                className={`flex-1 inline-flex items-center justify-center gap-1 rounded px-2 py-1 text-xs font-medium transition-colors text-blue-600 hover:bg-blue-50 ${dash.border}`}
+              >
+                <MiniIcon path="M12 6.253v13m0-13C6.5 6.253 2 10.998 2 17s4.5 10.747 10 10.747c5.5 0 10-4.998 10-10.747S17.5 6.253 12 6.253z" className="w-3 h-3" />
+                Abrir
+              </Link>
               <button
                 onClick={() => onToggleComplete(reading)}
                 className={`flex-1 inline-flex items-center justify-center gap-1 rounded px-2 py-1 text-xs font-medium transition-colors ${

@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Project, Reading } from "@/types";
 import { DashboardTheme } from "@/lib/dashboard/theme";
 import {
@@ -45,6 +46,7 @@ export default function ProjectDetailView({
   onNewReading,
   onClose,
 }: ProjectDetailViewProps) {
+  const router = useRouter();
   const readingCount = getProjectReadingCount(readings, project.id);
   const completedCount = getProjectCompletedCount(readings, completedReadings, project.id);
   const completionPercent = getProjectCompletionPercent(readings, completedReadings, project.id);
@@ -142,10 +144,17 @@ export default function ProjectDetailView({
       {/* Actions */}
       <div className={`border-t px-5 py-4 space-y-2 ${dash.divider}`}>
         <button
-          onClick={onNewReading}
+          onClick={() => router.push(`/project/${project.id}`)}
           className={`w-full flex items-center justify-center gap-2 rounded-lg px-4 py-3 font-semibold shadow-sm transition-all ${dash.primaryBtn}`}
         >
-          <Icon path="M12 4v16m8-8H4" />
+          <Icon path="M4 6h16M4 12h16M4 18h16" />
+          Abrir Proyecto
+        </button>
+        <button
+          onClick={onNewReading}
+          className={secondaryBtn}
+        >
+          <Icon path="M12 4v16m8-8H4" className="w-4 h-4" />
           Nueva Lectura
         </button>
       </div>
