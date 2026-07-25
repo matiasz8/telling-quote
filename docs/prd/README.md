@@ -1,70 +1,52 @@
-# Product Requirements Documents (PRD)
+# Product Requirements Documents (PRDs)
 
-## Overview
+This folder contains all Product Requirements Documents defining features and requirements for the Telling Quote application.
 
-This directory contains Product Requirements Documents for tellingQuote features. Each PRD defines the "what" and "why" of a feature before implementation.
+## Current PRDs (18 Total)
 
----
+### Core Features (Phases 1-3a)
+- **PRD-001**: Example Document (Template)
+- **PRD-002**: Tags System
+- **PRD-003**: Detox Theme
+- **PRD-004**: Accessibility
+- **PRD-005**: Firebase Authentication
+- **PRD-006**: Enhanced Tag Management
+- **PRD-007**: Automated Accessibility Testing
+- **PRD-008**: Advanced Accessibility (Blind Users)
+- **PRD-009**: Spotlight Mode
+- **PRD-010**: Onboarding Tutorial
+- **PRD-011**: Internationalization
+- **PRD-012**: Auto-Advance Timer
+- **PRD-013**: Text-to-Speech
+- **PRD-014**: Reading Reactivation
+- **PRD-015**: Visual Testing (Playwright)
+- **PRD-016**: Delivery Reliability & Documentation Governance
 
-## Active PRDs
+### Phase 3b: Project Hierarchy
+- **PRD-017**: Project Hierarchy
+- **PRD-018**: In-Page Drill-Down Navigation
 
-### Phase 1 - Core Enhancements (COMPLETED ✅)
+## Development Status
 
-| PRD | Feature | Status | Priority |
-|-----|---------|--------|----------|
+### Implemented (Phases 1-3b)
+✅ PRD-002, 003, 004, 005, 007, 009, 010, 012, 013, 014, 016, 017, 018
 
-| [PRD-001](./PRD-001-example-document.md) | Example Document on First Load | ✔️ Completed | High |
-| [PRD-002](./PRD-002-tags-system.md) | Tags System | ✔️ Completed | High |
-| [PRD-003](./PRD-003-detox-theme.md) | Detox Theme Mode | ✔️ Completed | Medium |
-| [PRD-004](./PRD-004-accessibility.md) | Accessibility Features | ✔️ Completed | High |
+### In Progress
+- PRD-006: Enhanced Tag Management
+- PRD-008: Advanced Accessibility
+- PRD-011: Internationalization
+- PRD-015: Visual Testing
 
-### Phase 2 - Enhanced Features (8/12 COMPLETED ✅)
+### Planned (Phase 4+)
+- PRD-019+: Future features to be defined
 
-| PRD | Feature | Status | Priority |
-|-----|---------|--------|----------|
-| [PRD-005](./PRD-005-firebase-auth.md) | Firebase Authentication & Cloud Sync | ✔️ Completed | Medium |
-| [PRD-006](./PRD-006-enhanced-tag-management.md) | Enhanced Tag Management & Filtering | 📝 Draft | High |
-| [PRD-007](./PRD-007-automated-accessibility-testing.md) | Automated Accessibility Testing & Validation | ✔️ Completed | High |
-| [PRD-008](./PRD-008-advanced-accessibility-blind-users.md) | Advanced Accessibility for Blind Users (Voice + TTS) | 📝 Draft | Critical |
-| [PRD-009](./PRD-009-spotlight-mode.md) | Spotlight Reading Mode | ✔️ Completed | High |
-| [PRD-010](./PRD-010-onboarding-tutorial.md) | Interactive Onboarding Tutorial | ✔️ Completed | High |
-| [PRD-011](./PRD-011-internationalization.md) | Internationalization (i18n) | 📝 Draft | Medium |
-| [PRD-012](./PRD-012-auto-advance-timer.md) | Auto-Advance Timer | ✔️ Completed | Medium |
-| [PRD-013](./PRD-013-text-to-speech.md) | Text-to-Speech (TTS) | ✔️ Completed | Medium |
-| [PRD-014](./PRD-014-reading-reactivation.md) | Reading Reactivation | ✔️ Completed | Low |
-| [PRD-015](./PRD-015-visual-testing-playwright.md) | Visual Regression Testing with Playwright | 📝 Draft | Medium |
-| [PRD-016](./PRD-016-delivery-reliability-doc-governance.md) | Delivery Reliability & Documentation Governance | ✔️ Completed | High |
+## PRD Format
 
----
+Each PRD includes:
+- Status (Planning, In Progress, Approved, Implemented, Deprecated)
+- Objectives and user stories
+- Acceptance criteria
+- Success metrics
+- Related documentation links
 
-## PRD Status Legend
-
-- 📝 **Draft**: Being written
-- 👀 **Review**: Ready for review
-- ✅ **Approved**: Approved for development
-- 🚧 **In Progress**: Being implemented
-- ✔️ **Completed**: Feature shipped
-- ❌ **Rejected**: Not moving forward
-
----
-
-## PRD Template
-
-Each PRD should include:
-
-1. **Overview**: Brief description
-2. **Problem Statement**: What problem does this solve?
-3. **Goals & Objectives**: What are we trying to achieve?
-4. **User Stories**: Who benefits and how?
-5. **Requirements**: Detailed functional requirements
-6. **Success Metrics**: How do we measure success?
-7. **Out of Scope**: What we're NOT doing
-8. **Open Questions**: Things to resolve
-
----
-
-## Related Documentation
-
-- [TRDs (Technical Requirements)](../trd/README.md)
-- [Architecture Overview](../Architecture-Overview.md)
-- [User Guide](../User-Guide.md)
+See `/docs/HOW-TO-PRD-TRD.md` for complete template.
