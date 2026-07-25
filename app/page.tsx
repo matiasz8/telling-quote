@@ -284,9 +284,20 @@ export default function Home() {
   };
 
   const handleSaveNewReading = async (reading: Reading) => {
-    // Add to selected project or default project
-    const projectId = selectedProject?.id || DEFAULT_PROJECT.id;
+    // Ensure we have a project selected or use the reading's projectId
+    let projectId = reading.projectId; // Use projectId from the reading
+    
+    // If no projectId in reading, use selected project or default
+    if (!projectId) {
+      projectId = selectedProject?.id || DEFAULT_PROJECT.id;
+    }
+    
     const readingWithProject = { ...reading, projectId };
+    
+    // Ensure project is selected so user can see the reading
+    if (!selectedProjectId || selectedProjectId !== projectId) {
+      setSelectedProjectId(projectId);
+    }
 
     setReadings((prev) => [...prev, readingWithProject]);
 
