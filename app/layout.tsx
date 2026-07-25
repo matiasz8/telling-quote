@@ -29,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="bg-background" suppressHydrationWarning>
       <head>
         <link
           href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible&display=swap"

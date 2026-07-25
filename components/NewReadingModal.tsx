@@ -11,12 +11,14 @@ interface NewReadingModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (reading: Reading) => Promise<void> | void;
+  projectId?: string; // Optional project ID for new readings
 }
 
 export default function NewReadingModal({
   isOpen,
   onClose,
   onSave,
+  projectId,
 }: NewReadingModalProps) {
   const { settings } = useSettings();
   const isDark = settings.theme === "dark";
@@ -101,6 +103,7 @@ export default function NewReadingModal({
 
     const newReading: Reading = {
       id: crypto.randomUUID(),
+      projectId: projectId || "default",
       title: derivedTitle || "Untitled",
       content: formattedContent,
       tags: normalizeTags(tagsInput),

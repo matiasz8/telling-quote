@@ -167,7 +167,7 @@ export function useTTS(options: UseTTSOptions) {
       clearVoiceLoadTimeout();
       window.speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged);
     };
-  }, [state.isSupported]);
+  }, [state.isSupported, onError]);
 
   // Parse text into speakable chunks
   const parseTextIntoSentences = useCallback((text: string): string[] => {

@@ -256,6 +256,7 @@ $$f(x) = \\begin{cases} x^2 & \\text{if } x \\geq 0 \\\\ -x & \\text{if } x < 0 
 
 export const EXAMPLE_READING: Reading = {
   id: EXAMPLE_READING_ID,
+  projectId: "example-project",
   title: "Welcome to tellingQuote - Example Reading",
   content: EXAMPLE_MARKDOWN_CONTENT,
   tags: ["tutorial", "markdown", "example", "getting-started"],
