@@ -12,6 +12,7 @@ export type Reading = {
   content: string;
   excerpt?: string; // Optional short preview/summary
   tags?: string[]; // Optional, default empty array
+  createdAt?: string; // ISO date string, optional for backwards compatibility
 };
 
 export type FontFamily = 'serif' | 'sans' | 'mono' | 'system' | 'opendyslexic' | 'comic-sans' | 'atkinson';

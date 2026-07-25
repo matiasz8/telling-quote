@@ -16,22 +16,6 @@ import { getFirebaseDb } from './config';
 import { Reading, Settings, AccessibilitySettings } from '@/types';
 
 /**
- * Firestore data types
- */
-export interface FirestoreReading extends Omit<Reading, 'createdAt'> {
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
-}
-
-export interface FirestoreSettings extends Settings {
-  updatedAt: Timestamp;
-}
-
-export interface FirestoreAccessibilitySettings extends AccessibilitySettings {
-  updatedAt: Timestamp;
-}
-
-/**
  * User profile
  */
 export interface UserProfile {
@@ -97,9 +81,11 @@ export const getUserProfile = async (uid: string): Promise<UserProfile | null> =
  */
 export const saveReading = async (uid: string, reading: Reading) => {
   const readingRef = doc(getReadingsRef(uid), reading.id);
+  const now = serverTimestamp();
   await setDoc(readingRef, {
     ...reading,
-    updatedAt: serverTimestamp(),
+    createdAt: now,
+    updatedAt: now,
   });
 };
 
@@ -127,18 +113,34 @@ export const deleteReading = async (uid: string, readingId: string) => {
 };
 
 /**
+ * Helper to convert Firestore Timestamp to ISO string
+ */
+const convertTimestampToString = (value: unknown): string => {
+  if (value && typeof value === 'object' && 'toDate' in value && typeof (value as Timestamp).toDate === 'function') {
+    return (value as Timestamp).toDate().toISOString();
+  }
+  if (typeof value === 'string') return value;
+  return new Date().toISOString();
+};
+
+/**
  * Get all readings for a user
  */
 export const getReadings = async (uid: string): Promise<Reading[]> => {
-  const q = query(getReadingsRef(uid), orderBy('createdAt', 'desc'));
+  const q = query(getReadingsRef(uid));
   const querySnapshot = await getDocs(q);
 
   return querySnapshot.docs.map((doc) => {
-    const data = doc.data() as FirestoreReading;
+    const data = doc.data();
     return {
-      ...data,
-      createdAt: data.createdAt.toDate().toISOString(),
-    };
+      id: data.id,
+      projectId: data.projectId || 'default',
+      title: data.title,
+      content: data.content,
+      excerpt: data.excerpt,
+      tags: data.tags || [],
+      createdAt: convertTimestampToString(data.createdAt),
+    } as Reading;
   });
 };
 
@@ -146,15 +148,20 @@ export const getReadings = async (uid: string): Promise<Reading[]> => {
  * Listen to real-time reading changes
  */
 export const subscribeToReadings = (uid: string, callback: (readings: Reading[]) => void) => {
-  const q = query(getReadingsRef(uid), orderBy('createdAt', 'desc'));
+  const q = query(getReadingsRef(uid));
 
   return onSnapshot(q, (snapshot) => {
     const readings = snapshot.docs.map((doc) => {
-      const data = doc.data() as FirestoreReading;
+      const data = doc.data();
       return {
-        ...data,
-        createdAt: data.createdAt.toDate().toISOString(),
-      };
+        id: data.id,
+        projectId: data.projectId || 'default',
+        title: data.title,
+        content: data.content,
+        excerpt: data.excerpt,
+        tags: data.tags || [],
+        createdAt: convertTimestampToString(data.createdAt),
+      } as Reading;
     });
     callback(readings);
   });
@@ -213,8 +220,10 @@ export const deleteAllUserData = async (uid: string) => {
   
   // Delete all readings
   const readingsSnapshot = await getDocs(getReadingsRef(uid));
-  const readingDeletePromises = readingsSnapshot.docs.map((doc) => deleteDoc(doc.ref));
-  await Promise.all(readingDeletePromises);
+  if (readingsSnapshot.docs.length > 0) {
+    const readingDeletePromises = readingsSnapshot.docs.map((d) => deleteDoc(d.ref));
+    await Promise.all(readingDeletePromises);
+  }
 
   // Delete settings
   await deleteDoc(getSettingsRef(uid));
