@@ -49,6 +49,9 @@ export default function NewProjectModal({
     setTitle("");
     setDescription("");
     setTags("");
+
+    // Close modal after saving
+    onClose();
   };
 
   if (!isOpen) return null;
