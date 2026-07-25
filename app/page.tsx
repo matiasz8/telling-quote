@@ -29,9 +29,13 @@ import { getDashboardTheme } from "@/lib/dashboard/theme";
 import {
   getProjectReadingCount,
   getProjectCompletionPercent,
-  filterProjectsList,
   getAllProjectTags,
 } from "@/lib/dashboard/projectHelpers";
+import {
+  needsMigration,
+  getOrphanedReadings,
+  assignToDefaultProject,
+} from "@/lib/dashboard/migrationHelpers";
 
 const isDev = process.env.NODE_ENV === "development";
 const dlog = (...args: unknown[]) => {
@@ -147,6 +151,23 @@ export default function Home() {
 
     hasInitializedExample.current = true;
   }, [readings, projects, setReadings, setProjects]);
+
+  // Auto-migrate orphaned readings (readings without projectId) to default project
+  useEffect(() => {
+    if (!mounted || readings.length === 0) return;
+
+    // Check if there are any orphaned readings
+    if (!needsMigration(readings)) return;
+
+    const orphaned = getOrphanedReadings(readings);
+    dlog(`[Migration] Found ${orphaned.length} orphaned reading(s)`);
+
+    // Migrate to default project
+    const migratedReadings = assignToDefaultProject(readings, DEFAULT_PROJECT.id);
+    setReadings(migratedReadings);
+
+    dlog(`[Migration] Migrated ${orphaned.length} reading(s) to default project`);
+  }, [mounted, readings, setReadings]);
 
   // Check for migration on first user sign-in
   useEffect(() => {
