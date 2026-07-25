@@ -10,6 +10,7 @@ interface ProjectCardV2Props {
   dash: DashboardTheme;
   isSelected: boolean;
   onSelect: () => void;
+  onOpen?: () => void;
 }
 
 function MiniIcon({ path, className = "w-4 h-4" }: { path: string; className?: string }) {
@@ -27,6 +28,7 @@ export default function ProjectCardV2({
   dash,
   isSelected,
   onSelect,
+  onOpen,
 }: ProjectCardV2Props) {
   return (
     <button
@@ -40,7 +42,13 @@ export default function ProjectCardV2({
       `}
     >
       {/* Title */}
-      <h3 className={`line-clamp-2 text-base font-semibold text-pretty ${dash.textPrimary}`}>
+      <h3 
+        onClick={(e) => {
+          e.stopPropagation();
+          onOpen?.();
+        }}
+        className={`line-clamp-2 text-base font-semibold text-pretty cursor-pointer hover:text-blue-500 transition-colors ${dash.textPrimary}`}
+      >
         {project.title}
       </h3>
 

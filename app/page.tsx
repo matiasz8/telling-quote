@@ -563,7 +563,6 @@ export default function Home() {
                           window.location.href = `/reader/${reading.id}`;
                         }}
                         onSelect={() => setSelectedReadingId(reading.id)}
-                        hideOpenButton={true}
                       />
                     ))}
                   </div>
@@ -600,6 +599,10 @@ export default function Home() {
                       dash={dash}
                       isSelected={selectedProjectId === project.id}
                       onSelect={() => setSelectedProjectId(project.id)}
+                      onOpen={() => {
+                        setViewMode("readings");
+                        setExpandedProjectId(project.id);
+                      }}
                     />
                   ))}
                 </div>

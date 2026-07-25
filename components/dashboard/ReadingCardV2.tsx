@@ -15,7 +15,6 @@ interface ReadingCardV2Props {
   onDelete: () => void;
   onOpen: () => void;
   onSelect?: () => void;
-  hideOpenButton?: boolean;
 }
 
 function Icon({ path, className = "w-5 h-5" }: { path: string; className?: string }) {
@@ -37,25 +36,22 @@ export default function ReadingCardV2({
   onDelete,
   onOpen,
   onSelect,
-  hideOpenButton,
 }: ReadingCardV2Props) {
   const excerpt = getExcerpt(reading.content, 120);
   const readingTime = getReadingTimeMinutes(reading.content);
 
   return (
     <div
-      onClick={hideOpenButton ? onOpen : onSelect}
+      onClick={onSelect}
       className={`group rounded-xl border p-4 transition-all duration-200 cursor-pointer ${dash.surface} ${dash.border} hover:shadow-lg hover:scale-105`}
     >
       <div className="flex items-start justify-between gap-2 mb-3">
         <h3 
           onClick={(e) => {
-            if (hideOpenButton) {
-              e.stopPropagation();
-              onOpen();
-            }
+            e.stopPropagation();
+            onOpen();
           }}
-          className={`flex-1 font-semibold line-clamp-2 transition-colors ${hideOpenButton ? 'cursor-pointer hover:text-blue-500' : 'hover:text-blue-500'} ${dash.textPrimary}`}
+          className={`flex-1 font-semibold line-clamp-2 cursor-pointer hover:text-blue-500 transition-colors ${dash.textPrimary}`}
         >
           {reading.title}
         </h3>
@@ -92,17 +88,15 @@ export default function ReadingCardV2({
           )}
         </div>
 
-        {!hideOpenButton && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onOpen();
-            }}
-            className="text-sm font-medium text-blue-500 hover:text-blue-600 transition-colors"
-          >
-            Abrir →
-          </button>
-        )}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpen();
+          }}
+          className="text-sm font-medium text-blue-500 hover:text-blue-600 transition-colors"
+        >
+          Abrir →
+        </button>
       </div>
 
       {/* Quick actions (hidden by default) */}
