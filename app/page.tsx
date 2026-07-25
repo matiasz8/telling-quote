@@ -563,6 +563,7 @@ export default function Home() {
                           window.location.href = `/reader/${reading.id}`;
                         }}
                         onSelect={() => setSelectedReadingId(reading.id)}
+                        hideOpenButton={true}
                       />
                     ))}
                   </div>
