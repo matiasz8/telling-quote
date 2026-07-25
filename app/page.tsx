@@ -11,6 +11,7 @@ import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import ProjectCardV2 from "@/components/dashboard/ProjectCardV2";
 import ReadingCardV2 from "@/components/dashboard/ReadingCardV2";
 import ProjectDetailView from "@/components/dashboard/ProjectDetailView";
+import ReadingDetailView from "@/components/dashboard/ReadingDetailView";
 import NewProjectModal from "@/components/dashboard/NewProjectModal";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useSettings } from "@/hooks/useSettings";
@@ -93,6 +94,7 @@ export default function Home() {
   const [query, setQuery] = useState("");
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [selectedReadingId, setSelectedReadingId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"projects" | "readings">("projects");
   const [expandedProjectId, setExpandedProjectId] = useState<string | null>(null);
@@ -560,6 +562,7 @@ export default function Home() {
                         onOpen={() => {
                           window.location.href = `/reader/${reading.id}`;
                         }}
+                        onSelect={() => setSelectedReadingId(reading.id)}
                       />
                     ))}
                   </div>
@@ -635,7 +638,29 @@ export default function Home() {
         <div
           className={`hidden w-full lg:w-1/2 xl:w-2/5 shrink-0 border-l lg:block overflow-hidden ${dash.divider} ${dash.sidebar}`}
         >
-          {selectedProject ? (
+          {selectedReadingId && expandedProjectId ? (
+            (() => {
+              const reading = readings.find((r) => r.id === selectedReadingId);
+              const project = projects.find((p) => p.id === expandedProjectId);
+              return reading && project ? (
+                <ReadingDetailView
+                  reading={reading}
+                  project={project}
+                  isCompleted={completedReadings.includes(reading.id)}
+                  isFavorite={favoriteReadings.includes(reading.id)}
+                  dash={dash}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                  onToggleFavorite={handleToggleFavorite}
+                  onToggleComplete={handleToggleComplete}
+                  onClose={() => setSelectedReadingId(null)}
+                  onOpen={() => {
+                    window.location.href = `/reader/${reading.id}`;
+                  }}
+                />
+              ) : null;
+            })()
+          ) : selectedProject ? (
             <ProjectDetailView
               project={selectedProject}
               readings={readings.filter((r) => r.projectId === selectedProject.id)}
@@ -657,7 +682,9 @@ export default function Home() {
           ) : (
             <div className={`flex h-full items-center justify-center ${dash.sidebar}`}>
               <p className={`text-center ${dash.textMuted}`}>
-                Selecciona un proyecto para ver detalles
+                {viewMode === "readings"
+                  ? "Selecciona una lectura para ver detalles"
+                  : "Selecciona un proyecto para ver detalles"}
               </p>
             </div>
           )}
@@ -665,32 +692,59 @@ export default function Home() {
       </div>
 
       {/* Details panel - overlay on small screens */}
-      {selectedProject && (
+      {(selectedProject || (selectedReadingId && expandedProjectId)) && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div
             className="absolute inset-0 bg-black/40"
-            onClick={() => setSelectedProjectId(null)}
+            onClick={() => {
+              setSelectedProjectId(null);
+              setSelectedReadingId(null);
+            }}
             aria-hidden="true"
           />
           <div className={`absolute inset-y-0 right-0 w-full max-w-sm border-l overflow-y-auto ${dash.divider} ${dash.sidebar}`}>
-            <ProjectDetailView
-              project={selectedProject}
-              readings={readings.filter((r) => r.projectId === selectedProject.id)}
-              completedReadings={completedReadings}
-              favoriteReadings={favoriteReadings}
-              dash={dash}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              onToggleFavorite={handleToggleFavorite}
-              onToggleComplete={handleToggleComplete}
-              onNewReading={() => setIsNewReadingModalOpen(true)}
-              onClose={() => setSelectedProjectId(null)}
-              onOpenProject={() => {
-                setViewMode("readings");
-                setExpandedProjectId(selectedProject.id);
-                setSelectedProjectId(null);
-              }}
-            />
+            {selectedReadingId && expandedProjectId ? (
+              (() => {
+                const reading = readings.find((r) => r.id === selectedReadingId);
+                const project = projects.find((p) => p.id === expandedProjectId);
+                return reading && project ? (
+                  <ReadingDetailView
+                    reading={reading}
+                    project={project}
+                    isCompleted={completedReadings.includes(reading.id)}
+                    isFavorite={favoriteReadings.includes(reading.id)}
+                    dash={dash}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    onToggleFavorite={handleToggleFavorite}
+                    onToggleComplete={handleToggleComplete}
+                    onClose={() => setSelectedReadingId(null)}
+                    onOpen={() => {
+                      window.location.href = `/reader/${reading.id}`;
+                    }}
+                  />
+                ) : null;
+              })()
+            ) : selectedProject ? (
+              <ProjectDetailView
+                project={selectedProject}
+                readings={readings.filter((r) => r.projectId === selectedProject.id)}
+                completedReadings={completedReadings}
+                favoriteReadings={favoriteReadings}
+                dash={dash}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onToggleFavorite={handleToggleFavorite}
+                onToggleComplete={handleToggleComplete}
+                onNewReading={() => setIsNewReadingModalOpen(true)}
+                onClose={() => setSelectedProjectId(null)}
+                onOpenProject={() => {
+                  setViewMode("readings");
+                  setExpandedProjectId(selectedProject.id);
+                  setSelectedProjectId(null);
+                }}
+              />
+            ) : null}
           </div>
         </div>
       )}

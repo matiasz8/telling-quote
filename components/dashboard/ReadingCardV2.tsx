@@ -14,6 +14,7 @@ interface ReadingCardV2Props {
   onEdit: () => void;
   onDelete: () => void;
   onOpen: () => void;
+  onSelect?: () => void;
 }
 
 function Icon({ path, className = "w-5 h-5" }: { path: string; className?: string }) {
@@ -34,13 +35,15 @@ export default function ReadingCardV2({
   onEdit,
   onDelete,
   onOpen,
+  onSelect,
 }: ReadingCardV2Props) {
   const excerpt = getExcerpt(reading.content, 120);
   const readingTime = getReadingTimeMinutes(reading.content);
 
   return (
     <div
-      className={`group rounded-xl border p-4 transition-all duration-200 ${dash.surface} ${dash.border} hover:shadow-lg hover:scale-105`}
+      onClick={onSelect}
+      className={`group rounded-xl border p-4 transition-all duration-200 cursor-pointer ${dash.surface} ${dash.border} hover:shadow-lg hover:scale-105`}
     >
       <div className="flex items-start justify-between gap-2 mb-3">
         <h3 className={`flex-1 font-semibold line-clamp-2 group-hover:text-blue-500 transition-colors ${dash.textPrimary}`}>
