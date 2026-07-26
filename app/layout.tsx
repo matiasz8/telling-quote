@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Atkinson_Hyperlegible } from "next/font/google";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import "./globals.css";
 import "./tutorial.css";
@@ -13,6 +13,13 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+// Self-hosted so the accessibility font needs no third-party request.
+const atkinsonHyperlegible = Atkinson_Hyperlegible({
+  variable: "--font-atkinson",
+  subsets: ["latin"],
+  weight: ["400", "700"],
 });
 
 export const metadata: Metadata = {
@@ -29,12 +36,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="bg-background" suppressHydrationWarning>
+    // The font variables live on <html> so `--font-atkinson` resolves when the
+    // accessibility settings set `font-family` on the document element.
+    <html
+      lang="en"
+      className={`bg-background ${geistSans.variable} ${geistMono.variable} ${atkinsonHyperlegible.variable}`}
+      suppressHydrationWarning
+    >
       <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible&display=swap"
-          rel="stylesheet"
-        />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -113,7 +122,7 @@ export default function RootLayout({
                       'mono': '"Courier New", monospace',
                       'opendyslexic': 'OpenDyslexic, sans-serif',
                       'comic-sans': '"Comic Sans MS", cursive',
-                      'atkinson': 'Atkinson Hyperlegible, sans-serif'
+                      'atkinson': 'var(--font-atkinson), sans-serif'
                     };
                     return fontMap[fontFamily] || 'system-ui, -apple-system, sans-serif';
                   }
@@ -123,9 +132,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className="antialiased">
         <ErrorBoundary>
           <TutorialProvider>
             {children}

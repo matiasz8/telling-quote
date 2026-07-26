@@ -149,7 +149,7 @@ html.reduce-motion *::after {
 }
 
 .font-atkinson {
-  font-family: 'Atkinson Hyperlegible', sans-serif;
+  font-family: var(--font-atkinson), sans-serif;
 }
 
 /* Dyslexia-friendly font support with font-face */

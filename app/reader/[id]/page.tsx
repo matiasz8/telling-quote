@@ -322,7 +322,7 @@ export default function ReaderPage() {
   const params = useParams();
   const router = useRouter();
   const id = typeof params.id === 'string' ? params.id : Array.isArray(params.id) ? params.id[0] : '';
-  const [readings] = useLocalStorage<Reading[]>(STORAGE_KEYS.READINGS, []);
+  const [readings, , readingsHydrated] = useLocalStorage<Reading[]>(STORAGE_KEYS.READINGS, []);
   const [completedReadings, setCompletedReadings] = useLocalStorage<string[]>('completedReadings', []);
   const { settings } = useSettings();
   useApplyAccessibilitySettings(settings);
@@ -826,6 +826,19 @@ export default function ReaderPage() {
       }
     };
   }, [handleNext, handlePrevious]);
+
+  // Readings live in localStorage, which is only available after hydration.
+  // Rendering "not found" before then would flash on every load — and would
+  // differ from the server-rendered HTML.
+  if (!readingsHydrated) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center" role="status" aria-live="polite">
+          <p className="text-gray-500">Cargando lectura…</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!reading) {
     return (

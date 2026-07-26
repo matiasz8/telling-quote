@@ -16,7 +16,7 @@ const FONT_FAMILY_MAP: Record<FontFamily, string> = {
   'mono': '"Courier New", monospace',
   'opendyslexic': 'OpenDyslexic, sans-serif',
   'comic-sans': '"Comic Sans MS", cursive',
-  'atkinson': 'Atkinson Hyperlegible, sans-serif'
+  'atkinson': 'var(--font-atkinson), sans-serif'
 };
 
 /**

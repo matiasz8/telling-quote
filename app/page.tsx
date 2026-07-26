@@ -68,11 +68,11 @@ export default function Home() {
   const [reactivatingReading, setReactivatingReading] = useState<Reading | null>(null);
 
   // Data storage
-  const [projects, setProjects] = useLocalStorage<Project[]>(
+  const [projects, setProjects, projectsHydrated] = useLocalStorage<Project[]>(
     "projects",
     []
   );
-  const [readings, setReadings] = useLocalStorage<Reading[]>(
+  const [readings, setReadings, readingsHydrated] = useLocalStorage<Reading[]>(
     STORAGE_KEYS.READINGS,
     []
   );
@@ -130,13 +130,16 @@ export default function Home() {
 
   // Auto-create default project if none exists on first load
   useEffect(() => {
-    if (!mounted || projects.length > 0) return;
+    if (!projectsHydrated || !mounted || projects.length > 0) return;
     setProjects([DEFAULT_PROJECT]);
-  }, [mounted, projects.length, setProjects]);
+  }, [projectsHydrated, mounted, projects.length, setProjects]);
 
   // Ensure example reading is assigned to a project
   useEffect(() => {
     if (typeof window === "undefined") return;
+    // `readings` is empty until localStorage has been read; seeding the example
+    // before that would overwrite the stored readings.
+    if (!readingsHydrated) return;
     if (hasInitializedExample.current) return;
 
     const exampleDismissed =
@@ -156,7 +159,7 @@ export default function Home() {
     }
 
     hasInitializedExample.current = true;
-  }, [readings, projects, setReadings, setProjects]);
+  }, [readingsHydrated, readings, projects, setReadings, setProjects]);
 
   // Auto-migrate orphaned readings (readings without projectId) to default project
   useEffect(() => {

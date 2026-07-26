@@ -27,14 +27,15 @@ export default function EditTitleModal({
   // Focus trap
   useFocusTrap(modalRef, isOpen);
 
-  // Reset form when modal opens
+  // Reset form when the modal opens. The `prevIsOpenRef` guard keeps this to the
+  // closed → open transition, so later prop changes never discard user edits.
   useEffect(() => {
     if (isOpen && !prevIsOpenRef.current) {
       setTitle(currentTitle);
       setTagsInput(currentTags?.join(", ") || "");
     }
     prevIsOpenRef.current = isOpen;
-  }, [isOpen]);
+  }, [isOpen, currentTitle, currentTags]);
 
   if (!isOpen) return null;
 

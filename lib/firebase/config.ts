@@ -2,9 +2,11 @@ import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
 import {
   getFirestore,
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
   Firestore,
   connectFirestoreEmulator,
-  enableIndexedDbPersistence,
 } from 'firebase/firestore';
 import { connectAuthEmulator } from 'firebase/auth';
 
@@ -36,7 +38,15 @@ function initializeFirebase() {
   if (!getApps().length) {
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const db = getFirestore(app);
+
+    // Offline persistence, configured up front. Replaces the deprecated
+    // enableIndexedDbPersistence() and uses multi-tab IndexedDB persistence, so
+    // the cache works in every open tab instead of only the first one.
+    const db = initializeFirestore(app, {
+      localCache: persistentLocalCache({
+        tabManager: persistentMultipleTabManager(),
+      }),
+    });
 
     // Connect local emulators for deterministic local development and tests.
     if (useEmulator && !emulatorConnected) {
@@ -45,17 +55,6 @@ function initializeFirebase() {
       });
       connectFirestoreEmulator(db, firestoreHost, firestorePort);
       emulatorConnected = true;
-    }
-
-    // Enable offline persistence (will show deprecation warning but it works)
-    if (typeof window !== 'undefined') {
-      enableIndexedDbPersistence(db).catch((err) => {
-        if (err.code === 'failed-precondition') {
-          console.warn('Multiple tabs open, persistence enabled in first tab only');
-        } else if (err.code === 'unimplemented') {
-          console.warn('Browser does not support offline persistence');
-        }
-      });
     }
 
     return { app, auth, db };
