@@ -109,6 +109,7 @@ export default function Home() {
   const hasAutoSynced = useRef(false);
   const readingsRef = useRef<Reading[]>(readings);
   const projectsRef = useRef<Project[]>(projects);
+  const hasMigratedOrphaned = useRef(false);
   const [mounted, setMounted] = useState(false);
 
   const dash = getDashboardTheme(settings.theme);
@@ -159,19 +160,28 @@ export default function Home() {
 
   // Auto-migrate orphaned readings (readings without projectId) to default project
   useEffect(() => {
-    if (!mounted || readings.length === 0) return;
+    if (!mounted || readings.length === 0 || hasMigratedOrphaned.current) return;
 
     // Check if there are any orphaned readings
-    if (!needsMigration(readings)) return;
+    if (!needsMigration(readings)) {
+      hasMigratedOrphaned.current = true;
+      return;
+    }
 
     const orphaned = getOrphanedReadings(readings);
     dlog(`[Migration] Found ${orphaned.length} orphaned reading(s)`);
 
     // Migrate to default project
     const migratedReadings = assignToDefaultProject(readings, DEFAULT_PROJECT.id);
-    setReadings(migratedReadings);
-
-    dlog(`[Migration] Migrated ${orphaned.length} reading(s) to default project`);
+    
+    // Only update if there are actual changes
+    const hasChanges = migratedReadings.some((r, i) => r.projectId !== readings[i]?.projectId);
+    if (hasChanges) {
+      setReadings(migratedReadings);
+      dlog(`[Migration] Migrated ${orphaned.length} reading(s) to default project`);
+    }
+    
+    hasMigratedOrphaned.current = true;
   }, [mounted, readings, setReadings]);
 
   // Check for migration on first user sign-in
